@@ -1,0 +1,42 @@
+.vscode
+.idea
+
+# JupyterNotebook
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# Pickles
+*.pkl
+
+# Mac stuff:
+.DS_Store
+
+
+# Python build stuff:
+*.egg-info
+*.egg*
+dist/
+/build
+__pycache__
+*.pyc
+*.whl
+
+# Cython build stuff
+*.so
+*.c
+
+# Unit testing
+.pytest_cache
+.coverage
+.coverage.*
+
+# Virtual env
+.venv
+
+# Release generated
+generated/
+
+# data output
+*output*
+
+sphinx/VERSION

@@ -1,0 +1,6 @@
+include sphinx/VERSION
+recursive-include sphinx *
+recursive-include sphinx/augmentation/uatg *
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
