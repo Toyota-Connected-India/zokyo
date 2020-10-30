@@ -25,7 +25,8 @@ REQUIREMENTS = [
     'pyyaml==5.1.2',
     'scikit-learn>=0.23.2',
     'Augmentor',
-    'opencv-python>=4.4.0'
+    'opencv-python>=4.4.0',
+    'Pillow>=5.2.0'
 ]
 
 SETUPTOOLS_COMMANDS = {

@@ -6,6 +6,7 @@ import cv2
 from Augmentor.Operations import Operation
 import os
 from ..utils.CustomExceptions import CoefficientNotinRangeError
+from PIL import Image
 
 class DarkenScene(Operation):
     def __init__(self, probability, darkness_coeff=-1):
