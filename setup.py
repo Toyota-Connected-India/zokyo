@@ -20,11 +20,12 @@ import sphinx
 
 REQUIREMENTS = [
     'grpcio==1.26.0',
-    'numpy',
+    'numpy>=1.17.3',
     'pandas<1.0.0',
     'pyyaml==5.1.2',
     'scikit-learn>=0.23.2',
-    'Augmentor'
+    'Augmentor',
+    'opencv-python>=4.4.0'
 ]
 
 SETUPTOOLS_COMMANDS = {

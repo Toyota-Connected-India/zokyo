@@ -1,18 +1,29 @@
 # -*- coding: utf-8 -*-
+# Contributors : [ashok.ramadass@toyotaconnected.com, srinivas.v@toyotaconnected.co.in, ]
 
 import Augmentor
+import cv2
+from Augmentor.Operations import Operation
 import os
+from ..utils.CustomExceptions import CoefficientNotinRangeError
 
-dir_path = os.path.dirname(os.path.realpath(__file__)) + "/uatg"
+class DarkenScene(Operation):
+    def __init__(self, probability, darkness_coeff=-1):
+        Operation.__init__(self, probability)
+        if(darkness_coeff!=-1):
+            if(darkness_coeff<0.0 or darkness_coeff>1.0):
+                raise CoefficientNotinRangeError(darkness_coeff, "DarknessCoefficient", 0, 1)
+        self.darkness_coeff = darkness_coeff
+    
+    def __str__(self):
+        return self.__class__.__name__
 
-def do_augmentation(dir_path=dir_path, no_of_sample=10, cache=True):
-    """do sample augmentation"""
-    p = Augmentor.Pipeline(dir_path)
-    p.rotate90(probability=0.5)
-    p.rotate270(probability=0.5)
-    p.flip_left_right(probability=0.8)
-    p.flip_top_bottom(probability=0.3)
-    p.crop_random(probability=1, percentage_area=0.5)
-    p.resize(probability=1.0, width=120, height=120)
-    p.sample(no_of_sample)
-    return len([name for name in os.listdir(dir_path + "/output")])
+    def perform_operation(self,images):
+        def do(image):
+            pass
+        augmented_images = []
+        for image in images:
+            augmented_images.append(do(image))
+        return augmented_images
+            
+
