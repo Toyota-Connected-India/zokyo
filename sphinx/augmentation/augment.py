@@ -5,26 +5,70 @@ import Augmentor
 import cv2
 from Augmentor.Operations import Operation
 import os
-from ..utils.CustomExceptions import CoefficientNotinRangeError
-from PIL import Image
+import numpy as np
+import warnings
+import json
+import importlib
+from .operations import ColorEqualize
 
-class DarkenScene(Operation):
-    def __init__(self, probability, darkness_coeff=-1):
-        Operation.__init__(self, probability)
-        if(darkness_coeff!=-1):
-            if(darkness_coeff<0.0 or darkness_coeff>1.0):
-                raise CoefficientNotinRangeError(darkness_coeff, "DarknessCoefficient", 0, 1)
-        self.darkness_coeff = darkness_coeff
+class Builder(object):
+    '''
+        Builder class to create augmentor Pipeline object
+    '''
+    def __init__(self, input_dir, **kwargs):
+        self.input_dir = input_dir
+        self.multi_threaded = multi_threaded
+        if kwargs["output_dir"] == None:
+            self.output_dir = input_dir + "/output"
+        self.__dict__.update((key, kwargs[key]) for key in ('sample','output_dir', 'run_all', 'multi_threaded') if key in kwargs)
     
-    def __str__(self):
-        return self.__class__.__name__
+    def build_and_run(self, config_json):
+        '''
+        Config file is a json map used to define Operations and their properties
+        {
+            "operations":[
+                {
+                    "operation": "DarkenScene",
+                    "args": {
+                        "probability": 0.7,
+                        "coefficient" : 0.5
+                    }
+                }
+            ]
+        }
+        '''
 
-    def perform_operation(self,images):
-        def do(image):
-            pass
-        augmented_images = []
-        for image in images:
-            augmented_images.append(do(image))
-        return augmented_images
+        if not os.path.exists(config_json):
+            raise FileNotFoundError("{} not found".format(config_json))
+        with open(config_json) as config_file:
+            self.config = json.load(config_file)
+       
+        pipeline = Augmentor.Pipeline(self.input_dir, output_directory=self.output_dir)
+        module = importlib.import_module('augmentation')
+       
+        for operation in self.config["operations"]:
+            Operation = getattr(module, operation["operation"])
+            OperationInstance = Operation(operation["args"])
+            pipeline.add_operation(OperationInstance)
+        
+        if self.run_all:
+            pipeline.process()
+        else:
+            pipeline.sample(self.sample, multi_threaded=self.multi_threaded)
+        
+
+
+
             
+
+
+
+        
+
+
+        
+
+        
+
+
 

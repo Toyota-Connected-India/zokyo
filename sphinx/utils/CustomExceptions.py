@@ -1,17 +1,18 @@
 class CoefficientNotinRangeError(Exception):
-    def __init__(self, coefficient, coefftype="Default", rangeMin = 0, rangeMax = 1):
-        self.rangeMax = rangeMax
-        self.rangeMin = rangeMin
-        self.coefftype = coefftype
+    def __init__(self, coefficient, coeff_type="Default", range_min = 0, range_max = 1):
+        self.range_max = range_max
+        self.range_min = range_min
+        self.coeff_type = coeff_type
         self.coefficient = coefficient
         super().__init__()
 
     def __str__(self):
-        return "{0} coefficient of value {1} is not in range {2} and {3}".format(self.coefftype,self.coefficient, self.rangeMin, self.rangeMax)
+        return "{0} coefficient of value {1} is not in range {2} and {3}".format(self.coeff_type,self.coefficient, self.range_min, self.range_max)
 
 class InvalidImageArrayError(Exception):
-    def __init__(self):
+    def __init__(self, image_type="PIL"):
+        self.image_type = image_type
         super().__init__()
 
     def __str__(self):
-        return "Image is not a numpy ndarray"
+        return "Image is not a {} Image".format(self.image_type)
