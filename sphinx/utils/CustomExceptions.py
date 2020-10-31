@@ -16,3 +16,12 @@ class InvalidImageArrayError(Exception):
 
     def __str__(self):
         return "Image is not a {} Image".format(self.image_type)
+
+class CrucialValueNotFoundError(Exception):
+    def __init__(self, operation, value_type="sample"):
+        self.value_type = value_type
+        self.operation = operation
+        super.__init__()
+
+    def __str__(self):
+        return "{0} value not found for operation {1}".format(self.value_type, self.operation)

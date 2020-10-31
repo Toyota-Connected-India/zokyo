@@ -17,10 +17,10 @@ class Builder(object):
     '''
     def __init__(self, input_dir, **kwargs):
         self.input_dir = input_dir
-        self.multi_threaded = multi_threaded
         if kwargs["output_dir"] == None:
             self.output_dir = input_dir + "/output"
-        self.__dict__.update((key, kwargs[key]) for key in ('sample','output_dir', 'run_all', 'multi_threaded') if key in kwargs)
+        if kwargs is not None:
+            self.__dict__.update((key, kwargs[key]) for key in ('sample','output_dir', 'run_all', 'multi_threaded') if key in kwargs)
     
     def build_and_run(self, config_json):
         '''
@@ -40,6 +40,7 @@ class Builder(object):
 
         if not os.path.exists(config_json):
             raise FileNotFoundError("{} not found".format(config_json))
+        
         with open(config_json) as config_file:
             self.config = json.load(config_file)
        
