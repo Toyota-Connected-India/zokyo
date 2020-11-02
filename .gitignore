@@ -39,7 +39,4 @@ generated/
 # data output
 *output*
 
-# images for unit tests
-*.png
-
 sphinx/VERSION

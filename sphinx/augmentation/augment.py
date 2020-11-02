@@ -57,7 +57,7 @@ class Builder(object):
             raise FileNotFoundError("{} not found", self.config["input_dir"])
         
         if "output_dir" not in self.config.keys():
-            self.output_dir = self.config["input_dir"] + "/output"
+            self.output_dir = "output"
         
         if "sample" not in self.config.keys():
             self.sample = len(os.listdir(self.input_dir))
@@ -81,7 +81,11 @@ class Builder(object):
         module = importlib.import_module(self.operation_module)
        
         for operation in self.operations:
-            Operation = getattr(module, operation["operation"])
+            try:
+                Operation = getattr(module, operation["operation"])
+            except:
+                raise ModuleNotFoundError("\"{0}\" operation not found in module \"{1}\"".format(operation["operation"], module))
+
             OperationInstance = Operation(**operation["args"])
             pipeline.add_operation(OperationInstance)
         
