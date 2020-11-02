@@ -27,8 +27,8 @@ test-unit: test-requirements
 	$(PYTHON) -m pytest -v --durations=20 --cov-config .coveragerc --cov sphinx -p no:logging
 
 .PHONY: test
-#test: test-unit test-lint
-test: test-unit
+test: test-unit test-lint
+# test: test-unit
 	rm -rf .coverage.* || echo "No coverage artifacts to remove"
 
 .PHONY: report-coverage
