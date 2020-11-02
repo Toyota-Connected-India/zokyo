@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from .augment import *
-from .operations import *
+__all__ = (
+           'augment', 
+           'operations'
+          )
 
-__all__ = [s for s in dir() if not s.startswith("_")]
+# To support old imports
+from sphinx.augmentation.augment import *
+from sphinx.augmentation.operations import *

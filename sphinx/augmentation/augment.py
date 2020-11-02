@@ -22,6 +22,7 @@ class Builder(object):
             "sample" : 5000,
             "multi_threaded" : true,
             "run_all" : false,
+            "type" : "sphinx.augmentation | Augmentor.Operations"
             "operations":[
                 {
                     "operation": "DarkenScene",
@@ -46,36 +47,42 @@ class Builder(object):
         with open(config_json) as config_file:
             self.config = json.load(config_file)
 
-        if self.config["operations"] is None:
+        if "operations" not in self.config.keys():
             raise CrucialValueNotFoundError(operation="augmentation configurations", value_type="operations")
 
-        if self.config["input_dir"] is None:
+        if "input_dir" not in self.config.keys():
             raise CrucialValueNotFoundError(operation="augmentation configurations", value_type="input_dir")
 
-        if not os.path.exits(self.config["input_dir"]):
+        if not os.path.exists(self.config["input_dir"]):
             raise FileNotFoundError("{} not found", self.config["input_dir"])
         
-        if self.config["output_dir"] is None:
-            self.output_dir = input_dir + "/output"
+        if "output_dir" not in self.config.keys():
+            self.output_dir = self.config["input_dir"] + "/output"
         
-        if self.config["sample"] is None:
+        if "sample" not in self.config.keys():
             self.sample = len(os.listdir(self.input_dir))
 
-        if self.config["run_all"] is None:
+        if "run_all" not in self.config.keys():
             self.run_all = False
 
-        if self.config["multi_threaded"] is None:
+        if "multi_threaded" not in self.config.keys():
             self.multi_threaded = False
+        
+        if "operation_module" not in self.config.keys():
+            self.operation_module = "sphinx.augmentation"
  
-        self.__dict__.update((key, self.config[key]) for key in ('sample','output_dir', 'run_all', 'multi_threaded', 'operations') if key in self.config)
+        self.__dict__.update((key, self.config[key]) \
+            for key in ('input_dir', 'sample','output_dir', 'run_all', 'multi_threaded', 'operations', 'operation_module') \
+            if key in self.config.keys())
+
 
     def build_and_run(self):
         pipeline = Augmentor.Pipeline(self.input_dir, output_directory=self.output_dir)
-        module = importlib.import_module('augmentation')
+        module = importlib.import_module(self.operation_module)
        
         for operation in self.operations:
             Operation = getattr(module, operation["operation"])
-            OperationInstance = Operation(operation["args"])
+            OperationInstance = Operation(**operation["args"])
             pipeline.add_operation(OperationInstance)
         
         if self.run_all:

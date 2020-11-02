@@ -21,7 +21,7 @@ class CrucialValueNotFoundError(Exception):
     def __init__(self, operation, value_type="sample"):
         self.value_type = value_type
         self.operation = operation
-        super.__init__()
+        super().__init__()
 
     def __str__(self):
-        return "{0} value not found for {1}".format(self.value_type, self.operation)
+        return "\"{0}\" value not found for {1}".format(self.value_type, self.operation)

@@ -1,0 +1,15 @@
+{
+    "input_dir" : "tests/images",
+    "sample" : 300,
+    "multi_threaded" : true,
+    "run_all" : false,
+    "operation_module" : "sphinx.augmentation",
+    "operations": [
+        {
+            "operation": "ColorEqualize",
+            "args": {
+                "probability": 0.5
+            }
+        }
+    ]
+}

@@ -40,7 +40,7 @@ class DarkenScene(Operation):
         Operation.__init__(self, args)
         
         if args.coefficient is None:
-            raise CrucialValueNotFoundError("DarkenScene", sample_type="Coefficient")
+            raise CrucialValueNotFoundError("DarkenScene", sample_type="coefficient")
         
         if (args.darkness_coeff != -1):
             if (darkness_coeff < 0.0 or darkness_coeff > 1.0):
@@ -52,7 +52,7 @@ class DarkenScene(Operation):
         def do(image):
             image_array = np.array(image).astype('uint8')
             #TODO : To implement Darken Road scene
-            return PIL.Image.fromarray(image_array)
+            return Image.fromarray(image_array)
 
         augmented_images = []
         for image in images:
