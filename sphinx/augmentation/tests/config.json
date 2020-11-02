@@ -1,0 +1,11 @@
+{
+    "multi_threaded" : true,
+    "operations" : [
+        {
+            "operation" : "ColorEqualize",
+            "args" : {
+                "probability" : 0.5
+            }
+        }
+    ]
+}
