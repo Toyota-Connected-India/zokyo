@@ -26,7 +26,8 @@ REQUIREMENTS = [
     'scikit-learn>=0.23.2',
     'Augmentor',
     'opencv-python>=4.4.0',
-    'Pillow>=5.2.0'
+    'Pillow>=5.2.0',
+    'mock'
 ]
 
 SETUPTOOLS_COMMANDS = {
