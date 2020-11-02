@@ -36,7 +36,7 @@ s::::::::::::::s p::::::::::::::::ph:::::h     h:::::i::::::in::::n    n::::n x:
 A sphinx (/ˈsfɪŋks/ SFINGKS, Ancient Greek: σφίγξ [spʰíŋks], Boeotian: φίξ [pʰíːks], plural sphinxes or sphinges) is a mythical creature with the head of a human, a falcon, a cat, or a sheep and the body of a lion with the wings of an eagle.
 
 Sphinx is a CV library for image data augmentation specifically built
-for Toyota and Lexus in unit camera streams.
+for Toyota and Lexus in unit camera streams on top of Augmentor.
 
 ## Installing locally
 

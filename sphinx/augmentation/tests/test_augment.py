@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
-
-from sphinx.augmentation import do_augmentation
 import os
+import pytest
+import unittest
+from ...augmentation import Builder
+from ...utils.CustomExceptions import CrucialValueNotFoundError
 
-dir_path = os.path.dirname(os.path.realpath(__file__)) + "/../uatg"
 
-def test_do_augmentation():
-    # Pre-cache
-    count = do_augmentation(dir_path=dir_path, no_of_sample=10)
+@pytest.fixture(scope="class")
+def builder_class(request):
+    request.cls.builder = Builder("tests/config.json")
 
-    assert count == 10
+
+@pytest.mark.usefixtures("builder_class")
+class BuilderTest(unittest.TestCase):
+    def test_build_run(self):
+        self.builder.build_and_run()
+        assert len(os.listdir('tests/images/output')) == 5
