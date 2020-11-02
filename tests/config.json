@@ -1,7 +1,7 @@
 {
     "input_dir" : "tests/images",
     "sample" : 300,
-    "multi_threaded" : true,
+    "multi_threaded" : false,
     "run_all" : false,
     "operation_module" : "sphinx.augmentation",
     "operations": [

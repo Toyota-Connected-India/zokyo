@@ -6,5 +6,5 @@ __all__ = (
           )
 
 # To support old imports
-from sphinx.augmentation.augment import *
-from sphinx.augmentation.operations import *
+from .augment import *
+from .operations import *
