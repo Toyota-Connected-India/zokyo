@@ -10,12 +10,13 @@ from PIL import Image, ImageOps
 import numpy as np
 import warnings
 
+
 class ArgsClass(object):
     def __init__(self, **kwargs):
         if "probability" not in kwargs.keys():
             kwargs["probability"] = 1
         self.__dict__.update((key, kwargs[key]) for key in kwargs)
-        
+
 
 class ColorEqualize(Operation):
     def __init__(self, **kwargs):
@@ -34,24 +35,27 @@ class ColorEqualize(Operation):
 
         return augmented_images
 
+
 class DarkenScene(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
         Operation.__init__(self, args)
-        
+
         if args.coefficient is None:
-            raise CrucialValueNotFoundError("DarkenScene", sample_type="coefficient")
-        
+            raise CrucialValueNotFoundError(
+                "DarkenScene", sample_type="coefficient")
+
         if (args.darkness_coeff != -1):
             if (darkness_coeff < 0.0 or darkness_coeff > 1.0):
-                raise CoefficientNotinRangeError(darkness_coeff, "DarknessCoefficient", 0, 1)
+                raise CoefficientNotinRangeError(
+                    darkness_coeff, "DarknessCoefficient", 0, 1)
         self.darkness_coeff = darkness_coeff
 
-    def perform_operation(self,images):
+    def perform_operation(self, images):
 
         def do(image):
             image_array = np.array(image).astype('uint8')
-            #TODO : To implement Darken Road scene
+            # TODO : To implement Darken Road scene
             return Image.fromarray(image_array)
 
         augmented_images = []
