@@ -30,7 +30,7 @@ test-unit: test-requirements
 .PHONY: test
 test: test-unit test-lint
 # test: test-unit
-	rm -rf .coverage.* || echo "No coverage artifacts to remove"
+	rm -rf tests/images/output || echo "Removed augmented images" || rm -rf .coverage.* || echo "No coverage artifacts to remove"
 
 .PHONY: report-coverage
 report-coverage:

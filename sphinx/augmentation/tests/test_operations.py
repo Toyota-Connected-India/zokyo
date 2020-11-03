@@ -1,7 +1,11 @@
 import pytest
 import unittest
 from ...augmentation import ColorEqualize, DarkenScene
-from Augmentor import pipeline
+import Augmentor
 
-@pytest.fixture(scope="class")
-def builder_class(request):
+
+class OperationsTest(unittest.TestCase):
+    def test_color_equalize(self):
+        cq = ColorEqualize(probability=0.5)
+        pipeline = Augmentor.Pipeline("tests/images")
+        pipeline.add_operation(cq)
