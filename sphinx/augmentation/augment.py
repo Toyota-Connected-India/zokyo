@@ -91,7 +91,7 @@ class Builder(object):
 
     def build_and_run(self):
         pipeline = Augmentor.Pipeline(
-            self.input_dir, output_directory=self.output_dir)
+            source_directory=self.input_dir, output_directory=self.output_dir)
         module = importlib.import_module(self.operation_module)
 
         for operation in self.operations:

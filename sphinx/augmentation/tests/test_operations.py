@@ -1,11 +1,13 @@
 import pytest
 import unittest
 from ...augmentation import ColorEqualize, DarkenScene
-import Augmentor
-
+from ...augmentation import Builder
+import shutil
+import os
 
 class OperationsTest(unittest.TestCase):
     def test_color_equalize(self):
-        cq = ColorEqualize(probability=0.5)
-        pipeline = Augmentor.Pipeline("tests/images")
-        pipeline.add_operation(cq)
+        builder = Builder("tests/color_equalize_test_config.json")
+        builder.build_and_run()
+        assert len(os.listdir('tests/images/output/color_equalize')) == 5
+        shutil.rmtree('tests/images/output')

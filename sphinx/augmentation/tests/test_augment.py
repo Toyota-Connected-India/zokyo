@@ -4,7 +4,7 @@ import pytest
 import unittest
 from ...augmentation import Builder
 from ...utils.CustomExceptions import CrucialValueNotFoundError
-
+import shutil
 
 @pytest.fixture(scope="class")
 def builder_class(request):
@@ -15,4 +15,5 @@ def builder_class(request):
 class BuilderTest(unittest.TestCase):
     def test_build_run(self):
         self.builder.build_and_run()
-        assert len(os.listdir('tests/images/output')) == 5        
+        assert len(os.listdir('tests/images/output/builder')) == 5        
+        shutil.rmtree('tests/images/output')

@@ -38,5 +38,6 @@ generated/
 
 # data output
 *output*
+*output/*
 
 sphinx/VERSION
