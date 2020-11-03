@@ -15,5 +15,4 @@ def builder_class(request):
 class BuilderTest(unittest.TestCase):
     def test_build_run(self):
         self.builder.build_and_run()
-        assert len(os.listdir('tests/images/output')) == 5
-        
+        assert len(os.listdir('tests/images/output')) == 5        
