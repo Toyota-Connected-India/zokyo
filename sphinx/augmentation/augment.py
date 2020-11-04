@@ -11,7 +11,7 @@ import warnings
 import json
 import importlib
 from .operations import ColorEqualize
-from ..utils.CustomExceptions import CrucialValueNotFoundError
+from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented
 
 
 class Builder(object):
@@ -75,9 +75,6 @@ class Builder(object):
         if "multi_threaded" not in self.config.keys():
             self.multi_threaded = False
 
-        if "operation_module" not in self.config.keys():
-            self.operation_module = "sphinx.augmentation"
-
         self.__dict__.update(
             (key,
              self.config[key]) for key in (
@@ -92,15 +89,24 @@ class Builder(object):
     def build_and_run(self):
         pipeline = Augmentor.Pipeline(
             source_directory=self.input_dir, output_directory=self.output_dir)
-        module = importlib.import_module(self.operation_module)
 
         for operation in self.operations:
+            if "operation_module" not in operation:
+                operation_module = "sphinx.augmentation"
+            else:
+                operation_module = operation["operation_module"]
+
+            try:
+                module = importlib.import_module(operation_module)
+            except BaseException:
+                raise ModuleNotFoundError(
+                    "\"{0}\" module not found".format(operation_module))
+
             try:
                 operation_class = getattr(module, operation["operation"])
             except BaseException:
-                raise ModuleNotFoundError(
-                    "\"{0}\" operation not found in module \"{1}\"".format(
-                        operation["operation"], module))
+                raise OperationNotFoundOrImplemented(
+                    operation_module, operation["operation"])
 
             OperationInstance = operation_class(**operation["args"])
             pipeline.add_operation(OperationInstance)

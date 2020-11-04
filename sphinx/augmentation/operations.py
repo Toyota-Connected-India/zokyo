@@ -39,24 +39,28 @@ class ColorEqualize(Operation):
 class DarkenScene(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
-        Operation.__init__(self, args)
+        Operation.__init__(self, args.probability)
 
         if args.coefficient is None:
             raise CrucialValueNotFoundError(
                 "DarkenScene", sample_type="coefficient")
 
-        if (args.darkness_coeff != -1):
-            if (darkness_coeff < 0.0 or darkness_coeff > 1.0):
+        if (args.coefficient != -1):
+            if (args.coefficient < 0.0 or args.coefficient > 1.0):
                 raise CoefficientNotinRangeError(
-                    darkness_coeff, "DarknessCoefficient", 0, 1)
-        self.darkness_coeff = darkness_coeff
+                    args.coefficient, "DarknessCoefficient", 0, 1)
+        self.darkness_coeff = args.coefficient
 
     def perform_operation(self, images):
 
         def do(image):
-            image_array = np.array(image).astype('uint8')
-            # TODO : To implement Darken Road scene
-            return Image.fromarray(image_array)
+            image = np.array(image, dtype=np.uint8)
+            image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+            image_HLS[:, :, 1] = image_HLS[:, :, 1] * self.darkness_coeff
+            image_HLS[:, :, 1][image_HLS[:, :, 1] < 0] = 0
+            image_HLS = np.array(image_HLS, dtype=np.uint8)
+            image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2RGB)
+            return Image.fromarray(image_RGB)
 
         augmented_images = []
         for image in images:
