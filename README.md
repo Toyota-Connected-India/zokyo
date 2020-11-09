@@ -64,12 +64,12 @@ Sample Configuration json for sphinx
     "sample" : 5,
     "multi_threaded" : false,
     "run_all" : false,
-    "operation_module" : "sphinx.augmentation",
     "operations": [
         {
             "operation": "EqualizeScene",
+            "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 0.5
+                "probability": 0.5,
             }
         }
     ]
