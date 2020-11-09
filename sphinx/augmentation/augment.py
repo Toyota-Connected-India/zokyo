@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# Contributors : [ashok.ramadass@toyotaconnected.com,
-# srinivas.v@toyotaconnected.co.in, ]
+# Contributors : [ashok.ramadass@toyotaconnected.com, srinivas.v@toyotaconnected.co.in, ]
 
 import Augmentor
 import cv2
