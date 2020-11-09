@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from scipy import spatial
 
+
 def make_mask(self, b, image):
     mask = np.zeros((image.shape[0], image.shape[1], 1), dtype=np.uint8)
     for xx, yy in enumerate(b):
@@ -23,12 +24,14 @@ def display_mask(self, b, image, color=[0, 0, 255]):
         )
     )
 
+
 def color_to_gradient(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return np.hypot(
         cv2.Sobel(gray, cv2.CV_64F, 1, 0),
         cv2.Sobel(gray, cv2.CV_64F, 0, 1)
     )
+
 
 def energy(b_tmp, image):
     sky_mask = make_mask(b_tmp, image)
@@ -41,8 +44,8 @@ def energy(b_tmp, image):
         image,
         mask=cv2.cvtColor(sky_mask, cv2.COLOR_GRAY2BGR)
     ).compressed()
-    ground.shape = (ground.size//3, 3)
-    sky.shape = (sky.size//3, 3)
+    ground.shape = (ground.size // 3, 3)
+    sky.shape = (sky.size // 3, 3)
 
     sigma_g, mu_g = cv2.calcCovarMatrix(
         ground,
@@ -63,6 +66,7 @@ def energy(b_tmp, image):
             np.linalg.det(np.linalg.eig(sigma_g)[1]))
     )
 
+
 def calculate_border(grad, t):
     sky = np.full(grad.shape[1], grad.shape[0])
 
@@ -76,7 +80,8 @@ def calculate_border(grad, t):
     return sky
 
 
-def calculate_border_optimal(image, thresh_min=5, thresh_max=600, search_step=5):
+def calculate_border_optimal(
+        image, thresh_min=5, thresh_max=600, search_step=5):
     grad = color_to_gradient(image)
 
     n = ((thresh_max - thresh_min) // search_step) + 1
@@ -96,14 +101,17 @@ def calculate_border_optimal(image, thresh_min=5, thresh_max=600, search_step=5)
 
     return b_opt
 
+
 def no_sky_region(bopt, thresh1, thresh2, thresh3):
     border_ave = np.average(bopt)
     asadsbp = np.average(np.absolute(np.diff(bopt)))
 
     return border_ave < thresh1 or (border_ave < thresh2 and asadsbp > thresh3)
 
+
 def partial_sky_region(bopt, thresh4):
     return np.any(np.diff(bopt) > thresh4)
+
 
 def refine_sky(bopt, image):
     sky_mask = make_mask(bopt, image)
@@ -116,8 +124,8 @@ def refine_sky(bopt, image):
         image,
         mask=cv2.cvtColor(sky_mask, cv2.COLOR_GRAY2BGR)
     ).compressed()
-    ground.shape = (ground.size//3, 3)
-    sky.shape = (sky.size//3, 3)
+    ground.shape = (ground.size // 3, 3)
+    sky.shape = (sky.size // 3, 3)
 
     ret, label, center = cv2.kmeans(
         np.float32(sky),
@@ -149,7 +157,8 @@ def refine_sky(bopt, image):
     )
     icg = cv2.invert(sigma_g, cv2.DECOMP_SVD)[1]
 
-    if cv2.Mahalanobis(mu_s1, mu_g, ic_s1) > cv2.Mahalanobis(mu_s2, mu_g, ic_s2):
+    if cv2.Mahalanobis(mu_s1, mu_g, ic_s1) > cv2.Mahalanobis(
+            mu_s2, mu_g, ic_s2):
         mu_s = mu_s1
         sigma_s = sigma_s1
         ics = ic_s1
@@ -179,18 +188,19 @@ def refine_sky(bopt, image):
 
     return bopt
 
+
 def detect_sky(image):
     display(input_image)
 
     bopt = calculate_border_optimal(image)
 
-    if no_sky_region(bopt, image.shape[0]/30, image.shape[0]/4, 5):
+    if no_sky_region(bopt, image.shape[0] / 30, image.shape[0] / 4, 5):
         display("No sky detected")
         return
-    
+
     display_mask(bopt, image)
 
-    if partial_sky_region(bopt, image.shape[1]/3):
+    if partial_sky_region(bopt, image.shape[1] / 3):
         bnew = refine_sky(bopt, image)
-    
+
         display_mask(bnew, image)
