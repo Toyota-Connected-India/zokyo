@@ -163,8 +163,6 @@ class SnowScene(Operation):
             image = np.array(image, dtype=np.uint8)
             image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
             brightness_coefficient = np.random.uniform(1, 3)
-            imshape = image.shape
-            snow_point = self.snowness
             image_HLS[:, :, 1][image_HLS[:, :, 1] < self.snowness] = image_HLS[:,
                                                                                :, 1][image_HLS[:, :, 1] < self.snowness] * brightness_coefficient
             image_HLS[:, :, 1][image_HLS[:, :, 1] > 255] = 255

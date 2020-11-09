@@ -164,7 +164,7 @@ def refine_sky(bopt, image):
         ics = ic_s1
     else:
         mu_s = mu_s2
-        sigma_s = sigma_s2
+        sigma_s = sigma_s2 # noqa
         ics = ic_s2
 
     for x in range(image.shape[1]):
