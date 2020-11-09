@@ -1,15 +1,16 @@
 {
     "input_dir" : "tests/images",
-    "output_dir" : "output/color_equalize",
+    "output_dir" : "output/random_brightness",
     "sample" : 5,
     "multi_threaded" : false,
     "run_all" : false,
     "operations": [
         {
-            "operation": "EqualizeScene",
+            "operation": "RandomBrightness",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 0.5
+                "probability": 0.5,
+                "distribution": "uniform"
             }
         }
     ]

@@ -114,7 +114,7 @@ class RandomBrightness(Operation):
 
         if args.distribution is None:
             raise CrucialValueNotFoundError(
-                "RandomBrightness", sample_type="coefficient")
+                "RandomBrightness", sample_type="distribution")
 
         if args.distribution == "normal":
             self.coeff = 2 * np.random.normal(0, 1)
