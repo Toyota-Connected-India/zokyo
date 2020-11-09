@@ -67,7 +67,7 @@ Sample Configuration json for sphinx
     "operation_module" : "sphinx.augmentation",
     "operations": [
         {
-            "operation": "ColorEqualize",
+            "operation": "EqualizeScene",
             "args": {
                 "probability": 0.5
             }

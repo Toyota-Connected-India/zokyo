@@ -10,7 +10,6 @@ import numpy as np
 import warnings
 import json
 import importlib
-from .operations import ColorEqualize
 from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented
 
 

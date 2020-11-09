@@ -27,7 +27,7 @@ REQUIREMENTS = [
     'Augmentor>=0.2.8',
     'opencv-python>=4.4.0',
     'Pillow>=5.2.0',
-    'scipy>=1.5.3'
+    'scipy>=1.5.0'
     'mock'
 ]
 
