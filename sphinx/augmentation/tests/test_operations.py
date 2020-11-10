@@ -29,3 +29,9 @@ class OperationsTest(unittest.TestCase):
         builder.build_and_run()
         assert len(os.listdir('tests/images/output/random_brightness')) == 5
         shutil.rmtree('tests/images/output')
+
+    def test_rain_scene(self):
+        builder = Builder("tests/rain_scene_test_config.json")
+        builder.build_and_run()
+        assert len(os.listdir('tests/images/output/rain_scene')) == 5
+        shutil.rmtree('tests/images/output')
