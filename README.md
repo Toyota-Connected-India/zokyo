@@ -61,6 +61,7 @@ Sample Configuration json for sphinx
 ```
 {
     "input_dir" : "tests/images",
+    "output_dir" : "output"
     "sample" : 5,
     "multi_threaded" : false,
     "run_all" : false,
