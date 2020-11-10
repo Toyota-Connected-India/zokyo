@@ -178,7 +178,6 @@ class SnowScene(Operation):
         return augmented_images
 
 
-
 class RainScene(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
@@ -266,4 +265,3 @@ class RainScene(Operation):
         for image in images:
             augmented_images.append(do(image))
         return augmented_images
-
