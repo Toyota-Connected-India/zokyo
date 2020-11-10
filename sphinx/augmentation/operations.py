@@ -18,7 +18,7 @@ class ArgsClass(object):
         self.__dict__.update((key, kwargs[key]) for key in kwargs)
 
 
-class ColorEqualize(Operation):
+class EqualizeScene(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
         Operation.__init__(self, args.probability)
@@ -39,24 +39,136 @@ class ColorEqualize(Operation):
 class DarkenScene(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
-        Operation.__init__(self, args)
+        Operation.__init__(self, args.probability)
 
         if args.coefficient is None:
             raise CrucialValueNotFoundError(
                 "DarkenScene", sample_type="coefficient")
 
-        if (args.darkness_coeff != -1):
-            if (darkness_coeff < 0.0 or darkness_coeff > 1.0):
+        if (args.coefficient != -1):
+            if (args.coefficient < 0.0 or args.coefficient > 1.0):
                 raise CoefficientNotinRangeError(
-                    darkness_coeff, "DarknessCoefficient", 0, 1)
-        self.darkness_coeff = darkness_coeff
+                    args.coefficient, "DarknessCoefficient", 0, 1)
+        self.darkness_coeff = args.coefficient
 
     def perform_operation(self, images):
 
         def do(image):
-            image_array = np.array(image).astype('uint8')
-            # TODO : To implement Darken Road scene
-            return Image.fromarray(image_array)
+            image = np.array(image, dtype=np.uint8)
+            image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+            image_HLS[:, :, 1] = image_HLS[:, :, 1] * self.darkness_coeff
+            image_HLS[:, :, 1][image_HLS[:, :, 1] < 0] = 0
+            image_HLS = np.array(image_HLS, dtype=np.uint8)
+            image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2RGB)
+            return Image.fromarray(image_RGB)
+
+        augmented_images = []
+        for image in images:
+            augmented_images.append(do(image))
+        return augmented_images
+
+# TODO : Add Sky augmentation operation
+
+# TODO : Add a common util to change lighting instead of repeating the
+# implementation
+
+
+class BrightenScene(Operation):
+    def __init__(self, **kwargs):
+        args = ArgsClass(**kwargs)
+        Operation.__init__(self, args.probability)
+
+        if args.coefficient is None:
+            raise CrucialValueNotFoundError(
+                "BrightenScene", sample_type="coefficient")
+
+        if (args.coefficient != -1):
+            if (args.coefficient < 0.0 or args.coefficient > 1.0):
+                raise CoefficientNotinRangeError(
+                    args.coefficient, "BrightnessCoefficient", 0, 1)
+
+        self.brightness_coeff = 1 + args.coefficient
+
+    def perform_operation(self, images):
+
+        def do(image):
+            image = np.array(image, dtype=np.uint8)
+            image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+            image_HLS[:, :, 1] = image_HLS[:, :, 1] * self.brightness_coeff
+            image_HLS[:, :, 1][image_HLS[:, :, 1] > 255] = 255
+            image_HLS[:, :, 1][image_HLS[:, :, 1] < 0] = 0
+            image_HLS = np.array(image_HLS, dtype=np.uint8)
+            image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2RGB)
+            return Image.fromarray(image_RGB)
+
+        augmented_images = []
+        for image in images:
+            augmented_images.append(do(image))
+        return augmented_images
+
+
+class RandomBrightness(Operation):
+    def __init__(self, **kwargs):
+        args = ArgsClass(**kwargs)
+        Operation.__init__(self, args.probability)
+
+        if args.distribution is None:
+            raise CrucialValueNotFoundError(
+                "RandomBrightness", sample_type="distribution")
+
+        if args.distribution == "normal":
+            self.coeff = 2 * np.random.normal(0, 1)
+        elif args.distribution == "uniform":
+            self.coeff = 2 * np.random.uniform(0, 1)
+
+    def perform_operation(self, images):
+
+        def do(image):
+            image = np.array(image, dtype=np.uint8)
+            image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+            image_HLS[:, :, 1] = image_HLS[:, :, 1] * self.coeff
+            image_HLS[:, :, 1][image_HLS[:, :, 1] > 255] = 255
+            image_HLS[:, :, 1][image_HLS[:, :, 1] < 0] = 0
+            image_HLS = np.array(image_HLS, dtype=np.uint8)
+            image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2RGB)
+            return Image.fromarray(image_RGB)
+
+        augmented_images = []
+        for image in images:
+            augmented_images.append(do(image))
+        return augmented_images
+
+
+class SnowScene(Operation):
+    def __init__(self, **kwargs):
+        args = ArgsClass(**kwargs)
+        Operation.__init__(self, args.probability)
+
+        if args.distribution is None:
+            raise CrucialValueNotFoundError(
+                "SnowScene", sample_type="coefficient")
+
+        if (args.coefficient != -1):
+            if (args.coefficient < 0.0 or args.coefficient > 1.0):
+                raise CoefficientNotinRangeError(
+                    args.coefficient, "SnownessCoefficient", 0, 1)
+
+        args.coefficient *= 255 / 2
+        args.coefficient += 255 / 3
+        self.snowness = args.coefficient
+
+    def perform_operation(self, images):
+
+        def do(image):
+            image = np.array(image, dtype=np.uint8)
+            image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+            brightness_coefficient = np.random.uniform(1, 3)
+            image_HLS[:, :, 1][image_HLS[:, :, 1] < self.snowness] = image_HLS[:,
+                                                                               :, 1][image_HLS[:, :, 1] < self.snowness] * brightness_coefficient
+            image_HLS[:, :, 1][image_HLS[:, :, 1] > 255] = 255
+            image_HLS = np.array(image_HLS, dtype=np.uint8)
+            image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2RGB)
+            return Image.fromarray(image_RGB)
 
         augmented_images = []
         for image in images:

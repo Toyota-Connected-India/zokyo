@@ -55,7 +55,30 @@ $ make test
 ```
 
 ## usage
+
+Sample Configuration json for sphinx
+
 ```
-from sphinx.augmentation import do_augmentation
-do_augmentation(dir_path=dir_path, no_of_sample=10)
-````
+{
+    "input_dir" : "tests/images",
+    "sample" : 5,
+    "multi_threaded" : false,
+    "run_all" : false,
+    "operations": [
+        {
+            "operation": "EqualizeScene",
+            "operation_module" : "sphinx.augmentation",
+            "args": {
+                "probability": 0.5,
+            }
+        }
+    ]
+}
+```
+
+```
+from sphinx.augmentation import Builder
+builder = Builder("config.json")
+builder.build_and_run()
+```
+
