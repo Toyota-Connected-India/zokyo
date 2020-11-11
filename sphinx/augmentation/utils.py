@@ -15,8 +15,7 @@ def make_mask(self, b, image):
 def display_mask(self, b, image, color=[0, 0, 255]):
     result = image.copy()
     overlay = np.full(image.shape, color, image.dtype)
-    display(
-        cv2.addWeighted(
+    cv2.addWeighted(
             cv2.bitwise_and(overlay, overlay, mask=make_mask(b, image)),
             1,
             image,
@@ -24,7 +23,8 @@ def display_mask(self, b, image, color=[0, 0, 255]):
             0,
             result
         )
-    )
+    return result
+    
 
 
 def color_to_gradient(image):
@@ -192,17 +192,14 @@ def refine_sky(bopt, image):
 
 
 def detect_sky(image):
-    display(input_image)
-
     bopt = calculate_border_optimal(image)
 
     if no_sky_region(bopt, image.shape[0] / 30, image.shape[0] / 4, 5):
-        display("No sky detected")
+        print("No sky detected")
         return
 
     display_mask(bopt, image)
 
     if partial_sky_region(bopt, image.shape[1] / 3):
         bnew = refine_sky(bopt, image)
-
-        display_mask(bnew, image)
+        return display_mask(bnew, image)

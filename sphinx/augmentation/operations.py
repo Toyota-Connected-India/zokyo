@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Contributors : [srinivas.v@toyotaconnected.co.in, ]
+# Contributors : [srinivas.v@toyotaconnected.co.in, ashok.ramadass@toyotaconnected.com, ]
 
 import Augmentor
 import cv2
@@ -185,21 +185,31 @@ class RainScene(Operation):
 
         if args.rain_type not in ["drizzle", "heavy", "torrential", None]:
             raise ValueError(
-                "raint_type must be one of ({}). Got: {}".format(["drizzle", "heavy", "torrential", None], args.rain_type)
+                "raint_type must be one of ({}). Got: {}".format(
+                    ["drizzle", "heavy", "torrential", None], args.rain_type)
             )
         if not -20 <= args.slant_lower <= args.slant_upper <= 20:
             raise ValueError(
-                "Invalid combination of slant_lower and slant_upper. Got: {}".format((args.slant_lower, args.slant_upper))
+                "Invalid combination of slant_lower and slant_upper. Got: {}".format(
+                    (args.slant_lower, args.slant_upper))
             )
         if not 1 <= args.drop_width <= 5:
-            raise ValueError("drop_width must be in range [1, 5]. Got: {}".format(args.drop_width))
+            raise ValueError(
+                "drop_width must be in range [1, 5]. Got: {}".format(
+                    args.drop_width))
         if not 0 <= args.drop_length <= 100:
-            raise ValueError("drop_length must be in range [0, 100]. Got: {}".format(args.drop_length))
+            raise ValueError(
+                "drop_length must be in range [0, 100]. Got: {}".format(
+                    args.drop_length))
         if not 0 <= args.brightness_coefficient <= 1:
-            raise ValueError("brightness_coefficient must be in range [0, 1]. Got: {}".format(args.brightness_coefficient))
+            raise ValueError(
+                "brightness_coefficient must be in range [0, 1]. Got: {}".format(
+                    args.brightness_coefficient))
 
         if not args.drop_color and isinstance(args.drop_color, list):
-            raise ValueError("drop_color must be a list of length 3 and each value must be in range [0, 255] . Got: {}".format(args.drop_color))
+            raise ValueError(
+                "drop_color must be a list of length 3 and each value must be in range [0, 255] . Got: {}".format(
+                    args.drop_color))
         self.slant_lower = args.slant_lower
         self.slant_upper = args.slant_upper
 
@@ -218,13 +228,25 @@ class RainScene(Operation):
                 rain_drop_x1 = rain_drop_x0 + slant
                 rain_drop_y1 = rain_drop_y0 + drop_length
 
-                cv2.line(image, (rain_drop_x0, rain_drop_y0), (rain_drop_x1, rain_drop_y1), self.drop_color, self.drop_width)
+                cv2.line(
+                    image,
+                    (rain_drop_x0,
+                     rain_drop_y0),
+                    (rain_drop_x1,
+                     rain_drop_y1),
+                    self.drop_color,
+                    self.drop_width)
 
-            image = cv2.blur(image, (self.blur_value, self.blur_value))  # rainy view are blurry
-            image_hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS).astype(np.float32)
+            # rainy view are blurry
+            image = cv2.blur(image, (self.blur_value, self.blur_value))
+            image_hls = cv2.cvtColor(
+                image, cv2.COLOR_RGB2HLS).astype(
+                np.float32)
             image_hls[:, :, 1] *= self.brightness_coefficient
 
-            image_rgb = cv2.cvtColor(image_hls.astype(np.uint8), cv2.COLOR_HLS2RGB)
+            image_rgb = cv2.cvtColor(
+                image_hls.astype(
+                    np.uint8), cv2.COLOR_HLS2RGB)
 
             return Image.fromarray(image_rgb)
 
@@ -249,14 +271,14 @@ class RainScene(Operation):
 
             rain_drops = []
 
-            for _i in range(num_drops):  # If You want heavy rain, try increasing this
+            for _i in range(
+                    num_drops):  # If You want heavy rain, try increasing this
                 if slant < 0:
                     x = random.randint(slant, width)
                 else:
                     x = random.randint(0, width - slant)
 
                 y = random.randint(0, height - drop_length)
-
                 rain_drops.append((x, y))
 
             return drop_length, rain_drops, slant
