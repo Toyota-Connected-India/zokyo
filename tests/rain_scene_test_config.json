@@ -1,0 +1,25 @@
+{
+    "input_dir" : "tests/images",
+    "output_dir" : "output/rain_scene",
+    "sample" : 5,
+    "multi_threaded" : false,
+    "run_all" : false,
+    "operations": [
+        {
+            "operation": "RainScene",
+            "operation_module" : "sphinx.augmentation",
+            "args": {
+                "slant_lower": -10,
+                "slant_upper": 10,
+                "drop_length": 20,
+                "drop_width":  1,
+                "blur_value":  7,
+                "rain_type": "drizzle",
+                "probability": 1,
+                "distribution": "uniform",
+                "brightness_coefficient": 0.5,
+                "drop_color": [200, 200, 200]
+            }
+        }
+    ]
+}
