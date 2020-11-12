@@ -287,3 +287,27 @@ class RainScene(Operation):
         for image in images:
             augmented_images.append(do(image))
         return augmented_images
+
+class MotionBlur(Operation):
+    def __init__(self, **kwargs):
+        args = ArgsClass(**kwargs)
+        if args.blurness is None:
+            raise CrucialValueNotFoundError("MotionBlur", "blurness coefficient")
+        self.blurness = args.blurness
+
+    def perform_operation(self, images):
+        pass
+
+class FogScene(Operation):
+    def __init__(self, **kwargs):
+        args = ArgsClass(**kwargs)
+        if args.fogness is None:
+            raise CrucialValueNotFoundError("FogScene", "Fogness coefficient")
+        self.fogness = args.fogness
+
+    def perform_operation(self, images):
+        pass
+
+
+
+
