@@ -2,11 +2,7 @@
 # Contributors : [ashok.ramadass@toyotaconnected.com, srinivas.v@toyotaconnected.co.in, ]
 
 import Augmentor
-import cv2
-from Augmentor.Operations import Operation
 import os
-import numpy as np
-import warnings
 import json
 import importlib
 from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented

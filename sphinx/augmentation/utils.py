@@ -42,10 +42,12 @@ def energy(b_tmp, image):
         image,
         mask=cv2.cvtColor(cv2.bitwise_not(sky_mask), cv2.COLOR_GRAY2BGR)
     ).compressed()
+
     sky = np.ma.array(
         image,
         mask=cv2.cvtColor(sky_mask, cv2.COLOR_GRAY2BGR)
     ).compressed()
+    
     ground.shape = (ground.size // 3, 3)
     sky.shape = (sky.size // 3, 3)
 

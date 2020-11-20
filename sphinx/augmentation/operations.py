@@ -5,6 +5,8 @@ import Augmentor
 import cv2
 from Augmentor.Operations import Operation
 import os
+
+from numpy.lib import histograms
 from ..utils.CustomExceptions import CoefficientNotinRangeError, InvalidImageArrayError, CrucialValueNotFoundError
 from ..utils.misc import from_float, to_float
 from PIL import Image, ImageOps
@@ -43,9 +45,9 @@ class DarkenScene(Operation):
         args = ArgsClass(**kwargs)
         Operation.__init__(self, args.probability)
 
-        if args.coefficient is None:
+        if 'coefficient' not in args.__dict__.keys():
             raise CrucialValueNotFoundError(
-                "DarkenScene", sample_type="coefficient")
+                "DarkenScene", value_type="coefficient")
 
         if (args.coefficient != -1):
             if (args.coefficient < 0.0 or args.coefficient > 1.0):
@@ -80,9 +82,9 @@ class BrightenScene(Operation):
         args = ArgsClass(**kwargs)
         Operation.__init__(self, args.probability)
 
-        if args.coefficient is None:
+        if 'coefficient' not in args.__dict__.keys():
             raise CrucialValueNotFoundError(
-                "BrightenScene", sample_type="coefficient")
+                "BrightenScene", value_type="coefficient")
 
         if (args.coefficient != -1):
             if (args.coefficient < 0.0 or args.coefficient > 1.0):
@@ -114,9 +116,9 @@ class RandomBrightness(Operation):
         args = ArgsClass(**kwargs)
         Operation.__init__(self, args.probability)
 
-        if args.distribution is None:
+        if 'distribution' not in args.__dict__.keys():
             raise CrucialValueNotFoundError(
-                "RandomBrightness", sample_type="distribution")
+                "RandomBrightness", value_type="distribution")
 
         if args.distribution == "normal":
             self.coeff = 2 * np.random.normal(0, 1)
@@ -146,9 +148,9 @@ class SnowScene(Operation):
         args = ArgsClass(**kwargs)
         Operation.__init__(self, args.probability)
 
-        if args.distribution is None:
+        if 'coefficient' not in args.__dict__.keys():
             raise CrucialValueNotFoundError(
-                "SnowScene", sample_type="coefficient")
+                "SnowScene", value_type="coefficient")
 
         if (args.coefficient != -1):
             if (args.coefficient < 0.0 or args.coefficient > 1.0):
@@ -157,19 +159,16 @@ class SnowScene(Operation):
 
         args.coefficient *= 255 / 2
         args.coefficient += 255 / 3
-        self.snowness = args.coefficient
+        self.snowness = 255 - args.coefficient
 
     def perform_operation(self, images):
 
         def do(image):
             image = np.array(image, dtype=np.uint8)
-            image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
-            brightness_coefficient = np.random.uniform(1, 3)
-            image_HLS[:, :, 1][image_HLS[:, :, 1] < self.snowness] = image_HLS[:,
-                                                                               :, 1][image_HLS[:, :, 1] < self.snowness] * brightness_coefficient
-            image_HLS[:, :, 1][image_HLS[:, :, 1] > 255] = 255
-            image_HLS = np.array(image_HLS, dtype=np.uint8)
-            image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2RGB)
+            image_HLS = cv2.cvtColor(image, cv2.COLOR_BGR2HLS_FULL)
+            rand = np.random.randint(225,255,(image_HLS[:,:,1].shape[0],image_HLS[:,:,1].shape[1]))
+            image_HLS[:,:,1][image_HLS[:,:,1] > self.snowness] = rand[image_HLS[:,:,1] > self.snowness]
+            image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2BGR_FULL)
             return Image.fromarray(image_RGB)
 
         augmented_images = []
@@ -291,7 +290,8 @@ class RainScene(Operation):
 class MotionBlur(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
-        if args.blurness is None:
+        
+        if 'blurness' not in args.__dict__.keys():
             raise CrucialValueNotFoundError("MotionBlur", "blurness coefficient")
         self.blurness = args.blurness
 
@@ -301,7 +301,7 @@ class MotionBlur(Operation):
 class FogScene(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
-        if args.fogness is None:
+        if 'fogness' not in args.__dict__.keys():
             raise CrucialValueNotFoundError("FogScene", "Fogness coefficient")
         self.fogness = args.fogness
 
