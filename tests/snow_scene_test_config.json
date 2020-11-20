@@ -9,8 +9,7 @@
             "operation": "SnowScene",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 0.5,
-                "coefficient": 0.5
+                "probability": 0.5
             }
         }
     ]

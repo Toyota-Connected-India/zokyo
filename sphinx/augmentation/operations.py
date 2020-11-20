@@ -71,11 +71,6 @@ class DarkenScene(Operation):
             augmented_images.append(do(image))
         return augmented_images
 
-# TODO : Add Sky augmentation operation
-
-# TODO : Add a common util to change lighting instead of repeating the
-# implementation
-
 
 class BrightenScene(Operation):
     def __init__(self, **kwargs):
@@ -148,26 +143,17 @@ class SnowScene(Operation):
         args = ArgsClass(**kwargs)
         Operation.__init__(self, args.probability)
 
-        if 'coefficient' not in args.__dict__.keys():
-            raise CrucialValueNotFoundError(
-                "SnowScene", value_type="coefficient")
-
-        if (args.coefficient != -1):
-            if (args.coefficient < 0.0 or args.coefficient > 1.0):
-                raise CoefficientNotinRangeError(
-                    args.coefficient, "SnownessCoefficient", 0, 1)
-
-        args.coefficient *= 255 / 2
-        args.coefficient += 255 / 3
-        self.snowness = 255 - args.coefficient
-
     def perform_operation(self, images):
 
         def do(image):
+            coefficient = random.gauss(0.3, 0.1)
+            coefficient *= 255 / 2
+            coefficient += 255 / 3
+            coefficient = 255 - coefficient
             image = np.array(image, dtype=np.uint8)
             image_HLS = cv2.cvtColor(image, cv2.COLOR_BGR2HLS_FULL)
             rand = np.random.randint(225,255,(image_HLS[:,:,1].shape[0],image_HLS[:,:,1].shape[1]))
-            image_HLS[:,:,1][image_HLS[:,:,1] > self.snowness] = rand[image_HLS[:,:,1] > self.snowness]
+            image_HLS[:,:,1][image_HLS[:,:,1] > coefficient] = rand[image_HLS[:,:,1] > coefficient]
             image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2BGR_FULL)
             return Image.fromarray(image_RGB)
 
