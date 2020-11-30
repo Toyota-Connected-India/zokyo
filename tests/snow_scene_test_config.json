@@ -1,6 +1,6 @@
 {
     "input_dir" : "tests/images",
-    "output_dir" : "../output/snow_scene",
+    "output_dir" : "/output/snow_scene",
     "sample" : 5,
     "multi_threaded" : false,
     "run_all" : false,

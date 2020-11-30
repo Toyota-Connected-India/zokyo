@@ -8,7 +8,7 @@ class CoefficientNotinRangeError(Exception):
         super().__init__()
 
     def __str__(self):
-        return "{0} coefficient of value {1} is not in range {2} and {3}".format(
+        return "\"{0}\" coefficient of value {1} is not in range {2} and {3}".format(
             self.coeff_type, self.coefficient, self.range_min, self.range_max)
 
 
@@ -41,3 +41,11 @@ class OperationNotFoundOrImplemented(Exception):
     def __str__(self):
         return "\"{0}\" not found or implemented in the module \"{1}\"".format(
             self.module, self.class_name)
+
+class ConfigurationError(Exception):
+    def __init__(self,exception_string) -> None:
+        self.exception_string = exception_string
+        super().__init__()
+    
+    def __str__(self) -> str:
+        return self.exception_string
