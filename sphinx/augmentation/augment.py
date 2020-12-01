@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 # Contributors : [ashok.ramadass@toyotaconnected.com, srinivas.v@toyotaconnected.co.in, ]
 
-from os import pipe
-from os.path import join
-import Augmentor
 import os
+from os.path import join
 import json
 import importlib
 import re
-from Augmentor.Pipeline import Pipeline, DataPipeline
+from .pipeline import DataPipeline
 from PIL import Image
-from numpy.lib.function_base import percentile
 from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented, ConfigurationError
 import numpy as np
+from tqdm import tqdm
+import random
 
 class Builder(object):
     '''
+        TODO : Image checks and exception handling, filter all the files that are not of acceptable format ( png, jpg, bmp, jpeg )
+        TODO : Parallelize saving images to disk
+
         Builder class to create augmentor Pipeline object
         Config file is a json map used to define Operations and their properties
         {
@@ -66,14 +68,28 @@ class Builder(object):
                 operation="augmentation configurations",
                 value_type="input_dir")
 
+        if "output_dir" not in self.config.keys():
+            self.output_dir = join(self.input_dir, "output")
+            os.mkdir(self.output_dir)
+            os.mkdir(join(self.output_dir, "images"))
+            os.mkdir(join(self.output_dir, "masks"))
+
         if not os.path.exists(self.config["input_dir"]):
             raise FileNotFoundError("{} not found", self.config["input_dir"])
+
+        self.data_len = len(os.listdir(self.input_dir))
+
+        if self.data_len == 0:
+            raise FileExistsError("No files found in the input directory")
+
+        if "mask_dir" in self.config.keys() and len(os.listdir) == 0:
+            raise FileNotFoundError("No files found in mask directory")
 
         if "output_dir" not in self.config.keys():
             self.output_dir = "output"
 
         if "sample" not in self.config.keys():
-            self.sample = len(os.listdir(self.input_dir))
+            self.sample = self.data_len
 
         if "run_all" not in self.config.keys():
             self.run_all = False
@@ -84,7 +100,8 @@ class Builder(object):
         if "batch_ingestion" not in self.config.keys():
             self.batch_ingestion = False
         
-        self.pipeline = None
+        if "internal_batch" not in self.__dict__.keys():
+            self.internal_batch = None
 
         self.__dict__.update(
             (key,
@@ -100,11 +117,11 @@ class Builder(object):
                 'internal_batch',
                 'operation_module') if key in self.config.keys())
 
-        if self.batch_ingestion and "internal_batch" not in self.__dict__.keys():
-            self.internal_batch = 1
-        
 
     def _add_operation(self,pipeline):
+        '''
+            Adds operation to sphinx pipeline. Dynamic module loading.
+        '''
         for operation in self.operations:
             if "operation_module" not in operation:
                 operation_module = "sphinx.augmentation"
@@ -138,7 +155,7 @@ class Builder(object):
             r = re.compile(filename.split('.')[0])
             filematch = [mask for mask in list(filter(r.match, os.listdir(self.mask_dir)))]
             if len(filematch) == 1: 
-                _image_mask_pair.append([os.path.join(self.input_dir,filename),os.path.join(os.path.join(self.mask_dir, filematch[0]))])
+                _image_mask_pair.append([join(self.input_dir,filename),join(join(self.mask_dir, filematch[0]))])
             elif len(filematch > 1):
                 raise ConfigurationError("More than 1 mask image found for the image " + filename)
         return _image_mask_pair
@@ -150,54 +167,116 @@ class Builder(object):
         if not os.path.exists(self.input_dir):
             raise FileExistsError("Input folder not found in the directory {}".format(self.mask_dir))
         
-        input_data_list = [os.path.join(self.input_dir, filename) for filename in os.listdir(self.input_dir)]
+        input_data_list = [join(self.input_dir, filename) for filename in os.listdir(self.input_dir)]
         return [input_data_list]
-        
 
-    def _generator_pipeline(self, batch_size):
-        if "mask_dir" in self.config.keys():
-            data_path_list = self._image_mask_pair_list_factory()
-        else:
-            data_path_list = self._image_list_factory()
-
-        self.sample_factor = self.sample // batch_size
-        internal_batch_split = len(data_path_list) // self.sample_factor
-        for i in range(self.sample_factor):
-            images = [[Image.open(y) for y in x] for x in data_path_list[i:(i+1)*(internal_batch_split+1) - 1]]
-            pipeline = Augmentor.DataPipeline(images=images)
-            pipeline = self._add_operation(pipeline=pipeline)
-            yield pipeline.sample(batch_size)
-    
     def _load_images(self):
         if "mask_dir" in self.config.keys():
             data_path_list = self._image_mask_pair_list_factory()
         else:
             data_path_list = self._image_list_factory()
-        images = [[Image.open(y) for y in x] for x in data_path_list]
+
+        images = [[np.array(Image.open(y)) for y in x] for x in data_path_list]
         return images
 
-
-
-
-
-    def process_and_save(self):
+    def _save_images_to_disk(self, images):
         '''
-            Build pipeline object
+            TODO: Parallelize saving the images to disk
         '''
-        if not self.batch_ingestion:
-            pipeline = Augmentor.DataPipeline(
-                source_directory=self.input_dir, output_directory=self.output_dir)
-            pipeline, mask_operations = self._add_operation(pipeline)
+        for image in images:
+            image = Image.fromarray(image[0])
+            image.save(join(self.output_dir, "images"))
+            image = Image.fromarray(image[1])
+            image.save(join(self.output_dir, "masks"))
 
-            if self.run_all:
-                pipeline.process()
-            else:
-                pipeline.sample(self.sample, multi_threaded=self.multi_threaded)
+    def _calculate_generator_params(self, batch_size=None):
+        if batch_size is None and self.internal_batch is None:
+                raise ValueError("Provide batch size or internal batch as batch_ingestion mode is set to \"True\"")
+
+        elif batch_size is None:
+            self.sample_factor = self.data_len // self.internal_batch
+            self.batch_size = self.sample // self.sample_factor
+            self.internal_batch_split = self.internal_batch
+
+        elif self.internal_batch is None:
+            self.sample_factor = self.sample // self.batch_size
+            self.internal_batch_split = self.data_len // self.sample_factor
+            self.batch_size = batch_size
 
         else:
-            pipeline = Augmentor.DataPipeline(
+            if batch_size < self.internal_batch:
+                raise ValueError("Batch size cannot be greater than internal batch split")
+            self.sample_factor = self.data_len // self.internal_batch
+            self.internal_batch_split = self.internal_batch
+            self.batch_size = self.batch_size
 
-            )
-        
-        
+            
+    def process_and_generate(self, batch_size=None, infinite_generator=False):
+        '''
+           Process the images and yields the results in batches. 
+           NOTE : If both internal batch and output batch size is given, sample number cannot be achieved.
+        '''
 
+        if "mask_dir" in self.config.keys():
+            data_path_list = self._image_mask_pair_list_factory()
+        else:
+            data_path_list = self._image_list_factory()
+        
+        if not infinite_generator:
+            self._calculate_generator_params(batch_size=batch_size)
+            
+            for i in range(self.sample_factor):
+                images = [[np.array(Image.open(y)) for y in x] for x in data_path_list[i:(i+1)*(self.internal_batch_split+1) - 1]]
+                pipeline = DataPipeline(images=images)
+                pipeline = self._add_operation(pipeline=pipeline)
+                images = pipeline.generator(batch_size=self.batch_size)
+                del pipeline # clear pipeline memory
+                yield images
+        
+        else:
+            if batch_size is None:
+                raise ValueError("Batch Size not found")
+
+            while True:
+                indexlist = random.sample(range(0, self.data_len), batch_size)
+                sample_data_path = [data_path_list[i] for i in indexlist]
+                images = [[np.array(Image.open(y)) for y in x] for x in sample_data_path]
+                pipeline = DataPipeline(images=images)
+                pipeline = self._add_operation(pipeline=pipeline)
+                images = pipeline.generator(batch_size=batch_size)
+                del pipeline #clear pipeline memory
+                yield images
+        
+            
+    def process(self, return_generator=False):
+        '''
+            Process the files and save to disk
+        '''
+        if not self.batch_ingestion:
+            images = self._load_images()
+            pipeline = DataPipeline(images=images)
+            pipeline = self._add_operation(pipeline)
+            images = pipeline.sample(self.sample)
+            if not return_generator:
+                self._save_images_to_disk(images)
+            else:
+                for image in images:
+                    yield image
+        else:
+            image_generator = self.process_and_generate(infinite_generator=False)
+            if not return_generator:
+                pbar = tqdm(total = self.sample_factor + 1)
+                while True:
+                    try:
+                        images = next(image_generator)
+                        self._save_images_to_disk(images)
+                        pbar.update(1)
+                    except StopIteration:
+                        break
+            else:
+                while True:
+                    try:
+                        images = next(image_generator)
+                        yield images
+                    except StopIteration:
+                        break

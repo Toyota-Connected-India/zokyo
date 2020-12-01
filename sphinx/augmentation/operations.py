@@ -136,7 +136,7 @@ class BrightenScene(Operation):
                     image[image_mask == self.args.label] = augmented_segment[image_mask == self.args.label]
                     return [image]
             else:
-                return [brighten(images[0])]   
+                return [brighten(images[0])] 
 
         return do(images)
 
@@ -338,7 +338,6 @@ class RainScene(Operation):
 class MotionBlur(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
-        
         if 'blurness' not in args.__dict__.keys():
             raise CrucialValueNotFoundError("MotionBlur", "blurness coefficient")
         self.blurness = args.blurness
