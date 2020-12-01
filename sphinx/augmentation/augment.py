@@ -2,6 +2,7 @@
 # Contributors : [ashok.ramadass@toyotaconnected.com, srinivas.v@toyotaconnected.co.in, ]
 
 from os import pipe
+from os.path import join
 import Augmentor
 import os
 import json
@@ -13,7 +14,6 @@ from numpy.lib.function_base import percentile
 from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented, ConfigurationError
 import numpy as np
 
-
 class Builder(object):
     '''
         Builder class to create augmentor Pipeline object
@@ -21,7 +21,7 @@ class Builder(object):
         {
             "input_dir" : "images",
             "output_dir" : "output",
-            "mask_dir" : "mask",
+            "mask_dir" : "mask"
             "sample" : 5000,
             "multi_threaded" : true,
             "run_all" : false,
@@ -111,9 +111,6 @@ class Builder(object):
             else:
                 operation_module = operation["operation_module"]
             
-            if "mask_operation" in operation.keys() and operation["mask_operation"] == True:
-                raise NotImplementedError("Mask polygon operation not implemented for the operation class : ", operation["operation"])
-            
             try:
                 module = importlib.import_module(operation_module)
             except BaseException:
@@ -129,13 +126,14 @@ class Builder(object):
             pipeline.add_operation(OperationInstance)
         return pipeline
 
-    def _image_mask_pair_generator(self):
+    def _image_mask_pair_list_factory(self):
         '''
-            Function that pairs images files with masks
+            Function that create a list of pair of image files with its respective masks
         '''
         _image_mask_pair = []
-        if "mask_dir" not in self.config.keys():
-            raise FileNotFoundError("Mask image directory not found")
+    
+        if not os.path.exists(self.mask_dir):
+            raise FileExistsError("Mask folder not found in the directory {}".format(self.mask_dir))
         for filename in os.listdir(self.input_dir):
             r = re.compile(filename.split('.')[0])
             filematch = [mask for mask in list(filter(r.match, os.listdir(self.mask_dir)))]
@@ -145,16 +143,40 @@ class Builder(object):
                 raise ConfigurationError("More than 1 mask image found for the image " + filename)
         return _image_mask_pair
 
+    def _image_list_factory(self):
+        '''
+            Function that create a list of pair of image files with its respective masks 
+        '''
+        if not os.path.exists(self.input_dir):
+            raise FileExistsError("Input folder not found in the directory {}".format(self.mask_dir))
         
-    def generator_pipeline(self, batch_size):
-        image_mask_pair = self._image_mask_pair_generator()
-        sample_factor = self.sample // batch_size
-        internal_batch_split = len(image_mask_pair) // sample_factor
-        for i in range(sample_factor):
-            images = [[np.asarray(Image.open(y)) for y in x] for x in image_mask_pair[i:(i+1)*(internal_batch_split+1) - 1]]
+        input_data_list = [os.path.join(self.input_dir, filename) for filename in os.listdir(self.input_dir)]
+        return [input_data_list]
+        
+
+    def _generator_pipeline(self, batch_size):
+        if "mask_dir" in self.config.keys():
+            data_path_list = self._image_mask_pair_list_factory()
+        else:
+            data_path_list = self._image_list_factory()
+
+        self.sample_factor = self.sample // batch_size
+        internal_batch_split = len(data_path_list) // self.sample_factor
+        for i in range(self.sample_factor):
+            images = [[Image.open(y) for y in x] for x in data_path_list[i:(i+1)*(internal_batch_split+1) - 1]]
             pipeline = Augmentor.DataPipeline(images=images)
             pipeline = self._add_operation(pipeline=pipeline)
             yield pipeline.sample(batch_size)
+    
+    def _load_images(self):
+        if "mask_dir" in self.config.keys():
+            data_path_list = self._image_mask_pair_list_factory()
+        else:
+            data_path_list = self._image_list_factory()
+        images = [[Image.open(y) for y in x] for x in data_path_list]
+        return images
+
+
 
 
 
@@ -163,7 +185,7 @@ class Builder(object):
             Build pipeline object
         '''
         if not self.batch_ingestion:
-            pipeline = Augmentor.Pipeline(
+            pipeline = Augmentor.DataPipeline(
                 source_directory=self.input_dir, output_directory=self.output_dir)
             pipeline, mask_operations = self._add_operation(pipeline)
 
