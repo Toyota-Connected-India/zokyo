@@ -12,6 +12,7 @@ from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoun
 import numpy as np
 from tqdm import tqdm
 import random
+import uuid
 
 class Builder(object):
     '''
@@ -69,20 +70,31 @@ class Builder(object):
                 value_type="input_dir")
 
         if "output_dir" not in self.config.keys():
-            self.output_dir = join(self.input_dir, "output")
-            os.mkdir(self.output_dir)
-            os.mkdir(join(self.output_dir, "images"))
-            os.mkdir(join(self.output_dir, "masks"))
+            self.output_dir = join(self.config["input_dir"], "output")
+            try:
+                os.mkdir(self.output_dir)
+                os.mkdir(join(self.output_dir, "images"))
+                os.mkdir(join(self.output_dir, "masks"))
+            except FileExistsError:
+                pass
+        
+        if "output_dir" in self.config.keys():
+            self.output_dir = self.config["output_dir"]
+            try:
+                os.mkdir(join(self.output_dir, "images"))
+                os.mkdir(join(self.output_dir, "masks"))
+            except FileExistsError:
+                pass
 
         if not os.path.exists(self.config["input_dir"]):
             raise FileNotFoundError("{} not found", self.config["input_dir"])
 
-        self.data_len = len(os.listdir(self.input_dir))
+        self.data_len = len(os.listdir(self.config["input_dir"]))
 
         if self.data_len == 0:
             raise FileExistsError("No files found in the input directory")
 
-        if "mask_dir" in self.config.keys() and len(os.listdir) == 0:
+        if "mask_dir" in self.config.keys() and len(os.listdir(self.config["mask_dir"])) == 0:
             raise FileNotFoundError("No files found in mask directory")
 
         if "output_dir" not in self.config.keys():
@@ -112,10 +124,9 @@ class Builder(object):
                 'run_all',
                 'multi_threaded',
                 'operations',
-                'mask_dir'
+                'mask_dir',
                 'batch_ingestion',
-                'internal_batch',
-                'operation_module') if key in self.config.keys())
+                'internal_batch') if key in self.config.keys())
 
 
     def _add_operation(self,pipeline):
@@ -170,26 +181,31 @@ class Builder(object):
         input_data_list = [join(self.input_dir, filename) for filename in os.listdir(self.input_dir)]
         return [input_data_list]
 
-    def _load_images(self):
+    def _check_and_populate_path(self):
         if "mask_dir" in self.config.keys():
             data_path_list = self._image_mask_pair_list_factory()
         else:
             data_path_list = self._image_list_factory()
+        return data_path_list
 
+    def _load_images(self):
+        data_path_list = self._check_and_populate_path()
         images = [[np.array(Image.open(y)) for y in x] for x in data_path_list]
         return images
 
     def _save_images_to_disk(self, images):
         '''
             TODO: Parallelize saving the images to disk
-        '''
-        for image in images:
-            image = Image.fromarray(image[0])
-            image.save(join(self.output_dir, "images"))
-            image = Image.fromarray(image[1])
-            image.save(join(self.output_dir, "masks"))
+        ''' 
+        for ims in images:
+            filename = str(uuid.uuid4())
+            image = Image.fromarray(ims[0])
+            image.save(join(self.output_dir, "images")+"/{}.png".format(filename))
+            if len(ims) == 2:
+                mask = Image.fromarray(ims[1])
+                mask.save(join(self.output_dir, "masks")+"/{}.png".format(filename))
 
-    def _calculate_generator_params(self, batch_size=None):
+    def calculate_and_set_generator_params(self, batch_size=None):
         if batch_size is None and self.internal_batch is None:
                 raise ValueError("Provide batch size or internal batch as batch_ingestion mode is set to \"True\"")
 
@@ -209,7 +225,6 @@ class Builder(object):
             self.sample_factor = self.data_len // self.internal_batch
             self.internal_batch_split = self.internal_batch
             self.batch_size = self.batch_size
-
             
     def process_and_generate(self, batch_size=None, infinite_generator=False):
         '''
@@ -217,14 +232,9 @@ class Builder(object):
            NOTE : If both internal batch and output batch size is given, sample number cannot be achieved.
         '''
 
-        if "mask_dir" in self.config.keys():
-            data_path_list = self._image_mask_pair_list_factory()
-        else:
-            data_path_list = self._image_list_factory()
+        data_path_list = self._check_and_populate_path()
         
         if not infinite_generator:
-            self._calculate_generator_params(batch_size=batch_size)
-            
             for i in range(self.sample_factor):
                 images = [[np.array(Image.open(y)) for y in x] for x in data_path_list[i:(i+1)*(self.internal_batch_split+1) - 1]]
                 pipeline = DataPipeline(images=images)
@@ -236,7 +246,6 @@ class Builder(object):
         else:
             if batch_size is None:
                 raise ValueError("Batch Size not found")
-
             while True:
                 indexlist = random.sample(range(0, self.data_len), batch_size)
                 sample_data_path = [data_path_list[i] for i in indexlist]
@@ -248,7 +257,7 @@ class Builder(object):
                 yield images
         
             
-    def process(self, return_generator=False):
+    def process_and_save(self, batch_size=None):
         '''
             Process the files and save to disk
         '''
@@ -257,26 +266,16 @@ class Builder(object):
             pipeline = DataPipeline(images=images)
             pipeline = self._add_operation(pipeline)
             images = pipeline.sample(self.sample)
-            if not return_generator:
-                self._save_images_to_disk(images)
-            else:
-                for image in images:
-                    yield image
+            self._save_images_to_disk(images)
+            
         else:
+            self.calculate_and_set_generator_params(batch_size=batch_size)
             image_generator = self.process_and_generate(infinite_generator=False)
-            if not return_generator:
-                pbar = tqdm(total = self.sample_factor + 1)
-                while True:
-                    try:
-                        images = next(image_generator)
-                        self._save_images_to_disk(images)
-                        pbar.update(1)
-                    except StopIteration:
-                        break
-            else:
-                while True:
-                    try:
-                        images = next(image_generator)
-                        yield images
-                    except StopIteration:
-                        break
+            pbar = tqdm(total = self.sample_factor)
+            while True:
+                try:
+                    images = next(image_generator)
+                    self._save_images_to_disk(images)
+                    pbar.update(1)
+                except StopIteration:
+                    break

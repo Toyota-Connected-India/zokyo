@@ -102,12 +102,12 @@ class BrightenScene(Operation):
             raise CrucialValueNotFoundError(
                 "BrightenScene", value_type="brightness")
 
-        if (self.args.coefficient != -1):
-            if (self.args.coefficient < 0.0 or self.args.coefficient > 1.0):
+        if (self.args.brightness != -1):
+            if (self.args.brightness < 0.0 or self.args.brightness > 1.0):
                 raise CoefficientNotinRangeError(
-                    self.args.coefficient, "BrightnessCoefficient", 0, 1)
+                    self.args.brightness, "BrightnessCoefficient", 0, 1)
 
-        self.brightness_coeff = 1 + self.args.coefficient
+        self.brightness_coeff = 1 + self.args.brightness
 
     def perform_operation(self, images):
 
