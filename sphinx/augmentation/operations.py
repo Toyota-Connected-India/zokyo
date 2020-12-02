@@ -18,8 +18,10 @@ class ArgsClass(object):
     def __init__(self, **kwargs):
         if "probability" not in kwargs.keys():
             kwargs["probability"] = 1
+        
         if "is_mask" not in kwargs.keys():
             kwargs["is_mask"] = False
+
         if kwargs["is_mask"] == True and "label" not in kwargs:
             kwargs["label"] = None
 

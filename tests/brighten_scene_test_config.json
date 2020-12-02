@@ -2,10 +2,10 @@
     "input_dir" : "tests/images",
     "mask_dir" : "tests/masks",
     "output_dir": "tests/output",
-    "sample" : 5,
+    "sample" : 6,
     "multi_threaded" : false,
     "batch_ingestion": true,
-    "internal_batch" : 1,
+    "internal_batch" : 2,
     "run_all" : false,
     "operations": [
         {
@@ -15,7 +15,7 @@
                 "probability": 0.5,
                 "brightness": 0.5,
                 "is_mask": true,
-                "label": 7
+                "label": 6
             }
         }
     ]

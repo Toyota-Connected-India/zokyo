@@ -1,4 +1,3 @@
-from os import pipe
 from sphinx.augmentation import Builder
 
 

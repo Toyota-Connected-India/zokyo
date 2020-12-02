@@ -197,6 +197,7 @@ class Builder(object):
         '''
             TODO: Parallelize saving the images to disk
         ''' 
+        print(len(images))
         for ims in images:
             filename = str(uuid.uuid4())
             image = Image.fromarray(ims[0])
@@ -225,6 +226,7 @@ class Builder(object):
             self.sample_factor = self.data_len // self.internal_batch
             self.internal_batch_split = self.internal_batch
             self.batch_size = self.batch_size
+
             
     def process_and_generate(self, batch_size=None, infinite_generator=False):
         '''
