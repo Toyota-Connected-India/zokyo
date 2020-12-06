@@ -3,7 +3,7 @@
 
 *CV library for image data augmentation*
 
-![Sphinx Build](https://github.com/toyotaconnected-India/sphinx/workflows/.github/workflows/main.yml/badge.svg)
+![Sphinx](https://github.com/toyotaconnected-India/sphinx/workflows/Sphinx/badge.svg?branch=master)
 
 ```
 
