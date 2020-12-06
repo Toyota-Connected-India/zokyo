@@ -12,7 +12,7 @@ from ..utils.misc import from_float, to_float
 from PIL import Image, ImageOps
 import numpy as np
 import random
-
+import warnings
 
 class ArgsClass(object):
     def __init__(self, **kwargs):
@@ -43,11 +43,15 @@ class EqualizeScene(Operation):
                     image_mask = np.array(images[1], dtype=np.uint8)
                     augmented_segment = cv2.equalizeHist(image)
                     image[image_mask == self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [image]
+                    return [Image.fromarray(image), Image.fromarray(image_mask)]
             else:
-                return [ImageOps.equalize(images[0])]   
-
+                if len(images) == 2:
+                    return [ImageOps.equalize(images[0]), images[1]]
+                else:
+                    return [ImageOps.equalize(images[0])]
+        
         return do(images)
+            
 
 
 class DarkenScene(Operation):
@@ -63,11 +67,11 @@ class DarkenScene(Operation):
             if (self.args.darkness < 0.0 or self.args.darkness > 1.0):
                 raise CoefficientNotinRangeError(
                     self.args.darkness, "darkness", 0, 1)
-        self.darkness_coeff = self.args.darkness
+
+        self.darkness_coeff = 1 - self.args.darkness
 
     def perform_operation(self, images):
         def darken(image):
-            image = np.array(image, dtype=np.uint8)
             image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
             image_HLS[:, :, 1] = image_HLS[:, :, 1] * self.darkness_coeff
             image_HLS[:, :, 1][image_HLS[:, :, 1] < 0] = 0
@@ -78,19 +82,18 @@ class DarkenScene(Operation):
         def do(images):
             if self.args.is_mask == True:
                 if self.args.label == None:
-                    augmented_images = []
-                    for image in images:
-                        image = darken(image)
-                        augmented_images.append(Image.fromarray(image))
-                    return augmented_images
+                    return [Image.fromarray(darken(image)) for image in images]
                 else:
                     image = np.array(images[0], dtype=np.uint8)
                     image_mask = np.array(images[1], dtype=np.uint8)
                     augmented_segment = darken(image)
                     image[image_mask == self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [image]
+                    return [Image.fromarray(image), Image.fromarray(image_mask)]
             else:
-                return [darken(images[0])]   
+                if len(images) == 2:
+                    return [Image.fromarray(darken(images[0])), images[1]]
+                else:
+                    return [Image.fromarray(darken(images[0]))]
 
         return do(images)
 
@@ -126,19 +129,18 @@ class BrightenScene(Operation):
         def do(images):
             if self.args.is_mask == True:
                 if self.args.label == None:
-                    augmented_images = []
-                    for image in images:
-                        image = brighten(image)
-                        augmented_images.append(Image.fromarray(image))
-                    return augmented_images
+                    return [Image.fromarray(brighten(image)) for image in images]
                 else:
                     image = np.array(images[0], dtype=np.uint8)
                     image_mask = np.array(images[1], dtype=np.uint8)
                     augmented_segment = brighten(image)
                     image[image_mask == self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [image]
+                    return [Image.fromarray(image), Image.fromarray(image_mask)]
             else:
-                return [brighten(images[0])] 
+                if len(images) == 2:
+                    return [Image.fromarray(brighten(images[0])), images[1]]
+                else:
+                    return [Image.fromarray(brighten(images[0]))]
 
         return do(images)
 
@@ -172,19 +174,19 @@ class RandomBrightness(Operation):
         def do(images):
             if self.args.is_mask == True:
                 if self.args.label == None:
-                    augmented_images = []
-                    for image in images:
-                        image = random_brighten(image)
-                        augmented_images.append(Image.fromarray(image))
-                    return augmented_images
+                    return [Image.fromarray(random_brighten(image)) for image in images]
                 else:
                     image = np.array(images[0], dtype=np.uint8)
                     image_mask = np.array(images[1], dtype=np.uint8)
                     augmented_segment = random_brighten(image)
                     image[image_mask == self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [image]
+                    return [Image.fromarray(image), Image.fromarray(image_mask)]
             else:
-                return [random_brighten(images[0])]   
+                if len(images) == 2:
+                    return [Image.fromarray(random_brighten(images[0])), images[1]]
+                else:
+                    return [Image.fromarray(random_brighten(images[0]))]
+
         return do(images)
 
 
@@ -210,19 +212,18 @@ class SnowScene(Operation):
         def do(images):
             if self.args.is_mask == True:
                 if self.args.label == None:
-                    augmented_images = []
-                    for image in images:
-                        image = snow(image)
-                        augmented_images.append(Image.fromarray(image))
-                    return augmented_images
+                    return [Image.fromarray(snow(image)) for image in images]
                 else:
                     image = np.array(images[0], dtype=np.uint8)
                     image_mask = np.array(images[1], dtype=np.uint8)
                     augmented_segment = snow(image)
                     image[image_mask == self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [image]
+                    return [Image.fromarray(image), Image.fromarray(image_mask)]
             else:
-                return [snow(images[0])]
+                if len(images) == 2:
+                    return [Image.fromarray(snow(images[0])), images[1]]
+                else:
+                    return [Image.fromarray(snow(images[0]))]
 
         return do(images)
 
@@ -333,7 +334,10 @@ class RainScene(Operation):
             return drop_length, rain_drops, slant
 
         def do(images):
-            return [rain(images[0])]
+            if len(images) == 2:
+                return [Image.fromarray(rain(images[0])), images[1]]
+            else:
+                return [Image.fromarray(rain(images[0]))]
 
         return do(images)
 

@@ -4,19 +4,18 @@
     "output_dir": "tests/output",
     "sample" : 6,
     "multi_threaded" : false,
-    "batch_ingestion": true,
-    "internal_batch" : 2,
+    "batch_ingestion": false,
     "run_all" : false,
     "operations": [
         {
-            "operation": "BrightenScene",
+            "operation": "DarkenScene",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 0.5,
-                "brightness": 0.5,
+                "probability": 0.7,
+                "darkness": 0.6,
                 "is_mask": true,
-                "label": 6
-            }
+                "label": 7
+              }
         }
     ]
 }

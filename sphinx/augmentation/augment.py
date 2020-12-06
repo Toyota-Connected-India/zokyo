@@ -13,8 +13,20 @@ import numpy as np
 from tqdm import tqdm
 import random
 import uuid
+from abc import ABC, abstractclassmethod, abstractstaticmethod
 
-class Builder(object):
+
+class AbstractBuilder(ABC):
+    
+    @abstractclassmethod
+    def process_and_generate(self):
+        pass
+
+    @abstractclassmethod
+    def process_and_save(self):
+        pass
+
+class Builder(AbstractBuilder):
     '''
         TODO : Image checks and exception handling, filter all the files that are not of acceptable format ( png, jpg, bmp, jpeg )
         TODO : Parallelize saving images to disk
@@ -115,6 +127,8 @@ class Builder(object):
         if "internal_batch" not in self.__dict__.keys():
             self.internal_batch = None
 
+        self.setting_generator_params = False
+
         self.__dict__.update(
             (key,
              self.config[key]) for key in (
@@ -197,7 +211,6 @@ class Builder(object):
         '''
             TODO: Parallelize saving the images to disk
         ''' 
-        print(len(images))
         for ims in images:
             filename = str(uuid.uuid4())
             image = Image.fromarray(ims[0])
@@ -207,59 +220,89 @@ class Builder(object):
                 mask.save(join(self.output_dir, "masks")+"/{}.png".format(filename))
 
     def calculate_and_set_generator_params(self, batch_size=None):
-        if batch_size is None and self.internal_batch is None:
-                raise ValueError("Provide batch size or internal batch as batch_ingestion mode is set to \"True\"")
+        self.setting_generator_params = True
 
-        elif batch_size is None:
-            self.sample_factor = self.data_len // self.internal_batch
-            self.batch_size = self.sample // self.sample_factor
-            self.internal_batch_split = self.internal_batch
+        if self.batch_ingestion:
+            if batch_size is None and self.internal_batch is None:
+                    raise ValueError("Provide batch size or internal batch as batch_ingestion mode is set to \"True\"")
 
-        elif self.internal_batch is None:
-            self.sample_factor = self.sample // self.batch_size
-            self.internal_batch_split = self.data_len // self.sample_factor
-            self.batch_size = batch_size
+            elif batch_size is None:
+                self.sample_factor = self.data_len // self.internal_batch
+                self.batch_size = self.sample // self.sample_factor
+                self.internal_batch_split = self.internal_batch
 
+            elif self.internal_batch is None:
+                self.sample_factor = self.sample // self.batch_size
+                self.internal_batch_split = self.data_len // self.sample_factor
+                self.batch_size = batch_size
+
+            else:
+                if batch_size < self.internal_batch:
+                    raise ValueError("Batch size cannot be greater than internal batch split")
+                self.sample_factor = self.data_len // self.internal_batch
+                self.internal_batch_split = self.internal_batch
+                self.batch_size = self.batch_size
+        
         else:
-            if batch_size < self.internal_batch:
-                raise ValueError("Batch size cannot be greater than internal batch split")
-            self.sample_factor = self.data_len // self.internal_batch
-            self.internal_batch_split = self.internal_batch
-            self.batch_size = self.batch_size
-
+            if self.batch_size is None:
+                raise ValueError("Batch size cannot be none !!")
+            self.batch_size = batch_size
+            self.sample_factor = self.sample // self.batch_size
             
-    def process_and_generate(self, batch_size=None, infinite_generator=False):
+    def process_and_generate(self, infinite_generator=False):
         '''
            Process the images and yields the results in batches. 
-           NOTE : If both internal batch and output batch size is given, sample number cannot be achieved.
+           NOTE : On batch ingestion mode if both internal batch and output batch size is given, sample number cannot be achieved.
         '''
 
         data_path_list = self._check_and_populate_path()
-        
-        if not infinite_generator:
-            for i in range(self.sample_factor):
-                images = [[np.array(Image.open(y)) for y in x] for x in data_path_list[i:(i+1)*(self.internal_batch_split+1) - 1]]
-                pipeline = DataPipeline(images=images)
-                pipeline = self._add_operation(pipeline=pipeline)
-                images = pipeline.generator(batch_size=self.batch_size)
-                del pipeline # clear pipeline memory
-                yield images
-        
+
+        if self.batch_ingestion:
+            if self.setting_generator_params:
+                if not infinite_generator:
+                    for i in range(self.sample_factor):
+                        images = [[np.array(Image.open(y)) for y in x] for x in data_path_list[i:(i+1)*(self.internal_batch_split+1) - 1]]
+                        pipeline = DataPipeline(images=images)
+                        pipeline = self._add_operation(pipeline=pipeline)
+                        images = pipeline.sample_generate(batch_size=self.batch_size)
+                        del pipeline # clear pipeline memory
+                        yield images
+                
+                else:
+                    if self.batch_size is None:
+                        raise ValueError("Batch Size not found")
+                    while True:
+                        indexlist = random.sample(range(0, self.data_len), self.internal_batch_split)
+                        sample_data_path = [data_path_list[i] for i in indexlist]
+                        images = [[np.array(Image.open(y)) for y in x] for x in sample_data_path]
+                        pipeline = DataPipeline(images=images)
+                        pipeline = self._add_operation(pipeline=pipeline)
+                        images = pipeline.sample_generate(batch_size=self.batch_size)
+                        del pipeline #clear pipeline memory
+                        yield images
+            else:
+                raise Exception("\nDid you call calculate_and_set_generator_params method ?")
+
         else:
-            if batch_size is None:
-                raise ValueError("Batch Size not found")
-            while True:
-                indexlist = random.sample(range(0, self.data_len), batch_size)
-                sample_data_path = [data_path_list[i] for i in indexlist]
-                images = [[np.array(Image.open(y)) for y in x] for x in sample_data_path]
+            if self.setting_generator_params:
+                images = self._load_images()
                 pipeline = DataPipeline(images=images)
-                pipeline = self._add_operation(pipeline=pipeline)
-                images = pipeline.generator(batch_size=batch_size)
-                del pipeline #clear pipeline memory
-                yield images
+                pipeline = self._add_operation(pipeline)
+                images = pipeline.sample(self.sample)
+                if not infinite_generator:
+                    for i in range(self.sample_factor):
+                        yield images[i:(i+1)*(self.batch_size+1) - 1]
+                else:
+                    while True:
+                        indexlist = random.sample(range(0, self.sample), self.batch_size)
+                        ims = [images[i] for i in indexlist]
+                        yield ims
+                        
+            else:
+                raise Exception("\nDid you call calculate_and_set_generator_params method ?")
+
         
-            
-    def process_and_save(self, batch_size=None):
+    def process_and_save(self, batch_save_size=None):
         '''
             Process the files and save to disk
         '''
@@ -271,7 +314,7 @@ class Builder(object):
             self._save_images_to_disk(images)
             
         else:
-            self.calculate_and_set_generator_params(batch_size=batch_size)
+            self.calculate_and_set_generator_params(batch_size=batch_save_size)
             image_generator = self.process_and_generate(infinite_generator=False)
             pbar = tqdm(total = self.sample_factor)
             while True:
