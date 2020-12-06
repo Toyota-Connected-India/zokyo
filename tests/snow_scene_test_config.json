@@ -1,16 +1,21 @@
 {
     "input_dir" : "tests/images",
-    "output_dir" : "/output/snow_scene",
-    "sample" : 5,
+    "mask_dir" : "tests/masks",
+    "output_dir": "tests/output",
+    "sample" : 6,
     "multi_threaded" : false,
+    "batch_ingestion": false,
     "run_all" : false,
     "operations": [
         {
-            "operation": "SnowScene",
+            "operation": "RandomBrightness",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 0.5
-            }
+                "probability": 1,
+                "distribution": "normal",
+                "is_mask": true,
+                "label": 7
+              }
         }
     ]
 }

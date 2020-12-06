@@ -1,16 +1,20 @@
 {
     "input_dir" : "tests/images",
-    "output_dir" : "output/color_equalize",
-    "sample" : 5,
+    "mask_dir" : "tests/masks",
+    "output_dir": "tests/output",
+    "sample" : 6,
     "multi_threaded" : false,
+    "batch_ingestion": false,
     "run_all" : false,
     "operations": [
         {
             "operation": "EqualizeScene",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 0.5
-            }
+                "probability": 1,
+                "is_mask": true,
+                "label": 7
+              }
         }
     ]
 }

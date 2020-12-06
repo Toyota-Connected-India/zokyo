@@ -264,7 +264,7 @@ class Builder(AbstractBuilder):
                         images = [[np.array(Image.open(y)) for y in x] for x in data_path_list[i:(i+1)*(self.internal_batch_split+1) - 1]]
                         pipeline = DataPipeline(images=images)
                         pipeline = self._add_operation(pipeline=pipeline)
-                        images = pipeline.sample_generate(batch_size=self.batch_size)
+                        images = pipeline.sample_for_generator(batch_size=self.batch_size)
                         del pipeline # clear pipeline memory
                         yield images
                 
@@ -277,7 +277,7 @@ class Builder(AbstractBuilder):
                         images = [[np.array(Image.open(y)) for y in x] for x in sample_data_path]
                         pipeline = DataPipeline(images=images)
                         pipeline = self._add_operation(pipeline=pipeline)
-                        images = pipeline.sample_generate(batch_size=self.batch_size)
+                        images = pipeline.sample_for_generator(batch_size=self.batch_size)
                         del pipeline #clear pipeline memory
                         yield images
             else:

@@ -60,14 +60,14 @@ class DataPipeline(Pipeline):
         return self._execute(augmentor_image)
 
 
-    def sample_generate(self, batch_size=1):
+    def sample_for_generator(self, batch_size=1):
 
         batch_size = 1 if (batch_size < 1) else batch_size
 
         batch = []
         y = []
 
-        for i in range(0, batch_size):
+        for _ in range(0, batch_size):
             index = random.randint(0, len(self.augmentor_images) - 1)
             images_to_yield = [Image.fromarray(x) for x in self.augmentor_images[index]]
 
@@ -93,7 +93,7 @@ class DataPipeline(Pipeline):
         batch = []
         y = []
 
-        for i in tqdm(range(0, n)):
+        for _ in tqdm(range(0, n)):
             index = random.randint(0, len(self.augmentor_images) - 1)
             images_to_return = [Image.fromarray(x) for x in self.augmentor_images[index]]
 
