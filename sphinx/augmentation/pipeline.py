@@ -4,6 +4,7 @@ from Augmentor.Pipeline import Pipeline
 import random
 from tqdm import tqdm
 
+
 class DataPipeline(Pipeline):
     def __init__(self, images, labels=None):
 
@@ -18,9 +19,9 @@ class DataPipeline(Pipeline):
 
         self.operations = []
 
-    ####################################################################################################################
+    ##########################################################################
     # Properties
-    ####################################################################################################################
+    ##########################################################################
 
     # @property
     # def output_directory(self):
@@ -39,7 +40,7 @@ class DataPipeline(Pipeline):
 
     @augmentor_images.setter
     def augmentor_images(self, value):
-            self._augmentor_images = value
+        self._augmentor_images = value
 
     @property
     def labels(self):
@@ -49,16 +50,15 @@ class DataPipeline(Pipeline):
     def labels(self, value):
         self._labels = value
 
-    ####################################################################################################################
+    ##########################################################################
     # End Properties
-    ####################################################################################################################
+    ##########################################################################
 
     def __call__(self, augmentor_image):
         """
         Multi-threading support to be enabled in a future release of sphinx.
         """
         return self._execute(augmentor_image)
-
 
     def sample_for_generator(self, batch_size=1):
 
@@ -69,12 +69,14 @@ class DataPipeline(Pipeline):
 
         for _ in range(0, batch_size):
             index = random.randint(0, len(self.augmentor_images) - 1)
-            images_to_yield = [Image.fromarray(x) for x in self.augmentor_images[index]]
+            images_to_yield = [
+                Image.fromarray(x) for x in self.augmentor_images[index]]
 
             for operation in self.operations:
                 r = round(random.uniform(0, 1), 1)
                 if r <= operation.probability:
-                    images_to_yield = operation.perform_operation(images_to_yield)
+                    images_to_yield = operation.perform_operation(
+                        images_to_yield)
 
             images_to_yield = [np.asarray(x) for x in images_to_yield]
 
@@ -95,12 +97,14 @@ class DataPipeline(Pipeline):
 
         for _ in tqdm(range(0, n)):
             index = random.randint(0, len(self.augmentor_images) - 1)
-            images_to_return = [Image.fromarray(x) for x in self.augmentor_images[index]]
+            images_to_return = [
+                Image.fromarray(x) for x in self.augmentor_images[index]]
 
             for operation in self.operations:
                 r = round(random.uniform(0, 1), 1)
                 if r <= operation.probability:
-                    images_to_return = operation.perform_operation(images_to_return)
+                    images_to_return = operation.perform_operation(
+                        images_to_return)
 
             images_to_return = [np.asarray(x) for x in images_to_return]
 
@@ -113,4 +117,4 @@ class DataPipeline(Pipeline):
         if self.labels:
             return batch, y
         else:
-            return batch 
+            return batch

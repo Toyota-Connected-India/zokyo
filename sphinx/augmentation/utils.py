@@ -16,15 +16,14 @@ def display_mask(self, b, image, color=[0, 0, 255]):
     result = image.copy()
     overlay = np.full(image.shape, color, image.dtype)
     cv2.addWeighted(
-            cv2.bitwise_and(overlay, overlay, mask=make_mask(b, image)),
-            1,
-            image,
-            1,
-            0,
-            result
-        )
+        cv2.bitwise_and(overlay, overlay, mask=make_mask(b, image)),
+        1,
+        image,
+        1,
+        0,
+        result
+    )
     return result
-    
 
 
 def color_to_gradient(image):
@@ -47,7 +46,7 @@ def energy(b_tmp, image):
         image,
         mask=cv2.cvtColor(sky_mask, cv2.COLOR_GRAY2BGR)
     ).compressed()
-    
+
     ground.shape = (ground.size // 3, 3)
     sky.shape = (sky.size // 3, 3)
 
@@ -168,7 +167,7 @@ def refine_sky(bopt, image):
         ics = ic_s1
     else:
         mu_s = mu_s2
-        sigma_s = sigma_s2 # noqa
+        sigma_s = sigma_s2  # noqa
         ics = ic_s2
 
     for x in range(image.shape[1]):

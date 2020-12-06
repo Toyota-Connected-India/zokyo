@@ -12,7 +12,6 @@
             "operation_module" : "sphinx.augmentation",
             "args": {
                 "probability": 1,
-                "distribution": "normal",
                 "is_mask": true,
                 "label": 7
               }

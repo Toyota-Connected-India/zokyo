@@ -42,10 +42,11 @@ class OperationNotFoundOrImplemented(Exception):
         return "\"{0}\" not found or implemented in the module \"{1}\"".format(
             self.module, self.class_name)
 
+
 class ConfigurationError(Exception):
-    def __init__(self,exception_string) -> None:
+    def __init__(self, exception_string) -> None:
         self.exception_string = exception_string
         super().__init__()
-    
+
     def __str__(self) -> str:
         return self.exception_string
