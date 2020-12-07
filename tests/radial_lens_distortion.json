@@ -1,0 +1,16 @@
+{
+    "input_dir" : "tests/images",
+    "output_dir" : "output/rain_scene",
+    "sample" : 5,
+    "multi_threaded" : false,
+    "run_all" : false,
+    "operations": [
+        {
+            "operation": "RadialLensDistortion",
+            "operation_module" : "sphinx.augmentation",
+            "args": {
+                "distortiontype": "NegativeBarrel"
+            }
+        }
+    ]
+}

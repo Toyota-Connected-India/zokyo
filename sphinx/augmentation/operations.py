@@ -11,7 +11,7 @@ from PIL import Image, ImageOps
 import numpy as np
 import warnings
 import random
-
+from random import randint
 
 class ArgsClass(object):
     def __init__(self, **kwargs):
@@ -140,7 +140,6 @@ class RandomBrightness(Operation):
             augmented_images.append(do(image))
         return augmented_images
 
-
 class SnowScene(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
@@ -177,6 +176,44 @@ class SnowScene(Operation):
             augmented_images.append(do(image))
         return augmented_images
 
+class RadialLensDistortion(Operation):
+    def __init__(self, **kwargs):
+        args = ArgsClass(**kwargs)
+        Operation.__init__(self, args.probability)
+
+        if args.distortiontype not in ["NegativeBarrel", "PinCushion"]:
+            raise ValueError(
+                "distortiontype must be one of ({}). Got: {}".format(["NegativeBarrel", "PinCushion"], args.rain_type)
+            )
+        
+        if (args.distortiontype == "NegativeBarrel"):
+            self.radialk1 = -1*randint(0, 10)/10
+        elif (args.distortiontype != "PinCushion" ):
+            self.radialk1 = randint(0, 10)/10
+
+    def perform_operation(self, images):
+        def do(image):
+            image = np.array(image, dtype=np.uint8)
+            d_coef=(self.radialk1, 0, 0, 0, 0)
+            # get the height and the width of the image
+            h, w = image.shape[:2]
+            # compute its diagonal
+            f = (h ** 2 + w ** 2) ** 0.5
+            # set the image projective to carrtesian dimension
+            K = np.array([[f, 0, w / 2],
+                        [0, f, h / 2],
+                        [0, 0,     1]])
+            # Generate new camera matrix from parameters
+            M, _ = cv2.getOptimalNewCameraMatrix(K, d_coef, (w, h), 0)
+            # Generate look-up tables for remapping the camera image
+            remap = cv2.initUndistortRectifyMap(K, d_coef, None, M, (w, h), 5)
+            # Remap the original image to a new image
+            image = cv2.remap(image, *remap, cv2.INTER_LINEAR)
+            return Image.fromarray(image)
+        augmented_images = []
+        for image in images:
+            augmented_images.append(do(image))
+        return augmented_images
 
 class RainScene(Operation):
     def __init__(self, **kwargs):
