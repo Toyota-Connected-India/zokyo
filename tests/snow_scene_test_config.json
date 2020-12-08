@@ -8,11 +8,10 @@
     "run_all" : false,
     "operations": [
         {
-            "operation": "DarkenScene",
+            "operation": "RandomBrightness",
             "operation_module" : "sphinx.augmentation",
             "args": {
                 "probability": 1,
-                "darkness": 0.6,
                 "is_mask": true,
                 "label": 7
               }

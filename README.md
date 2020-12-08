@@ -3,6 +3,8 @@
 
 *CV library for image data augmentation*
 
+![Sphinx](https://github.com/toyotaconnected-India/sphinx/workflows/Sphinx/badge.svg?branch=master)
+
 ```
 
                                                                                                 
@@ -61,16 +63,21 @@ Sample Configuration json for sphinx
 ```
 {
     "input_dir" : "tests/images",
-    "sample" : 5,
+    "mask_dir" : "tests/masks",
+    "output_dir": "tests/output",
+    "sample" : 6,
     "multi_threaded" : false,
+    "batch_ingestion": false,
     "run_all" : false,
     "operations": [
         {
             "operation": "EqualizeScene",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 0.5,
-            }
+                "probability": 1,
+                "is_mask": true,
+                "label": 7
+              }
         }
     ]
 }
@@ -78,7 +85,7 @@ Sample Configuration json for sphinx
 
 ```
 from sphinx.augmentation import Builder
-builder = Builder("config.json")
-builder.build_and_run()
+pipeline = Builder(config_json="config.json")
+pipeline.process_and_save()
 ```
 
