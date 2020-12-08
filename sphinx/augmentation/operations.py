@@ -187,14 +187,14 @@ class RadialLensDistortion(Operation):
             )
         
         if (args.distortiontype == "NegativeBarrel"):
-            self.radialk1 = -1*randint(0, 10)/10
-        elif (args.distortiontype != "PinCushion" ):
-            self.radialk1 = randint(0, 10)/10
+            self.radialk1 = -1 * randint(0, 10) / 10
+        elif (args.distortiontype != "PinCushion"):
+            self.radialk1 = randint(0, 10) / 10
 
     def perform_operation(self, images):
         def do(image):
             image = np.array(image, dtype=np.uint8)
-            d_coef=(self.radialk1, 0, 0, 0, 0)
+            d_coef = (self.radialk1, 0, 0, 0, 0)
             # get the height and the width of the image
             h, w = image.shape[:2]
             # compute its diagonal
@@ -202,7 +202,7 @@ class RadialLensDistortion(Operation):
             # set the image projective to carrtesian dimension
             K = np.array([[f, 0, w / 2],
                         [0, f, h / 2],
-                        [0, 0,     1]])
+                        [0, 0, 1]])
             # Generate new camera matrix from parameters
             M, _ = cv2.getOptimalNewCameraMatrix(K, d_coef, (w, h), 0)
             # Generate look-up tables for remapping the camera image
