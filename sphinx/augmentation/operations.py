@@ -200,9 +200,7 @@ class RadialLensDistortion(Operation):
             # compute its diagonal
             f = (h ** 2 + w ** 2) ** 0.5
             # set the image projective to carrtesian dimension
-            K = np.array([[f, 0, w / 2],
-                        [0, f, h / 2],
-                        [0, 0, 1]])
+            K = np.array([[f, 0, w / 2], [0, f, h / 2], [0, 0, 1]])
             # Generate new camera matrix from parameters
             M, _ = cv2.getOptimalNewCameraMatrix(K, d_coef, (w, h), 0)
             # Generate look-up tables for remapping the camera image
