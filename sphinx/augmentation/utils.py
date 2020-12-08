@@ -15,16 +15,15 @@ def make_mask(self, b, image):
 def display_mask(self, b, image, color=[0, 0, 255]):
     result = image.copy()
     overlay = np.full(image.shape, color, image.dtype)
-    display(
-        cv2.addWeighted(
-            cv2.bitwise_and(overlay, overlay, mask=make_mask(b, image)),
-            1,
-            image,
-            1,
-            0,
-            result
-        )
+    cv2.addWeighted(
+        cv2.bitwise_and(overlay, overlay, mask=make_mask(b, image)),
+        1,
+        image,
+        1,
+        0,
+        result
     )
+    return result
 
 
 def color_to_gradient(image):
@@ -42,10 +41,12 @@ def energy(b_tmp, image):
         image,
         mask=cv2.cvtColor(cv2.bitwise_not(sky_mask), cv2.COLOR_GRAY2BGR)
     ).compressed()
+
     sky = np.ma.array(
         image,
         mask=cv2.cvtColor(sky_mask, cv2.COLOR_GRAY2BGR)
     ).compressed()
+
     ground.shape = (ground.size // 3, 3)
     sky.shape = (sky.size // 3, 3)
 
@@ -166,7 +167,7 @@ def refine_sky(bopt, image):
         ics = ic_s1
     else:
         mu_s = mu_s2
-        sigma_s = sigma_s2 # noqa
+        sigma_s = sigma_s2  # noqa
         ics = ic_s2
 
     for x in range(image.shape[1]):
@@ -192,17 +193,14 @@ def refine_sky(bopt, image):
 
 
 def detect_sky(image):
-    display(input_image)
-
     bopt = calculate_border_optimal(image)
 
     if no_sky_region(bopt, image.shape[0] / 30, image.shape[0] / 4, 5):
-        display("No sky detected")
+        print("No sky detected")
         return
 
     display_mask(bopt, image)
 
     if partial_sky_region(bopt, image.shape[1] / 3):
         bnew = refine_sky(bopt, image)
-
-        display_mask(bnew, image)
+        return display_mask(bnew, image)

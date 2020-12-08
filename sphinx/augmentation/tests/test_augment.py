@@ -14,6 +14,8 @@ def builder_class(request):
 @pytest.mark.usefixtures("builder_class")
 class BuilderTest(unittest.TestCase):
     def test_build_run(self):
-        self.builder.build_and_run()
-        assert len(os.listdir('tests/images/output/builder')) == 5        
-        shutil.rmtree('tests/images/output')
+        self.builder.process_and_save()
+        assert len(os.listdir('tests/output/images/')) == 6
+        assert len(os.listdir('tests/output/masks')) == 6          
+        shutil.rmtree('tests/output/images')
+        shutil.rmtree('tests/output/masks')

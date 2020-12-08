@@ -1,7 +1,8 @@
 {
     "input_dir" : "tests/images",
-    "output_dir" : "output/rain_scene",
-    "sample" : 5,
+    "mask_dir" : "tests/masks",
+    "output_dir": "tests/output",
+    "sample" : 6,
     "multi_threaded" : false,
     "run_all" : false,
     "operations": [
