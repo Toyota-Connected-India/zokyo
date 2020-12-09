@@ -11,6 +11,7 @@
             "operation": "TangentialLensDistortion",
             "operation_module" : "sphinx.augmentation",
             "args": {
+                "probability": 1
             }
         }
     ]

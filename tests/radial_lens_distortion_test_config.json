@@ -11,6 +11,7 @@
             "operation": "RadialLensDistortion",
             "operation_module" : "sphinx.augmentation",
             "args": {
+                "probability": 1,
                 "distortiontype": "NegativeBarrel"
             }
         }
