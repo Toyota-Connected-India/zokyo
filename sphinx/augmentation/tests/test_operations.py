@@ -47,7 +47,15 @@ class OperationsTest(unittest.TestCase):
         shutil.rmtree('tests/output/masks')
 
     def radial_lens_distortion(self):
-        builder = Builder("tests/radial_lens_distortion_config.json")
+        builder = Builder("tests/radial_lens_distortion_test_config.json")
+        builder.process_and_save()
+        assert len(os.listdir('tests/output/images')) == 6
+        assert len(os.listdir('tests/output/masks')) == 6          
+        shutil.rmtree('tests/output/images')
+        shutil.rmtree('tests/output/masks')
+
+    def tangential_lens_distortion(self):
+        builder = Builder("tests/tangential_lens_distortion_test_config.json")
         builder.process_and_save()
         assert len(os.listdir('tests/output/images')) == 6
         assert len(os.listdir('tests/output/masks')) == 6          
