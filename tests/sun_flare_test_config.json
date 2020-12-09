@@ -1,0 +1,18 @@
+{
+    "input_dir" : "tests/images",
+    "mask_dir" : "tests/masks",
+    "output_dir": "tests/output",
+    "sample" : 6,
+    "multi_threaded" : false,
+    "batch_ingestion": false,
+    "run_all" : false,
+    "operations": [
+        {
+            "operation": "SunFlare",
+            "operation_module" : "sphinx.augmentation",
+            "args": {
+                "probability": 1
+            }
+        }
+    ]
+}
