@@ -455,21 +455,20 @@ class SunFlare(Operation):
         def flare_source(image, point, radius, src_color):
             overlay = image.copy()
             output = image.copy()
-            num_times = radius//10
+            num_times = radius // 10
             alpha = np.linspace(0.0, 1, num = num_times)
             rad = np.linspace(1, radius, num = num_times)
             for i in range(num_times):
                 cv2.circle(overlay, point, int(rad[i]), src_color, -1)
-                alp = alpha[num_times-i-1] * alpha[num_times-i-1] * alpha[num_times-i-1]
-                cv2.addWeighted(overlay, alp, output, 1 -alp , 0, output)
+                alp = alpha[num_times - i - 1] * alpha[num_times - i - 1] * alpha[num_times - i - 1]
+                cv2.addWeighted(overlay, alp, output, 1 - alp , 0, output)
             return output
 
         def add_sun_flare_line(flare_center, angle, imshape):
-            x=[]
-            y=[]
-            i=0
-            for rand_x in range(0, imshape[1], 10):
-                rand_y= math.tan(angle) * (rand_x-flare_center[0]) + flare_center[1]
+            x = []
+            y = []
+            for rand_x in range(0, imshape[1], 10) :
+                rand_y = math.tan(angle) * (rand_x-flare_center[0]) + flare_center[1]
                 x.append(rand_x)
                 y.append(2 * flare_center[1]-rand_y)
             return x, y
