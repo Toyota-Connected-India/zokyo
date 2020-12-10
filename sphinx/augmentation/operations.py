@@ -456,8 +456,8 @@ class SunFlare(Operation):
             overlay = image.copy()
             output = image.copy()
             num_times = radius // 10
-            alpha = np.linspace(0.0, 1, num = num_times)
-            rad = np.linspace(1, radius, num = num_times)
+            alpha = np.linspace(0.0, 1, num=num_times)
+            rad = np.linspace(1, radius, num=num_times)
             for i in range(num_times):
                 cv2.circle(overlay, point, int(rad[i]), src_color, -1)
                 alp = alpha[num_times - i - 1] * alpha[num_times - i - 1] * alpha[num_times - i - 1]
