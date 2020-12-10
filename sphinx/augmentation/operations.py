@@ -461,13 +461,13 @@ class SunFlare(Operation):
             for i in range(num_times):
                 cv2.circle(overlay, point, int(rad[i]), src_color, -1)
                 alp = alpha[num_times - i - 1] * alpha[num_times - i - 1] * alpha[num_times - i - 1]
-                cv2.addWeighted(overlay, alp, output, 1 - alp , 0, output)
+                cv2.addWeighted(overlay, alp, output, 1 - alp, 0, output)
             return output
 
         def add_sun_flare_line(flare_center, angle, imshape):
             x = []
             y = []
-            for rand_x in range(0, imshape[1], 10) :
+            for rand_x in range(0, imshape[1], 10):
                 rand_y = math.tan(angle) * (rand_x - flare_center[0]) + flare_center[1]
                 x.append(rand_x)
                 y.append(2 * flare_center[1] - rand_y)
@@ -475,18 +475,18 @@ class SunFlare(Operation):
 
         def add_sun_process(image, no_of_flare_circles, flare_center, src_radius, x, y, src_color):
             overlay = image.copy()
-            outpu = image.copy()
-            imshape =image.shape
+            output = image.copy()
+            imshape = image.shape
             for i in range(no_of_flare_circles):
                 alpha = random.uniform(0.05, 0.2)
                 r = random.randint(0, len(x) - 1)
                 rad = random.randint(1, imshape[0] // 100 - 2)
-                cv2.circle(overlay,(int(x[r]), int(y[r])), rad * rad * rad, (random.randint(max(src_color[0] - 50, 0), src_color[0]), random.randint(max(src_color[1] - 50, 0), src_color[1]), random.randint(max(src_color[2] - 50, 0), src_color[2])), -1)
+                cv2.circle(overlay, (int(x[r]), int(y[r])), rad * rad * rad, (random.randint(max(src_color[0] - 50, 0), src_color[0]), random.randint(max(src_color[1] - 50, 0), src_color[1]), random.randint(max(src_color[2] - 50, 0), src_color[2])), -1)
                 cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)                      
             output = flare_source(output, (int(flare_center[0]), int(flare_center[1])), src_radius, src_color)
             return output
 
-        def add_sun_flare(image, flare_center=-1, angle=-1, no_of_flare_circles=3, src_radius=100, src_color=(255,255,255)):
+        def add_sun_flare(image, flare_center=-1, angle=-1, no_of_flare_circles=3, src_radius=100, src_color=(255, 255, 255)):
             image = np.array(image, dtype=np.uint8)
             imshape = image.shape
             if(angle == -1):
@@ -496,10 +496,10 @@ class SunFlare(Operation):
             else:
                 angle_t = angle
             if flare_center == -1:
-                flare_center_t = (random.randint(0, imshape[1]), random.randint(0, imshape[0]//2))
+                flare_center_t = (random.randint(0, imshape[1]), random.randint(0, imshape[0] // 2))
             else:
                 flare_center_t = flare_center
-            x,y = add_sun_flare_line(flare_center_t, angle_t, imshape)
+            x, y = add_sun_flare_line(flare_center_t, angle_t, imshape)
             output = add_sun_process(image, no_of_flare_circles, flare_center_t, src_radius, x, y, src_color)
             image_RGB = output
             return image_RGB
@@ -511,6 +511,3 @@ class SunFlare(Operation):
                 return [Image.fromarray(add_sun_flare(images[0]))]
 
         return do(images)
-
-        
-    
