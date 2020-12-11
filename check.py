@@ -1,3 +1,10 @@
 from sphinx.augmentation import Builder
 pipeline = Builder(config_json="tests/brighten_scene_test_config.json")
-pipeline.process_and_save()
+pipeline.calculate_and_set_generator_params()
+gen = pipeline.process_and_generate()
+
+while True:
+    try:
+        next(gen)
+    except StopIteration:
+        break

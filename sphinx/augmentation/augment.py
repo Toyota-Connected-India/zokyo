@@ -14,10 +14,14 @@ import numpy as np
 from tqdm import tqdm
 import random
 import uuid
-from abc import ABC, abstractclassmethod, abstractstaticmethod
+from abc import ABC, abstractclassmethod
 
 
 class AbstractBuilder(ABC):
+    
+    @abstractclassmethod
+    def _add_operation(self, pipeline):
+        pass
 
     @abstractclassmethod
     def process_and_generate(self):
@@ -69,6 +73,8 @@ class Builder(AbstractBuilder):
     def __init__(self, config_json="config.json"):
         if not os.path.exists(config_json):
             raise FileNotFoundError("{} not found".format(config_json))
+
+        self.batch_size = None
 
         with open(config_json) as config_file:
             self.config = json.load(config_file)
@@ -196,7 +202,7 @@ class Builder(AbstractBuilder):
             if len(filematch) == 1:
                 _image_mask_pair.append(
                     [join(self.input_dir, filename), join(join(self.mask_dir, filematch[0]))])
-            elif len(filematch > 1):
+            elif len(filematch) > 1:
                 raise ConfigurationError(
                     "More than 1 mask image found for the image " + filename)
         return _image_mask_pair

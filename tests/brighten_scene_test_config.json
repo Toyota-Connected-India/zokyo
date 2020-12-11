@@ -4,7 +4,8 @@
     "output_dir": "tests/output",
     "sample" : 6,
     "multi_threaded" : false,
-    "batch_ingestion": false,
+    "batch_ingestion": true,
+    "internal_batch" : 2,
     "run_all" : false,
     "operations": [
         {
@@ -12,7 +13,7 @@
             "operation_module" : "sphinx.augmentation",
             "args": {
                 "probability": 1,
-                "brightness": 0.6,
+                "brightness": 0.7,
                 "is_mask": true,
                 "label": 7
               }
