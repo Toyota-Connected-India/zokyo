@@ -18,7 +18,7 @@ from abc import ABC, abstractclassmethod
 
 
 class AbstractBuilder(ABC):
-    
+
     @abstractclassmethod
     def _add_operation(self, pipeline):
         pass
@@ -29,6 +29,10 @@ class AbstractBuilder(ABC):
 
     @abstractclassmethod
     def process_and_save(self):
+        pass
+
+    @abstractclassmethod
+    def get_keras_generator(self):
         pass
 
 
@@ -48,6 +52,8 @@ class Builder(AbstractBuilder):
             "run_all" : false,
             "batch_ingestion": true,
             "internal_batch": 20,
+            "dataset_type" : "detection",
+            "format" : "pascal_voc"
             "operations":[
                 {
                     "operation": "DarkenScene",
@@ -55,7 +61,7 @@ class Builder(AbstractBuilder):
                     "args": {
                         "probability": 0.7,
                         "darkness" : 0.5,
-                        "is_mask" : true,
+                        "is_annotation" : true,
                         "label" : 2,
                     }
                 },
@@ -94,7 +100,7 @@ class Builder(AbstractBuilder):
             try:
                 os.mkdir(self.output_dir)
                 os.mkdir(join(self.output_dir, "images"))
-                os.mkdir(join(self.output_dir, "masks"))
+                os.mkdir(join(self.output_dir, "annotations"))
             except FileExistsError:
                 pass
 
@@ -103,7 +109,7 @@ class Builder(AbstractBuilder):
             if os.path.exists(self.output_dir):
                 try:
                     os.mkdir(join(self.output_dir, "images"))
-                    os.mkdir(join(self.output_dir, "masks"))
+                    os.mkdir(join(self.output_dir, "annotations"))
                 except FileExistsError:
                     pass
             else:
@@ -138,7 +144,12 @@ class Builder(AbstractBuilder):
         if "batch_ingestion" not in self.config.keys():
             self.batch_ingestion = False
 
-        if "internal_batch" not in self.__dict__.keys():
+        if "dataset_type" not in self.config.keys():
+            raise CrucialValueNotFoundError(
+                operation="augmentation configurations",
+                value_type="operations")
+
+        if "internal_batch" not in self.config.keys():
             self.internal_batch = None
 
         self.setting_generator_params = False
@@ -219,6 +230,12 @@ class Builder(AbstractBuilder):
         input_data_list = [join(self.input_dir, filename)
                            for filename in os.listdir(self.input_dir)]
         return [input_data_list]
+    
+    def _image_annotation_pair_factory(self):
+        if self.dataset_type is "segmentation":
+            return self._image_mask_pair_list_factory
+        elif self.dataset_type is "detection":
+            pass
 
     def _check_and_populate_path(self):
         if "mask_dir" in self.config.keys():
@@ -368,3 +385,6 @@ class Builder(AbstractBuilder):
                     pbar.update(1)
                 except StopIteration:
                     break
+
+    def get_keras_generator(self, batch_size=None):
+        pass
