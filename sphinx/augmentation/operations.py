@@ -11,8 +11,9 @@ from ..utils.misc import from_float, to_float
 from PIL import Image, ImageOps
 import numpy as np
 import random
+from random import randint
 import warnings
-
+import math
 
 class ArgsClass(object):
     def __init__(self, **kwargs):
@@ -201,7 +202,6 @@ class RandomBrightness(Operation):
 
         return do(images)
 
-
 class SnowScene(Operation):
     def __init__(self, **kwargs):
         args = ArgsClass(**kwargs)
@@ -243,6 +243,71 @@ class SnowScene(Operation):
 
         return do(images)
 
+class RadialLensDistortion(Operation):
+    def __init__(self, **kwargs):
+        args = ArgsClass(**kwargs)
+        Operation.__init__(self, args.probability)
+
+        if args.distortiontype not in ["NegativeBarrel", "PinCushion"]:
+            raise ValueError(
+                "distortiontype must be one of ({}). Got: {}".format(["NegativeBarrel", "PinCushion"], args.rain_type)
+            )
+        
+        if (args.distortiontype == "NegativeBarrel"):
+            self.radialk1 = -1 * randint(0, 10) / 10
+        elif (args.distortiontype != "PinCushion"):
+            self.radialk1 = randint(0, 10) / 10
+
+    def perform_operation(self, images):
+        def do(image):
+            image = np.array(image, dtype=np.uint8)
+            d_coef = (self.radialk1, 0, 0, 0, 0)
+            # get the height and the width of the image
+            h, w = image.shape[:2]
+            # compute its diagonal
+            f = (h ** 2 + w ** 2) ** 0.5
+            # set the image projective to carrtesian dimension
+            K = np.array([[f, 0, w / 2], [0, f, h / 2], [0, 0, 1]])
+            # Generate new camera matrix from parameters
+            M, _ = cv2.getOptimalNewCameraMatrix(K, d_coef, (w, h), 0)
+            # Generate look-up tables for remapping the camera image
+            remap = cv2.initUndistortRectifyMap(K, d_coef, None, M, (w, h), 5)
+            # Remap the original image to a new image
+            image = cv2.remap(image, *remap, cv2.INTER_LINEAR)
+            return Image.fromarray(image)
+        augmented_images = []
+        for image in images:
+            augmented_images.append(do(image))
+        return augmented_images
+
+class TangentialLensDistortion(Operation):
+    def __init__(self, **kwargs):
+        args = ArgsClass(**kwargs)
+        Operation.__init__(self, args.probability)
+        self.tangentialP1 = randint(-10, 10) / 100
+        self.tangentialP2 = randint(-10, 10) / 100
+
+    def perform_operation(self, images):
+        def do(image):
+            image = np.array(image, dtype=np.uint8)
+            d_coef = (0, 0, self.tangentialP1, self.tangentialP2, 0)
+            # get the height and the width of the image
+            h, w = image.shape[:2]
+            # compute its diagonal
+            f = (h ** 2 + w ** 2) ** 0.5
+            # set the image projective to carrtesian dimension
+            K = np.array([[f, 0, w / 2], [0, f, h / 2], [0, 0, 1]])
+            # Generate new camera matrix from parameters
+            M, _ = cv2.getOptimalNewCameraMatrix(K, d_coef, (w, h), 0)
+            # Generate look-up tables for remapping the camera image
+            remap = cv2.initUndistortRectifyMap(K, d_coef, None, M, (w, h), 5)
+            # Remap the original image to a new image
+            image = cv2.remap(image, *remap, cv2.INTER_LINEAR)
+            return Image.fromarray(image)
+        augmented_images = []
+        for image in images:
+            augmented_images.append(do(image))
+        return augmented_images
 
 class RainScene(Operation):
     def __init__(self, **kwargs):
@@ -379,3 +444,70 @@ class FogScene(Operation):
 
     def perform_operation(self, images):
         pass
+
+
+class SunFlare(Operation):
+    def __init__(self, **kwargs):
+        args = ArgsClass(**kwargs)
+        Operation.__init__(self, args.probability)
+
+    def perform_operation(self, images):
+        def flare_source(image, point, radius, src_color):
+            overlay = image.copy()
+            output = image.copy()
+            num_times = radius // 10
+            alpha = np.linspace(0.0, 1, num=num_times)
+            rad = np.linspace(1, radius, num=num_times)
+            for i in range(num_times):
+                cv2.circle(overlay, point, int(rad[i]), src_color, -1)
+                alp = alpha[num_times - i - 1] * alpha[num_times - i - 1] * alpha[num_times - i - 1]
+                cv2.addWeighted(overlay, alp, output, 1 - alp, 0, output)
+            return output
+
+        def add_sun_flare_line(flare_center, angle, imshape):
+            x = []
+            y = []
+            for rand_x in range(0, imshape[1], 10):
+                rand_y = math.tan(angle) * (rand_x - flare_center[0]) + flare_center[1]
+                x.append(rand_x)
+                y.append(2 * flare_center[1] - rand_y)
+            return x, y
+
+        def add_sun_process(image, no_of_flare_circles, flare_center, src_radius, x, y, src_color):
+            overlay = image.copy()
+            output = image.copy()
+            imshape = image.shape
+            for i in range(no_of_flare_circles):
+                alpha = random.uniform(0.05, 0.2)
+                r = random.randint(0, len(x) - 1)
+                rad = random.randint(1, imshape[0] // 100 - 2)
+                cv2.circle(overlay, (int(x[r]), int(y[r])), rad * rad * rad, (random.randint(max(src_color[0] - 50, 0), src_color[0]), random.randint(max(src_color[1] - 50, 0), src_color[1]), random.randint(max(src_color[2] - 50, 0), src_color[2])), -1)
+                cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)                      
+            output = flare_source(output, (int(flare_center[0]), int(flare_center[1])), src_radius, src_color)
+            return output
+
+        def add_sun_flare(image, flare_center=-1, angle=-1, no_of_flare_circles=3, src_radius=100, src_color=(255, 255, 255)):
+            image = np.array(image, dtype=np.uint8)
+            imshape = image.shape
+            if(angle == -1):
+                angle_t = random.uniform(0, 2 * math.pi)
+                if angle_t == math.pi / 2:
+                    angle_t = 0
+            else:
+                angle_t = angle
+            if flare_center == -1:
+                flare_center_t = (random.randint(0, imshape[1]), random.randint(0, imshape[0] // 2))
+            else:
+                flare_center_t = flare_center
+            x, y = add_sun_flare_line(flare_center_t, angle_t, imshape)
+            output = add_sun_process(image, no_of_flare_circles, flare_center_t, src_radius, x, y, src_color)
+            image_RGB = output
+            return image_RGB
+
+        def do(images):
+            if len(images) > 1:
+                return [Image.fromarray(add_sun_flare(images[0])), images[1]]
+            else:
+                return [Image.fromarray(add_sun_flare(images[0]))]
+
+        return do(images)
