@@ -28,7 +28,7 @@ class CrucialValueNotFoundError(Exception):
         super().__init__()
 
     def __str__(self):
-        return "\"{0}\" value not found for {1}".format(
+        return "\"{0}\" value not found for the \"{1}\" mentioned".format(
             self.value_type, self.operation)
 
 

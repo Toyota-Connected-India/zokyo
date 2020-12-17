@@ -46,6 +46,7 @@ class Builder(AbstractBuilder):
         {
             "input_dir" : "images",
             "output_dir" : "output",
+            "annotation_dir" : "annotations"
             "mask_dir" : "mask"
             "sample" : 5000,
             "multi_threaded" : true,
@@ -61,7 +62,7 @@ class Builder(AbstractBuilder):
                     "args": {
                         "probability": 0.7,
                         "darkness" : 0.5,
-                        "is_annotation" : true,
+                        "is_mask" : true,
                         "label" : 2,
                     }
                 },
@@ -70,8 +71,20 @@ class Builder(AbstractBuilder):
                     "operation_module" : "sphinx.augmentation",
                     "args": {
                         "probability": 0.5,
+                        "is_mask" : true,
+                        "label" : 2
                     }
                 },
+                {
+                    "operation": "RadialLensDistortion",
+                    "operation_module" : "sphinx.augmentation",
+                    "args": {
+                        "probability": 0.5,
+                        "is_annotation" : true,
+                        "distortiontyle" : "NegativeBarrel",
+                        "is_mask" : true,
+                    }
+                }
             ]
         }
     '''
@@ -145,9 +158,10 @@ class Builder(AbstractBuilder):
             self.batch_ingestion = False
 
         if "dataset_type" not in self.config.keys():
-            raise CrucialValueNotFoundError(
-                operation="augmentation configurations",
-                value_type="operations")
+            raise ValueError("Dataset type not found")
+
+        if "dataset_type" in self.config.keys() and "dataset_format" not in self.config.keys():
+            raise CrucialValueNotFoundError(operation="dataset_type", value_type="dataset_format")
 
         if "internal_batch" not in self.config.keys():
             self.internal_batch = None
@@ -163,7 +177,7 @@ class Builder(AbstractBuilder):
                 'run_all',
                 'multi_threaded',
                 'operations',
-                'mask_dir',
+                'annotation_dir',
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
 
