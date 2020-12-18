@@ -5,12 +5,13 @@ from ...augmentation import Builder
 import shutil
 import os
 
+
 class OperationsTest(unittest.TestCase):
     def test_equalize_scene(self):
         builder = Builder("tests/color_equalize_test_config.json")
         builder.process_and_save()
         assert len(os.listdir('tests/output/images')) == 6
-        assert len(os.listdir('tests/output/masks')) == 6          
+        assert len(os.listdir('tests/output/masks')) == 6
         shutil.rmtree('tests/output/images')
         shutil.rmtree('tests/output/masks')
 
@@ -18,7 +19,7 @@ class OperationsTest(unittest.TestCase):
         builder = Builder("tests/darkness_coeff_test_config.json")
         builder.process_and_save()
         assert len(os.listdir('tests/output/images')) == 6
-        assert len(os.listdir('tests/output/masks')) == 6          
+        assert len(os.listdir('tests/output/masks')) == 6
         shutil.rmtree('tests/output/images')
         shutil.rmtree('tests/output/masks')
 
@@ -26,7 +27,7 @@ class OperationsTest(unittest.TestCase):
         builder = Builder("tests/brighten_scene_test_config.json")
         builder.process_and_save()
         assert len(os.listdir('tests/output/images')) == 6
-        assert len(os.listdir('tests/output/masks')) == 6          
+        assert len(os.listdir('tests/output/masks')) == 6
         shutil.rmtree('tests/output/images')
         shutil.rmtree('tests/output/masks')
 
@@ -34,7 +35,7 @@ class OperationsTest(unittest.TestCase):
         builder = Builder("tests/random_brightness_test_config.json")
         builder.process_and_save()
         assert len(os.listdir('tests/output/images')) == 6
-        assert len(os.listdir('tests/output/masks')) == 6          
+        assert len(os.listdir('tests/output/masks')) == 6
         shutil.rmtree('tests/output/images')
         shutil.rmtree('tests/output/masks')
 
@@ -42,7 +43,7 @@ class OperationsTest(unittest.TestCase):
         builder = Builder("tests/rain_scene_test_config.json")
         builder.process_and_save()
         assert len(os.listdir('tests/output/images')) == 6
-        assert len(os.listdir('tests/output/masks')) == 6          
+        assert len(os.listdir('tests/output/masks')) == 6
         shutil.rmtree('tests/output/images')
         shutil.rmtree('tests/output/masks')
 
@@ -50,7 +51,7 @@ class OperationsTest(unittest.TestCase):
         builder = Builder("tests/radial_lens_distortion_test_config.json")
         builder.process_and_save()
         assert len(os.listdir('tests/output/images')) == 6
-        assert len(os.listdir('tests/output/masks')) == 6          
+        assert len(os.listdir('tests/output/masks')) == 6
         shutil.rmtree('tests/output/images')
         shutil.rmtree('tests/output/masks')
 
@@ -58,6 +59,6 @@ class OperationsTest(unittest.TestCase):
         builder = Builder("tests/tangential_lens_distortion_test_config.json")
         builder.process_and_save()
         assert len(os.listdir('tests/output/images')) == 6
-        assert len(os.listdir('tests/output/masks')) == 6          
+        assert len(os.listdir('tests/output/masks')) == 6
         shutil.rmtree('tests/output/images')
         shutil.rmtree('tests/output/masks')

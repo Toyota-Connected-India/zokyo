@@ -144,7 +144,7 @@ class Builder(AbstractBuilder):
         if "mask_dir" in self.config.keys() and len(
                 os.listdir(self.config["mask_dir"])) == 0:
             raise FileNotFoundError("No files found in mask directory")
-        
+
         if "annotation_dir" in self.config.keys() and len(
                 os.listdir(self.config["annotation_dir"])) == 0:
             raise FileNotFoundError("No files found in annotation directory")
@@ -167,8 +167,11 @@ class Builder(AbstractBuilder):
         if "dataset_type" not in self.config.keys():
             raise ValueError("Dataset type not found")
 
-        if "dataset_type" in self.config.keys() and "dataset_format" not in self.config.keys():
-            raise CrucialValueNotFoundError(operation="dataset_type", value_type="dataset_format")
+        if "dataset_type" in self.config.keys(
+        ) and "dataset_format" not in self.config.keys():
+            raise CrucialValueNotFoundError(
+                operation="dataset_type",
+                value_type="dataset_format")
 
         if "internal_batch" not in self.config.keys():
             self.internal_batch = None
@@ -252,7 +255,7 @@ class Builder(AbstractBuilder):
         input_data_list = [join(self.input_dir, filename)
                            for filename in os.listdir(self.input_dir)]
         return [input_data_list]
-    
+
     def _image_annotation_pair_factory(self):
         if self.dataset_type is "segmentation":
             return self._image_mask_pair_list_factory

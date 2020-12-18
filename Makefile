@@ -20,7 +20,7 @@ auto-lint:
 	docker run --rm -t \
 		-v `pwd`:/app \
 		-w /app python:3.7-alpine \
-		/bin/ash -c "pip install autopep8; python auto-lint.py"
+		/bin/ash -c "pip install autopep8; pip3 install tqdm; python auto-lint.py"
 
 .PHONY: test-lint
 test-lint: clean-py
