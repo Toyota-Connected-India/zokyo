@@ -15,6 +15,13 @@ GITHUB_SPHINX_BASE ?= github-sphinx
 aws-login: ${CRED_FILE}
 	eval $$(aws ecr get-login --region $(AWS_ECR_REGION) --no-include-email)
 
+.PHONY: auto-lint
+auto-lint:
+	docker run --rm -t \
+		-v `pwd`:/app \
+		-w /app python:3.7-alpine \
+		/bin/ash -c "pip install autopep8; python auto-lint.py"
+
 .PHONY: test-lint
 test-lint: clean-py
 	docker run --rm -t \

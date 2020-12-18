@@ -81,7 +81,7 @@ class Builder(AbstractBuilder):
                     "args": {
                         "probability": 0.5,
                         "is_annotation" : true,
-                        "distortiontyle" : "NegativeBarrel",
+                        "distortiontype" : "NegativeBarrel",
                         "is_mask" : true,
                     }
                 }
@@ -113,6 +113,7 @@ class Builder(AbstractBuilder):
             try:
                 os.mkdir(self.output_dir)
                 os.mkdir(join(self.output_dir, "images"))
+                os.mkdir(join(self.output_dir, "masks"))
                 os.mkdir(join(self.output_dir, "annotations"))
             except FileExistsError:
                 pass
@@ -122,6 +123,7 @@ class Builder(AbstractBuilder):
             if os.path.exists(self.output_dir):
                 try:
                     os.mkdir(join(self.output_dir, "images"))
+                    os.mkdir(join(self.output_dir, "masks"))
                     os.mkdir(join(self.output_dir, "annotations"))
                 except FileExistsError:
                     pass
@@ -129,6 +131,7 @@ class Builder(AbstractBuilder):
                 os.mkdir(self.output_dir)
                 os.mkdir(join(self.output_dir, "images"))
                 os.mkdir(join(self.output_dir, "masks"))
+                os.mkdir(join(self.output_dir, "annotations"))
 
         if not os.path.exists(self.config["input_dir"]):
             raise FileNotFoundError("{} not found", self.config["input_dir"])
@@ -141,6 +144,10 @@ class Builder(AbstractBuilder):
         if "mask_dir" in self.config.keys() and len(
                 os.listdir(self.config["mask_dir"])) == 0:
             raise FileNotFoundError("No files found in mask directory")
+        
+        if "annotation_dir" in self.config.keys() and len(
+                os.listdir(self.config["annotation_dir"])) == 0:
+            raise FileNotFoundError("No files found in annotation directory")
 
         if "output_dir" not in self.config.keys():
             self.output_dir = "output"
@@ -177,6 +184,7 @@ class Builder(AbstractBuilder):
                 'run_all',
                 'multi_threaded',
                 'operations',
+                'mask_dir',
                 'annotation_dir',
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
