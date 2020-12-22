@@ -64,7 +64,7 @@ class Builder(AbstractBuilder):
                         "darkness" : 0.5,
                         "is_mask" : true,
                         "mask_label" : 2,
-                        "is_annotation" : true, 
+                        "is_annotation" : true,
                         "annotation_label : 1
                     }
                 },
@@ -110,7 +110,7 @@ class Builder(AbstractBuilder):
             raise CrucialValueNotFoundError(
                 operation="configuration json file",
                 value_type="input_dir")
-        
+
         if "input_dir" in self.config.keys() and len(
                 os.listdir(self.config["input_dir"])) == 0:
             raise FileNotFoundError("No files found in input directory")
@@ -178,7 +178,8 @@ class Builder(AbstractBuilder):
                     value_type="annotation_format")
             else:
                 if self.config["annotation_format"] != "pascal_voc":
-                    raise NotImplementedError("Annotation format not supported, pascal_voc is the only supported format")
+                    raise NotImplementedError(
+                        "Annotation format not supported, pascal_voc is the only supported format")
 
         if "internal_batch" not in self.config.keys():
             self.internal_batch = None
@@ -199,11 +200,10 @@ class Builder(AbstractBuilder):
                 'annotation_format',
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
-    
+
     @staticmethod
     def _generate_mask_for_annotation(annotation):
         pass
-
 
     def _add_operation(self, pipeline):
         '''
@@ -251,14 +251,16 @@ class Builder(AbstractBuilder):
         image_list.sort()
         mask_list.sort()
 
-        if "annotation_dir" in self.__dict__.keys():      
-            annotation_list = os.listdir(self.annotation_dir)
-            annotation_list.sort()
-            for image,mask,annotations in zip(image_list, mask_list, annotation_list):
-                _image_mask_pair.append([join(self.input_dir,image),join(self.mask_dir,mask), join(self.annotation_dir,annotations)])
+        if "annotation_dir" in self.__dict__.keys():
+            annotation_list = sorted(os.listdir(self.annotation_dir))
+            for image, mask, annotations in zip(
+                    image_list, mask_list, annotation_list):
+                _image_mask_pair.append([join(self.input_dir, image), join(
+                    self.mask_dir, mask), join(self.annotation_dir, annotations)])
         else:
-            for image,mask in zip(image_list, mask_list):
-                _image_mask_pair.append([join(self.input_dir,image),join(self.mask_dir,mask)])
+            for image, mask in zip(image_list, mask_list):
+                _image_mask_pair.append(
+                    [join(self.input_dir, image), join(self.mask_dir, mask)])
 
         return _image_mask_pair
 
@@ -294,7 +296,9 @@ class Builder(AbstractBuilder):
                 else:
                     with open(entity) as f:
                         entity_object = f.readlines()
-                    entity_list.append(self._generate_mask_for_annotation(entity_object), entity_object)
+                    entity_list.append(
+                        self._generate_mask_for_annotation(entity_object),
+                        entity_object)
             image_mask_list.append(entity_list)
 
         return image_mask_list
@@ -360,7 +364,7 @@ class Builder(AbstractBuilder):
             if self.setting_generator_params:
                 if not infinite_generator:
                     for i in range(self.sample_factor):
-                        
+
                         images = [[np.array(Image.open(y)) for y in x[:-1]] for x in data_path_list[i:(
                             i + 1) * (self.internal_batch_split + 1) - 1]]
 

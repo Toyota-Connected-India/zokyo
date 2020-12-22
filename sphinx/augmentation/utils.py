@@ -2,11 +2,14 @@
 import numpy as np
 import cv2
 
+
 def annotations_to_mask():
     pass
 
+
 def parse_annotations():
     pass
+
 
 def apply_augmentation(image, mask, label, function):
     image = np.array(image, dtype=np.uint8)

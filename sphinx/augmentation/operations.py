@@ -27,7 +27,7 @@ class ArgsClass(object):
 
         if kwargs["is_mask"] is True and "mask_label" not in kwargs:
             kwargs["mask_label"] = None
-        
+
         if "is_annotation" not in kwargs.keys():
             kwargs["is_annotation"] = False
 
@@ -50,7 +50,8 @@ class EqualizeScene(Operation):
                 else:
                     image = images[0]
                     image_mask = images[1]
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, cv2.equalizeHist)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, cv2.equalizeHist)
                     return [Image.fromarray(image), *image[1:]]
 
             if self.args.is_annotation is True:
@@ -59,7 +60,8 @@ class EqualizeScene(Operation):
                 else:
                     image = images[0]
                     image_mask = images[2]
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, cv2.equalizeHist)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, cv2.equalizeHist)
                     return [Image.fromarray(image), *image[1:]]
 
             if not self.is_mask and not self.is_annotation:
@@ -104,7 +106,8 @@ class DarkenScene(Operation):
                 else:
                     image = images[0]
                     image_mask = images[1]
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, darken)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, darken)
                     return [Image.fromarray(image), *image[1:]]
 
             if self.args.is_annotation is True:
@@ -113,7 +116,8 @@ class DarkenScene(Operation):
                 else:
                     image = images[0]
                     image_mask = images[2]
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, darken)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, darken)
                     return [Image.fromarray(image), *image[1:]]
 
             if not self.is_mask and not self.is_annotation:
@@ -159,7 +163,8 @@ class BrightenScene(Operation):
                 else:
                     image = images[0]
                     image_mask = images[1]
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, brighten)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, brighten)
                     return [Image.fromarray(image), *image[1:]]
 
             if self.args.is_annotation is True:
@@ -168,9 +173,10 @@ class BrightenScene(Operation):
                 else:
                     image = images[0]
                     image_mask = images[2]
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, brighten)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, brighten)
                     return [Image.fromarray(image), *image[1:]]
-            
+
             if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
                     return [Image.fromarray(brighten(images[0])), *images[1:]]
@@ -213,7 +219,8 @@ class RandomBrightness(Operation):
                 else:
                     image = images[0]
                     image_mask = images[1]
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, random_brighten)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, random_brighten)
                     return [Image.fromarray(image), *image[1:]]
 
             if self.args.is_annotation is True:
@@ -222,12 +229,14 @@ class RandomBrightness(Operation):
                 else:
                     image = images[0]
                     image_mask = images[2]
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, random_brighten)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, random_brighten)
                     return [Image.fromarray(image), *image[1:]]
 
             if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
-                    return [Image.fromarray(random_brighten(images[0])), *images[1:]]
+                    return [Image.fromarray(
+                        random_brighten(images[0])), *images[1:]]
                 else:
                     return [Image.fromarray(random_brighten(images[0]))]
 
@@ -262,7 +271,8 @@ class SnowScene(Operation):
                 else:
                     image = images[0]
                     image_mask = images[1]
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, snow)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, snow)
                     return [Image.fromarray(image), *image[1:]]
 
             if self.args.is_annotation is True:
@@ -271,9 +281,10 @@ class SnowScene(Operation):
                 else:
                     image = images[0]
                     image_mask = images[2]
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, snow)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, snow)
                     return [Image.fromarray(image), *image[1:]]
-            
+
             if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
                     return [Image.fromarray(snow(images[0])), *images[1:]]
@@ -318,7 +329,8 @@ class RadialLensDistortion(Operation):
                 else:
                     image = images[0]
                     image_mask = images[1]
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, radial_distort)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, radial_distort)
                     return [Image.fromarray(image), *image[1:]]
 
             if self.args.is_annotation is True:
@@ -327,16 +339,17 @@ class RadialLensDistortion(Operation):
                 else:
                     image = images[0]
                     image_mask = images[2]
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, radial_distort)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, radial_distort)
                     return [Image.fromarray(image), *image[1:]]
-            
+
             if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
-                    return [Image.fromarray(radial_distort(images[0])), *images[1:]]
+                    return [Image.fromarray(
+                        radial_distort(images[0])), *images[1:]]
                 else:
                     return [Image.fromarray(radial_distort(images[0]))]
-            
-        
+
         augmented_images = []
         for image in images[:-1]:
             augmented_images.append(do(image))
@@ -369,7 +382,8 @@ class TangentialLensDistortion(Operation):
                 else:
                     image = images[0]
                     image_mask = images[1]
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, tangential_distort)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, tangential_distort)
                     return [Image.fromarray(image), *image[1:]]
 
             if self.args.is_annotation is True:
@@ -378,12 +392,14 @@ class TangentialLensDistortion(Operation):
                 else:
                     image = images[0]
                     image_mask = images[2]
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, tangential_distort)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, tangential_distort)
                     return [Image.fromarray(image), *image[1:]]
-            
+
             if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
-                    return [Image.fromarray(tangential_distort(images[0])), *images[1:]]
+                    return [Image.fromarray(
+                        tangential_distort(images[0])), *images[1:]]
                 else:
                     return [Image.fromarray(tangential_distort(images[0]))]
 
