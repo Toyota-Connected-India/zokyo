@@ -15,6 +15,7 @@ from tqdm import tqdm
 import random
 import uuid
 from abc import ABC, abstractclassmethod
+import xml.etree.ElementTree as ET
 
 
 class AbstractBuilder(ABC):
@@ -237,13 +238,14 @@ class Builder(AbstractBuilder):
     def _image_mask_pair_list_factory(self):
         '''
             Function that create a list of pair of image files with its respective masks
+            TODO: Implement name checks and verification
         '''
         _image_mask_pair = []
 
-        if not os.path.exists(self.mask_dir):
-            raise FileExistsError(
-                "Mask folder not found in the directory {}".format(
-                    self.mask_dir))
+        if not os.path.exists(self.input_dir):
+            raise FileNotFoundError(
+                "Input folder not found in the directory {}".format(
+                    self.input_dir))
 
         image_list = os.listdir(self.input_dir)
         image_list.sort()
@@ -251,25 +253,37 @@ class Builder(AbstractBuilder):
         if "mask_dir" in self.__dict__.keys():
             mask_list = os.listdir(self.mask_dir)
             mask_list.sort()
-            for image, mask in zip(
-                    image_list, mask_list):
-                _image_mask_pair.append([join(self.input_dir, image), join(self.mask_dir, mask)])
+            for image, mask in zip(image_list, mask_list):
+                image_mask_dict = {
+                    "image" : join(self.input_dir, image),
+                    "mask"  : join(self.mask_dir, mask),
+                    "annotation" : None
+                }
+                _image_mask_pair.append(image_mask_dict)
 
         if "annotation_dir" in self.__dict__.keys():
             annotation_list = os.listdir(self.annotation_dir)
             annotation_list.sort()
-            for image, mask in zip(
-                    image_list, annotation_list):
-                _image_mask_pair.append([join(self.input_dir, image), join(self.annotation_dir, mask)])
+            for image, annotation in zip(image_list, annotation_list):
+                image_annotation_dict = {
+                    "image" : join(self.input_dir, image),
+                    "mask"  : None,
+                    "annotation"  : join(self.annotation_dir, annotation)
+                }
+                _image_mask_pair.append(image_annotation_dict)
 
         if "mask_dir" in self.__dict__.keys() and "annotation_dir" in self.__dict__.keys():
             mask_list = os.listdir(self.mask_dir)
             annotation_list = os.listdir(self.annotation_dir)
             mask_list.sort()
             annotation_list.sort()
-            for image, mask, annotation in zip(
-                    image_list, mask_list, annotation_list):
-                _image_mask_pair.append([join(self.input_dir, image), join(self.mask_dir, mask), join(self.annotation_dir, annotation)])
+            for image, mask, annotation in zip(image_list, mask_list, annotation_list):
+                image_mask_annotation_dict = {
+                    "image" : join(self.input_dir, image),
+                    "mask"  : join(self.mask_dir, mask),
+                    "annotation"  : join(self.annotation_dir, annotation)
+                }
+                _image_mask_pair.append(image_mask_annotation_dict)
 
         return _image_mask_pair
 
@@ -278,11 +292,16 @@ class Builder(AbstractBuilder):
             Function that create a list of image files
         '''
         if not os.path.exists(self.input_dir):
-            raise FileExistsError(
+            raise FileNotFoundError(
                 "Input folder not found in the directory {}".format(
-                    self.mask_dir))
+                    self.input_dir))
 
-        input_data_list = [[join(self.input_dir, filename)]
+        input_data_list = [
+                            {
+                             "image" : join(self.input_dir, filename),
+                             "mask" : None,
+                             "annotation" : None
+                            }
                            for filename in os.listdir(self.input_dir)]
         return input_data_list
 
@@ -296,20 +315,16 @@ class Builder(AbstractBuilder):
     def _load_images(self):
         data_path_list = self._check_and_populate_path()
         image_mask_list = []
-
-        for data_path in data_path_list:
-            entity_list = []
-            for entity in data_path:
-                if entity.split('.')[-1] in self._extension_list:
-                    entity_list.append(np.array(Image.open(entity)))
-                else:
-                    with open(entity) as f:
-                        entity_object = f.readlines()
-                    entity_list.append(
-                        self._generate_mask_for_annotation(entity_object),
-                        entity_object)
-            image_mask_list.append(entity_list)
-
+        entity_dict = {}
+        for data_dict in data_path_list:
+            entity_dict["image"] = Image.open(data_dict["image"])
+            if data_dict["mask"] is not None:
+                entity_dict["mask"] = Image.open(data_dict["mask"])
+            if data_dict["annotation"] is not None:
+                xmlobject = ET.parse(data_dict["annotation"])
+                entity_dict["annotation_mask"] = self._generate_mask_for_annotation(xmlobject)
+                entity_dict["annotation"] = xmlobject
+            image_mask_list.append(entity_dict)
         return image_mask_list
 
     def _save_images_to_disk(self, images):
@@ -437,8 +452,7 @@ class Builder(AbstractBuilder):
 
         else:
             self.calculate_and_set_generator_params(batch_size=batch_save_size)
-            image_generator = self.process_and_generate(
-                infinite_generator=False)
+            image_generator = self.process_and_generate(infinite_generator=False)
             pbar = tqdm(total=self.sample_factor)
             while True:
                 try:
