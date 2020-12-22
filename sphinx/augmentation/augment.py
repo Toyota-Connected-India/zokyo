@@ -387,9 +387,9 @@ class Builder(AbstractBuilder):
                         entities = self._load_entities(data_list)
                         pipeline = DataPipeline(data_dictionary=entities)
                         pipeline = self._add_operation(pipeline=pipeline)
-                        images = pipeline.sample_for_generator(batch_size=self.batch_size)
+                        result_entities = pipeline.sample_for_generator(batch_size=self.batch_size)
                         del pipeline 
-                        yield images
+                        yield result_entities
                 else:
                     if self.batch_size is None:
                         raise ValueError("Batch Size not found")
