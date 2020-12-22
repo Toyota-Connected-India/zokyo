@@ -14,6 +14,7 @@ import random
 from random import randint
 import warnings
 import math
+from .utils import apply_augmentation
 
 
 class ArgsClass(object):
@@ -24,8 +25,14 @@ class ArgsClass(object):
         if "is_mask" not in kwargs.keys():
             kwargs["is_mask"] = False
 
-        if kwargs["is_mask"] is True and "label" not in kwargs:
-            kwargs["label"] = None
+        if kwargs["is_mask"] is True and "mask_label" not in kwargs:
+            kwargs["mask_label"] = None
+        
+        if "is_annotation" not in kwargs.keys():
+            kwargs["is_annotation"] = False
+
+        if kwargs["is_annotation"] is True and "annotation_label" not in kwargs:
+            kwargs["annotation_label"] = None
 
         self.__dict__.update((key, kwargs[key]) for key in kwargs)
 
@@ -38,19 +45,24 @@ class EqualizeScene(Operation):
     def perform_operation(self, images):
         def do(images):
             if self.args.is_mask is True:
-                if self.args.label is None:
-                    return [ImageOps.equalize(image) for image in images]
+                if self.args.mask_label is None:
+                    return [ImageOps.equalize(images[0]), *images[1:]]
                 else:
                     image = images[0]
                     image_mask = images[1]
-                    augmented_segment = ImageOps.equalize(image)
-                    image = np.array(image, dtype=np.uint8)
-                    augmented_segment = np.array(
-                        augmented_segment, dtype=np.uint8)
-                    image[image_mask ==
-                          self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [Image.fromarray(image), image_mask]
-            else:
+                    image = apply_augmentation(image, image_mask, self.args.mask_label, cv2.equalizeHist)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if self.args.is_annotation is True:
+                if self.args.annotation_label is None:
+                    return [ImageOps.equalize(images[0]), *images[1:]]
+                else:
+                    image = images[0]
+                    image_mask = images[2]
+                    image = apply_augmentation(image, image_mask, self.args.annotation_label, cv2.equalizeHist)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
                     return [ImageOps.equalize(images[0]), *images[1:]]
                 else:
@@ -77,6 +89,7 @@ class DarkenScene(Operation):
 
     def perform_operation(self, images):
         def darken(image):
+            image = np.array(image)
             image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
             image_HLS[:, :, 1] = image_HLS[:, :, 1] * self.darkness_coeff
             image_HLS[:, :, 1][image_HLS[:, :, 1] < 0] = 0
@@ -86,17 +99,24 @@ class DarkenScene(Operation):
 
         def do(images):
             if self.args.is_mask is True:
-                if self.args.label is None:
-                    return [Image.fromarray(darken(image)) for image in images]
+                if self.args.mask_label is None:
+                    return [darken(images[0]), *images[1:]]
                 else:
-                    image = np.array(images[0], dtype=np.uint8)
-                    image_mask = np.array(images[1], dtype=np.uint8)
-                    augmented_segment = darken(image)
-                    image[image_mask ==
-                          self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [Image.fromarray(
-                        image), Image.fromarray(image_mask)]
-            else:
+                    image = images[0]
+                    image_mask = images[1]
+                    image = apply_augmentation(image, image_mask, self.args.mask_label, darken)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if self.args.is_annotation is True:
+                if self.args.annotation_label is None:
+                    return [darken(images[0]), *images[1:]]
+                else:
+                    image = images[0]
+                    image_mask = images[2]
+                    image = apply_augmentation(image, image_mask, self.args.annotation_label, darken)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
                     return [Image.fromarray(darken(images[0])), *images[1:]]
                 else:
@@ -122,7 +142,6 @@ class BrightenScene(Operation):
         self.brightness_coeff = 1 + self.args.brightness
 
     def perform_operation(self, images):
-
         def brighten(image):
             image = np.array(image, dtype=np.uint8)
             image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
@@ -135,18 +154,24 @@ class BrightenScene(Operation):
 
         def do(images):
             if self.args.is_mask is True:
-                if self.args.label is None:
-                    return [Image.fromarray(brighten(image))
-                            for image in images]
+                if self.args.mask_label is None:
+                    return [brighten(images[0]), *images[1:]]
                 else:
-                    image = np.array(images[0], dtype=np.uint8)
-                    image_mask = np.array(images[1], dtype=np.uint8)
-                    augmented_segment = brighten(image)
-                    image[image_mask ==
-                          self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [Image.fromarray(
-                        image), Image.fromarray(image_mask)]
-            else:
+                    image = images[0]
+                    image_mask = images[1]
+                    image = apply_augmentation(image, image_mask, self.args.mask_label, brighten)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if self.args.is_annotation is True:
+                if self.args.annotation_label is None:
+                    return [brighten(images[0]), *images[1:]]
+                else:
+                    image = images[0]
+                    image_mask = images[2]
+                    image = apply_augmentation(image, image_mask, self.args.annotation_label, brighten)
+                    return [Image.fromarray(image), *image[1:]]
+            
+            if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
                     return [Image.fromarray(brighten(images[0])), *images[1:]]
                 else:
@@ -183,18 +208,24 @@ class RandomBrightness(Operation):
 
         def do(images):
             if self.args.is_mask is True:
-                if self.args.label is None:
-                    return [Image.fromarray(random_brighten(image))
-                            for image in images]
+                if self.args.mask_label is None:
+                    return [random_brighten(images[0]), *images[1:]]
                 else:
-                    image = np.array(images[0], dtype=np.uint8)
-                    image_mask = np.array(images[1], dtype=np.uint8)
-                    augmented_segment = random_brighten(image)
-                    image[image_mask ==
-                          self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [Image.fromarray(
-                        image), Image.fromarray(image_mask)]
-            else:
+                    image = images[0]
+                    image_mask = images[1]
+                    image = apply_augmentation(image, image_mask, self.args.mask_label, random_brighten)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if self.args.is_annotation is True:
+                if self.args.annotation_label is None:
+                    return [random_brighten(images[0]), *images[1:]]
+                else:
+                    image = images[0]
+                    image_mask = images[2]
+                    image = apply_augmentation(image, image_mask, self.args.annotation_label, random_brighten)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
                     return [Image.fromarray(random_brighten(images[0])), *images[1:]]
                 else:
@@ -226,17 +257,24 @@ class SnowScene(Operation):
 
         def do(images):
             if self.args.is_mask is True:
-                if self.args.label is None:
-                    return [Image.fromarray(snow(image)) for image in images]
+                if self.args.mask_label is None:
+                    return [snow(images[0]), *images[1:]]
                 else:
-                    image = np.array(images[0], dtype=np.uint8)
-                    image_mask = np.array(images[1], dtype=np.uint8)
-                    augmented_segment = snow(image)
-                    image[image_mask ==
-                          self.args.label] = augmented_segment[image_mask == self.args.label]
-                    return [Image.fromarray(
-                        image), Image.fromarray(image_mask)]
-            else:
+                    image = images[0]
+                    image_mask = images[1]
+                    image = apply_augmentation(image, image_mask, self.args.mask_label, snow)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if self.args.is_annotation is True:
+                if self.args.annotation_label is None:
+                    return [snow(images[0]), *images[1:]]
+                else:
+                    image = images[0]
+                    image_mask = images[2]
+                    image = apply_augmentation(image, image_mask, self.args.annotation_label, snow)
+                    return [Image.fromarray(image), *image[1:]]
+            
+            if not self.is_mask and not self.is_annotation:
                 if len(images) > 1:
                     return [Image.fromarray(snow(images[0])), *images[1:]]
                 else:
@@ -262,26 +300,47 @@ class RadialLensDistortion(Operation):
             self.radialk1 = randint(0, 10) / 10
 
     def perform_operation(self, images):
-        def do(image):
+        def radial_distort(image):
             image = np.array(image, dtype=np.uint8)
             d_coef = (self.radialk1, 0, 0, 0, 0)
-            # get the height and the width of the image
             h, w = image.shape[:2]
-            # compute its diagonal
             f = (h ** 2 + w ** 2) ** 0.5
-            # set the image projective to carrtesian dimension
             K = np.array([[f, 0, w / 2], [0, f, h / 2], [0, 0, 1]])
-            # Generate new camera matrix from parameters
             M, _ = cv2.getOptimalNewCameraMatrix(K, d_coef, (w, h), 0)
-            # Generate look-up tables for remapping the camera image
             remap = cv2.initUndistortRectifyMap(K, d_coef, None, M, (w, h), 5)
-            # Remap the original image to a new image
             image = cv2.remap(image, *remap, cv2.INTER_LINEAR)
-            return Image.fromarray(image)
+            return image
+
+        def do(images):
+            if self.args.is_mask is True:
+                if self.args.mask_label is None:
+                    return [radial_distort(images[0]), *images[1:]]
+                else:
+                    image = images[0]
+                    image_mask = images[1]
+                    image = apply_augmentation(image, image_mask, self.args.mask_label, radial_distort)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if self.args.is_annotation is True:
+                if self.args.annotation_label is None:
+                    return [radial_distort(images[0]), *images[1:]]
+                else:
+                    image = images[0]
+                    image_mask = images[2]
+                    image = apply_augmentation(image, image_mask, self.args.annotation_label, radial_distort)
+                    return [Image.fromarray(image), *image[1:]]
+            
+            if not self.is_mask and not self.is_annotation:
+                if len(images) > 1:
+                    return [Image.fromarray(radial_distort(images[0])), *images[1:]]
+                else:
+                    return [Image.fromarray(radial_distort(images[0]))]
+            
+        
         augmented_images = []
-        for image in images:
+        for image in images[:-1]:
             augmented_images.append(do(image))
-        return augmented_images
+        return augmented_images.extend(images[-1])
 
 
 class TangentialLensDistortion(Operation):
@@ -292,26 +351,46 @@ class TangentialLensDistortion(Operation):
         self.tangentialP2 = randint(-10, 10) / 100
 
     def perform_operation(self, images):
-        def do(image):
+        def tangential_distort(image):
             image = np.array(image, dtype=np.uint8)
             d_coef = (0, 0, self.tangentialP1, self.tangentialP2, 0)
-            # get the height and the width of the image
             h, w = image.shape[:2]
-            # compute its diagonal
             f = (h ** 2 + w ** 2) ** 0.5
-            # set the image projective to carrtesian dimension
             K = np.array([[f, 0, w / 2], [0, f, h / 2], [0, 0, 1]])
-            # Generate new camera matrix from parameters
             M, _ = cv2.getOptimalNewCameraMatrix(K, d_coef, (w, h), 0)
-            # Generate look-up tables for remapping the camera image
             remap = cv2.initUndistortRectifyMap(K, d_coef, None, M, (w, h), 5)
-            # Remap the original image to a new image
             image = cv2.remap(image, *remap, cv2.INTER_LINEAR)
-            return Image.fromarray(image)
+            return image
+
+        def do(images):
+            if self.args.is_mask is True:
+                if self.args.mask_label is None:
+                    return [tangential_distort(images[0]), *images[1:]]
+                else:
+                    image = images[0]
+                    image_mask = images[1]
+                    image = apply_augmentation(image, image_mask, self.args.mask_label, tangential_distort)
+                    return [Image.fromarray(image), *image[1:]]
+
+            if self.args.is_annotation is True:
+                if self.args.annotation_label is None:
+                    return [tangential_distort(images[0]), *images[1:]]
+                else:
+                    image = images[0]
+                    image_mask = images[2]
+                    image = apply_augmentation(image, image_mask, self.args.annotation_label, tangential_distort)
+                    return [Image.fromarray(image), *image[1:]]
+            
+            if not self.is_mask and not self.is_annotation:
+                if len(images) > 1:
+                    return [Image.fromarray(tangential_distort(images[0])), *images[1:]]
+                else:
+                    return [Image.fromarray(tangential_distort(images[0]))]
+
         augmented_images = []
-        for image in images:
+        for image in images[:-1]:
             augmented_images.append(do(image))
-        return augmented_images
+        return augmented_images.extend(images[-1])
 
 
 class RainScene(Operation):
@@ -358,6 +437,35 @@ class RainScene(Operation):
     def perform_operation(self, images):
 
         def rain(image):
+            def get_params(img):
+                slant = int(random.uniform(self.slant_lower, self.slant_upper))
+
+                height, width = img.shape[:2]
+                area = height * width
+
+                if self.rain_type == "drizzle":
+                    num_drops = area // 770
+                    drop_length = 10
+                elif self.rain_type == "heavy":
+                    num_drops = width * height // 600
+                    drop_length = 30
+                elif self.rain_type == "torrential":
+                    num_drops = area // 500
+                    drop_length = 60
+                else:
+                    drop_length = self.drop_length
+                    num_drops = area // 600
+                rain_drops = []
+                for _i in range(
+                        num_drops):  # If You want heavy rain, try increasing this
+                    if slant < 0:
+                        x = random.randint(slant, width)
+                    else:
+                        x = random.randint(0, width - slant)
+                    y = random.randint(0, height - drop_length)
+                    rain_drops.append((x, y))
+                return drop_length, rain_drops, slant
+
             image = np.array(image, dtype=np.uint8)
             drop_length, rain_drops, slant = get_params(image)
             for (rain_drop_x0, rain_drop_y0) in rain_drops:
@@ -385,39 +493,6 @@ class RainScene(Operation):
                     np.uint8), cv2.COLOR_HLS2RGB)
 
             return image_rgb
-
-        def get_params(img):
-            slant = int(random.uniform(self.slant_lower, self.slant_upper))
-
-            height, width = img.shape[:2]
-            area = height * width
-
-            if self.rain_type == "drizzle":
-                num_drops = area // 770
-                drop_length = 10
-            elif self.rain_type == "heavy":
-                num_drops = width * height // 600
-                drop_length = 30
-            elif self.rain_type == "torrential":
-                num_drops = area // 500
-                drop_length = 60
-            else:
-                drop_length = self.drop_length
-                num_drops = area // 600
-
-            rain_drops = []
-
-            for _i in range(
-                    num_drops):  # If You want heavy rain, try increasing this
-                if slant < 0:
-                    x = random.randint(slant, width)
-                else:
-                    x = random.randint(0, width - slant)
-
-                y = random.randint(0, height - drop_length)
-                rain_drops.append((x, y))
-
-            return drop_length, rain_drops, slant
 
         def do(images):
             if len(images) > 1:
