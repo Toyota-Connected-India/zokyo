@@ -246,27 +246,36 @@ class Builder(AbstractBuilder):
                     self.mask_dir))
 
         image_list = os.listdir(self.input_dir)
-        mask_list = os.listdir(self.mask_dir)
-
         image_list.sort()
-        mask_list.sort()
+
+        if "mask_dir" in self.__dict__.keys():
+            mask_list = os.listdir(self.mask_dir)
+            mask_list.sort()
+            for image, mask in zip(
+                    image_list, mask_list):
+                _image_mask_pair.append([join(self.input_dir, image), join(self.mask_dir, mask)])
 
         if "annotation_dir" in self.__dict__.keys():
-            annotation_list = sorted(os.listdir(self.annotation_dir))
-            for image, mask, annotations in zip(
+            annotation_list = os.listdir(self.annotation_dir)
+            annotation_list.sort()
+            for image, mask in zip(
+                    image_list, annotation_list):
+                _image_mask_pair.append([join(self.input_dir, image), join(self.annotation_dir, mask)])
+
+        if "mask_dir" in self.__dict__.keys() and "annotation_dir" in self.__dict__.keys():
+            mask_list = os.listdir(self.mask_dir)
+            annotation_list = os.listdir(self.annotation_dir)
+            mask_list.sort()
+            annotation_list.sort()
+            for image, mask, annotation in zip(
                     image_list, mask_list, annotation_list):
-                _image_mask_pair.append([join(self.input_dir, image), join(
-                    self.mask_dir, mask), join(self.annotation_dir, annotations)])
-        else:
-            for image, mask in zip(image_list, mask_list):
-                _image_mask_pair.append(
-                    [join(self.input_dir, image), join(self.mask_dir, mask)])
+                _image_mask_pair.append([join(self.input_dir, image), join(self.mask_dir, mask), join(self.annotation_dir, annotation)])
 
         return _image_mask_pair
 
     def _image_list_factory(self):
         '''
-            Function that create a list of pair of image files with its respective masks
+            Function that create a list of image files
         '''
         if not os.path.exists(self.input_dir):
             raise FileExistsError(
@@ -278,7 +287,7 @@ class Builder(AbstractBuilder):
         return input_data_list
 
     def _check_and_populate_path(self):
-        if "mask_dir" in self.config.keys():
+        if "mask_dir" in self.config.keys() or "annotation_dir" in self.config.keys():
             data_path_list = self._image_mask_pair_list_factory()
         else:
             data_path_list = self._image_list_factory()
