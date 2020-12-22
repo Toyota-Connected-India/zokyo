@@ -25,6 +25,10 @@ class AbstractBuilder(ABC):
         raise NotImplementedError("This method is not implemented")
 
     @abstractclassmethod
+    def _load_entities(self, data_path_list):
+        raise NotImplementedError("This is method is not implemented")
+
+    @abstractclassmethod
     def process_and_generate(self):
         raise NotImplementedError("This method is not implemented")
 
@@ -47,15 +51,15 @@ class Builder(AbstractBuilder):
         {
             "input_dir" : "images",
             "output_dir" : "output",
-            "annotation_dir" : "annotations"
+            "annotation_dir" : "annotations",
+            "annotation_format" : "pascal_voc",
             "mask_dir" : "mask"
             "sample" : 5000,
             "multi_threaded" : true,
             "run_all" : false,
             "batch_ingestion": true,
             "internal_batch": 20,
-            "dataset_type" : "detection",
-            "format" : "pascal_voc"
+            "save_annotation_mask" : false,
             "operations":[
                 {
                     "operation": "DarkenScene",
@@ -185,6 +189,9 @@ class Builder(AbstractBuilder):
         if "internal_batch" not in self.config.keys():
             self.internal_batch = None
 
+        if "save_annotation_mask" not in self.config.keys():
+            self.save_annotation_mask = False
+
         self.setting_generator_params = False
 
         self.__dict__.update(
@@ -199,6 +206,7 @@ class Builder(AbstractBuilder):
                 'mask_dir',
                 'annotation_dir',
                 'annotation_format',
+                'save_annotation_mask',
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
 
@@ -230,10 +238,6 @@ class Builder(AbstractBuilder):
             OperationInstance = operation_class(**operation["args"])
             pipeline.add_operation(OperationInstance)
         return pipeline
-
-    def _parse_annotations(self):
-        if self.data_type == "detection" and self.dataset_format == "coco":
-            pass
 
     def _image_mask_pair_list_factory(self):
         '''
@@ -295,7 +299,6 @@ class Builder(AbstractBuilder):
             raise FileNotFoundError(
                 "Input folder not found in the directory {}".format(
                     self.input_dir))
-
         input_data_list = [
                             {
                              "image" : join(self.input_dir, filename),
@@ -312,11 +315,10 @@ class Builder(AbstractBuilder):
             data_path_list = self._image_list_factory()
         return data_path_list
 
-    def _load_images(self):
-        data_path_list = self._check_and_populate_path()
+    def _load_entities(self, data_sample_list):
         image_mask_list = []
         entity_dict = {}
-        for data_dict in data_path_list:
+        for data_dict in data_sample_list:
             entity_dict["image"] = Image.open(data_dict["image"])
             if data_dict["mask"] is not None:
                 entity_dict["mask"] = Image.open(data_dict["mask"])
@@ -325,27 +327,22 @@ class Builder(AbstractBuilder):
                 entity_dict["annotation_mask"] = self._generate_mask_for_annotation(xmlobject)
                 entity_dict["annotation"] = xmlobject
             image_mask_list.append(entity_dict)
+        del entity_dict
         return image_mask_list
 
-    def _save_images_to_disk(self, images):
+    def _save_entities_to_disk(self, entities):
         '''
             TODO: Parallelize saving the images to disk
         '''
-        for ims in images:
+        for ets in entities:
             filename = str(uuid.uuid4())
-            image = Image.fromarray(ims[0])
-            image.save(
-                join(
-                    self.output_dir,
-                    "images") +
-                "/{}.png".format(filename))
-            if len(ims) == 2:
-                mask = Image.fromarray(ims[1])
-                mask.save(
-                    join(
-                        self.output_dir,
-                        "masks") +
-                    "/{}.png".format(filename))
+            ets["image"].save(join(self.output_dir,"images") +"/{}.png".format(filename))
+            if ets["mask"] is not None:
+                ets["mask"].save(join(self.output_dir,"images") +"/{}.png".format(filename))
+            if ets["annotation"] is not None:
+                ets["mask"].save(join(self.output_dir,"images") +"/{}.png".format(filename))
+            if self.save_annotation_mask:
+                ets["anotation_mask"].save(join(self.output_dir,"images") +"/{}.png".format(filename))
 
     def calculate_and_set_generator_params(self, batch_size=None):
         self.setting_generator_params = True
@@ -358,16 +355,14 @@ class Builder(AbstractBuilder):
             elif batch_size is None:
                 self.sample_factor = self.data_len // self.internal_batch
                 self.batch_size = self.sample // self.sample_factor
-                self.internal_batch_split = self.internal_batch
 
             elif self.internal_batch is None:
                 self.sample_factor = self.sample // batch_size
-                self.internal_batch_split = self.data_len // self.sample_factor
+                self.internal_batch = self.data_len // self.sample_factor
                 self.batch_size = batch_size
 
             else:
                 self.sample_factor = self.data_len // self.internal_batch
-                self.internal_batch_split = self.internal_batch
                 self.batch_size = batch_size
 
         else:
@@ -388,40 +383,31 @@ class Builder(AbstractBuilder):
             if self.setting_generator_params:
                 if not infinite_generator:
                     for i in range(self.sample_factor):
-
-                        images = [[np.array(Image.open(y)) for y in x[:-1]] for x in data_path_list[i:(
-                            i + 1) * (self.internal_batch_split + 1) - 1]]
-
-                        pipeline = DataPipeline(images=images)
+                        data_list = data_path_list[i:(i + 1) * (self.internal_batch + 1) - 1]
+                        entities = self._load_entities(data_list)
+                        pipeline = DataPipeline(data_dictionary=entities)
                         pipeline = self._add_operation(pipeline=pipeline)
-                        images = pipeline.sample_for_generator(
-                            batch_size=self.batch_size)
-                        del pipeline  # clear pipeline memory
+                        images = pipeline.sample_for_generator(batch_size=self.batch_size)
+                        del pipeline 
                         yield images
-
                 else:
                     if self.batch_size is None:
                         raise ValueError("Batch Size not found")
                     while True:
-                        indexlist = random.sample(
-                            range(0, self.data_len), self.internal_batch_split)
-                        sample_data_path = [data_path_list[i]
-                                            for i in indexlist]
-                        images = [[np.array(Image.open(y)) for y in x]
-                                  for x in sample_data_path]
-                        pipeline = DataPipeline(images=images)
+                        indexlist = random.sample(range(0, self.data_len), self.internal_batch)
+                        data_list = [data_path_list[i] for i in indexlist]
+                        entites = self._load_entities(data_list)
+                        pipeline = DataPipeline(data_dictionary=entites)
                         pipeline = self._add_operation(pipeline=pipeline)
-                        images = pipeline.sample_for_generator(
-                            batch_size=self.batch_size)
-                        del pipeline  # clear pipeline memory
+                        images = pipeline.sample_for_generator(batch_size=self.batch_size)
+                        del pipeline
                         yield images
             else:
-                raise Exception(
-                    "\nDid you call calculate_and_set_generator_params method ?")
+                raise Exception("Did you call calculate_and_set_generator_params method ?")
 
         else:
             if self.setting_generator_params:
-                images = self._load_images()
+                images = self._load_entities(self.data_len)
                 pipeline = DataPipeline(images=images)
                 pipeline = self._add_operation(pipeline)
                 images = pipeline.sample(self.sample)
@@ -443,12 +429,14 @@ class Builder(AbstractBuilder):
         '''
             Process the files and save to disk
         '''
+
         if not self.batch_ingestion:
-            images = self._load_images()
-            pipeline = DataPipeline(images=images)
+            data_path_list = self._check_and_populate_path()
+            entities = self._load_entities(data_path_list)
+            pipeline = DataPipeline(data_dictionary=entities)
             pipeline = self._add_operation(pipeline)
-            images = pipeline.sample(self.sample)
-            self._save_images_to_disk(images)
+            result_entities = pipeline.sample(self.sample)
+            self._save_entities_to_disk(result_entities)
 
         else:
             self.calculate_and_set_generator_params(batch_size=batch_save_size)
@@ -456,8 +444,8 @@ class Builder(AbstractBuilder):
             pbar = tqdm(total=self.sample_factor)
             while True:
                 try:
-                    images = next(image_generator)
-                    self._save_images_to_disk(images)
+                    result_entities = next(image_generator)
+                    self._save_entities_to_disk(result_entities)
                     pbar.update(1)
                 except StopIteration:
                     break

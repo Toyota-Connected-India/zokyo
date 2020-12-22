@@ -19,7 +19,7 @@ class DataPipeline():
     def remove_operation(self, operation_index=-1):
         self.operations.pop(operation_index)
 
-    def sample_for_generator(self, batch_size=1, **kwargs):
+    def sample_for_generator(self, batch_size=1):
         batch_size = 1 if (batch_size < 1) else batch_size
         batch = []
         for _ in range(0, batch_size):
