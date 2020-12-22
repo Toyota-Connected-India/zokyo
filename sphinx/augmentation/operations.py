@@ -52,7 +52,7 @@ class EqualizeScene(Operation):
                     return [Image.fromarray(image), image_mask]
             else:
                 if len(images) > 1:
-                    return [ImageOps.equalize(images[0]), images[1]]
+                    return [ImageOps.equalize(images[0]), *images[1:]]
                 else:
                     return [ImageOps.equalize(images[0])]
 
@@ -98,7 +98,7 @@ class DarkenScene(Operation):
                         image), Image.fromarray(image_mask)]
             else:
                 if len(images) > 1:
-                    return [Image.fromarray(darken(images[0])), images[1]]
+                    return [Image.fromarray(darken(images[0])), *images[1:]]
                 else:
                     return [Image.fromarray(darken(images[0]))]
 
@@ -148,7 +148,7 @@ class BrightenScene(Operation):
                         image), Image.fromarray(image_mask)]
             else:
                 if len(images) > 1:
-                    return [Image.fromarray(brighten(images[0])), images[1]]
+                    return [Image.fromarray(brighten(images[0])), *images[1:]]
                 else:
                     return [Image.fromarray(brighten(images[0]))]
 
@@ -196,8 +196,7 @@ class RandomBrightness(Operation):
                         image), Image.fromarray(image_mask)]
             else:
                 if len(images) > 1:
-                    return [Image.fromarray(
-                        random_brighten(images[0])), images[1]]
+                    return [Image.fromarray(random_brighten(images[0])), *images[1:]]
                 else:
                     return [Image.fromarray(random_brighten(images[0]))]
 
@@ -239,7 +238,7 @@ class SnowScene(Operation):
                         image), Image.fromarray(image_mask)]
             else:
                 if len(images) > 1:
-                    return [Image.fromarray(snow(images[0])), images[1]]
+                    return [Image.fromarray(snow(images[0])), *images[1:]]
                 else:
                     return [Image.fromarray(snow(images[0]))]
 
@@ -422,7 +421,7 @@ class RainScene(Operation):
 
         def do(images):
             if len(images) > 1:
-                return [Image.fromarray(rain(images[0])), images[1]]
+                return [Image.fromarray(rain(images[0])), *images[1:]]
             else:
                 return [Image.fromarray(rain(images[0]))]
 
@@ -535,7 +534,7 @@ class SunFlare(Operation):
 
         def do(images):
             if len(images) > 1:
-                return [Image.fromarray(add_sun_flare(images[0])), images[1]]
+                return [Image.fromarray(add_sun_flare(images[0])), *images[1:]]
             else:
                 return [Image.fromarray(add_sun_flare(images[0]))]
 

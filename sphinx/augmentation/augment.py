@@ -3,7 +3,7 @@
 # srinivas.v@toyotaconnected.co.in, ]
 
 import os
-from os.path import join
+from os.path import join, split
 import json
 import importlib
 import re
@@ -21,19 +21,19 @@ class AbstractBuilder(ABC):
 
     @abstractclassmethod
     def _add_operation(self, pipeline):
-        pass
+        raise NotImplementedError("This method is not implemented")
 
     @abstractclassmethod
     def process_and_generate(self):
-        pass
+        raise NotImplementedError("This method is not implemented")
 
     @abstractclassmethod
     def process_and_save(self):
-        pass
+        raise NotImplementedError("This method is not implemented")
 
     @abstractclassmethod
     def get_keras_generator(self):
-        pass
+        raise NotImplementedError("This method is not implemented")
 
 
 class Builder(AbstractBuilder):
@@ -63,7 +63,9 @@ class Builder(AbstractBuilder):
                         "probability": 0.7,
                         "darkness" : 0.5,
                         "is_mask" : true,
-                        "label" : 2,
+                        "mask_label" : 2,
+                        "is_annotation" : true, 
+                        "annotation_label : 1
                     }
                 },
                 {
@@ -94,6 +96,7 @@ class Builder(AbstractBuilder):
             raise FileNotFoundError("{} not found".format(config_json))
 
         self.batch_size = None
+        self._extension_list = ["png", "jpg", "jpeg", "bmp"]
 
         with open(config_json) as config_file:
             self.config = json.load(config_file)
@@ -105,11 +108,15 @@ class Builder(AbstractBuilder):
 
         if "input_dir" not in self.config.keys():
             raise CrucialValueNotFoundError(
-                operation="augmentation configurations",
+                operation="configuration json file",
                 value_type="input_dir")
+        
+        if "input_dir" in self.config.keys() and len(
+                os.listdir(self.config["input_dir"])) == 0:
+            raise FileNotFoundError("No files found in input directory")
 
         if "output_dir" not in self.config.keys():
-            self.output_dir = join(self.config["input_dir"], "output")
+            self.output_dir = join(os.getcwd(), "output")
             try:
                 os.mkdir(self.output_dir)
                 os.mkdir(join(self.output_dir, "images"))
@@ -164,14 +171,14 @@ class Builder(AbstractBuilder):
         if "batch_ingestion" not in self.config.keys():
             self.batch_ingestion = False
 
-        if "dataset_type" not in self.config.keys():
-            raise ValueError("Dataset type not found")
-
-        if "dataset_type" in self.config.keys(
-        ) and "dataset_format" not in self.config.keys():
-            raise CrucialValueNotFoundError(
-                operation="dataset_type",
-                value_type="dataset_format")
+        if "annotation_dir" in self.config.keys():
+            if "annotation_format" not in self.config.keys():
+                raise CrucialValueNotFoundError(
+                    operation="annotation data",
+                    value_type="annotation_format")
+            else:
+                if self.config["annotation_format"] != "pascal_voc":
+                    raise NotImplementedError("Annotation format not supported, pascal_voc is the only supported format")
 
         if "internal_batch" not in self.config.keys():
             self.internal_batch = None
@@ -189,8 +196,14 @@ class Builder(AbstractBuilder):
                 'operations',
                 'mask_dir',
                 'annotation_dir',
+                'annotation_format',
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
+    
+    @staticmethod
+    def _generate_mask_for_annotation(annotation):
+        pass
+
 
     def _add_operation(self, pipeline):
         '''
@@ -217,6 +230,10 @@ class Builder(AbstractBuilder):
             pipeline.add_operation(OperationInstance)
         return pipeline
 
+    def _parse_annotations(self):
+        if self.data_type == "detection" and self.dataset_format == "coco":
+            pass
+
     def _image_mask_pair_list_factory(self):
         '''
             Function that create a list of pair of image files with its respective masks
@@ -227,20 +244,22 @@ class Builder(AbstractBuilder):
             raise FileExistsError(
                 "Mask folder not found in the directory {}".format(
                     self.mask_dir))
-        for filename in os.listdir(self.input_dir):
-            r = re.compile(filename.split('.')[0])
-            filematch = [
-                mask for mask in list(
-                    filter(
-                        r.match,
-                        os.listdir(
-                            self.mask_dir)))]
-            if len(filematch) == 1:
-                _image_mask_pair.append(
-                    [join(self.input_dir, filename), join(join(self.mask_dir, filematch[0]))])
-            elif len(filematch) > 1:
-                raise ConfigurationError(
-                    "More than 1 mask image found for the image " + filename)
+
+        image_list = os.listdir(self.input_dir)
+        mask_list = os.listdir(self.mask_dir)
+
+        image_list.sort()
+        mask_list.sort()
+
+        if "annotation_dir" in self.__dict__.keys():      
+            annotation_list = os.listdir(self.annotation_dir)
+            annotation_list.sort()
+            for image,mask,annotations in zip(image_list, mask_list, annotation_list):
+                _image_mask_pair.append([join(self.input_dir,image),join(self.mask_dir,mask), join(self.annotation_dir,annotations)])
+        else:
+            for image,mask in zip(image_list, mask_list):
+                _image_mask_pair.append([join(self.input_dir,image),join(self.mask_dir,mask)])
+
         return _image_mask_pair
 
     def _image_list_factory(self):
@@ -252,15 +271,9 @@ class Builder(AbstractBuilder):
                 "Input folder not found in the directory {}".format(
                     self.mask_dir))
 
-        input_data_list = [join(self.input_dir, filename)
+        input_data_list = [[join(self.input_dir, filename)]
                            for filename in os.listdir(self.input_dir)]
-        return [input_data_list]
-
-    def _image_annotation_pair_factory(self):
-        if self.dataset_type is "segmentation":
-            return self._image_mask_pair_list_factory
-        elif self.dataset_type is "detection":
-            pass
+        return input_data_list
 
     def _check_and_populate_path(self):
         if "mask_dir" in self.config.keys():
@@ -271,8 +284,20 @@ class Builder(AbstractBuilder):
 
     def _load_images(self):
         data_path_list = self._check_and_populate_path()
-        images = [[np.array(Image.open(y)) for y in x] for x in data_path_list]
-        return images
+        image_mask_list = []
+
+        for data_path in data_path_list:
+            entity_list = []
+            for entity in data_path:
+                if entity.split('.')[-1] in self._extension_list:
+                    entity_list.append(np.array(Image.open(entity)))
+                else:
+                    with open(entity) as f:
+                        entity_object = f.readlines()
+                    entity_list.append(self._generate_mask_for_annotation(entity_object), entity_object)
+            image_mask_list.append(entity_list)
+
+        return image_mask_list
 
     def _save_images_to_disk(self, images):
         '''
@@ -308,17 +333,14 @@ class Builder(AbstractBuilder):
                 self.internal_batch_split = self.internal_batch
 
             elif self.internal_batch is None:
-                self.sample_factor = self.sample // self.batch_size
+                self.sample_factor = self.sample // batch_size
                 self.internal_batch_split = self.data_len // self.sample_factor
                 self.batch_size = batch_size
 
             else:
-                if batch_size < self.internal_batch:
-                    raise ValueError(
-                        "Batch size cannot be greater than internal batch split")
                 self.sample_factor = self.data_len // self.internal_batch
                 self.internal_batch_split = self.internal_batch
-                self.batch_size = self.batch_size
+                self.batch_size = batch_size
 
         else:
             if self.batch_size is None:
@@ -338,8 +360,10 @@ class Builder(AbstractBuilder):
             if self.setting_generator_params:
                 if not infinite_generator:
                     for i in range(self.sample_factor):
-                        images = [[np.array(Image.open(y)) for y in x] for x in data_path_list[i:(
+                        
+                        images = [[np.array(Image.open(y)) for y in x[:-1]] for x in data_path_list[i:(
                             i + 1) * (self.internal_batch_split + 1) - 1]]
+
                         pipeline = DataPipeline(images=images)
                         pipeline = self._add_operation(pipeline=pipeline)
                         images = pipeline.sample_for_generator(
