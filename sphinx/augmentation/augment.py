@@ -7,6 +7,8 @@ from os.path import join, split
 import json
 import importlib
 import re
+
+from jedi.plugins.stdlib import StaticMethodObject
 from .pipeline import DataPipeline
 from PIL import Image
 from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented, ConfigurationError
@@ -193,6 +195,9 @@ class Builder(AbstractBuilder):
             self.save_annotation_mask = False
 
         self.setting_generator_params = False
+        self.class_dictionary = {}
+        self.class_dictionary["background"] = 0
+        self.classes = 1
 
         self.__dict__.update(
             (key,
@@ -210,9 +215,36 @@ class Builder(AbstractBuilder):
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
 
-    @staticmethod
-    def _generate_mask_for_annotation(annotation):
-        pass
+    def _get_annotations(self, annotation):
+        root = annotation.getroot()
+        class_bnd_box = {}
+        class_bnd_box["classes"] = {}
+        class_bnd_box["size"] = {}
+        for child in root:
+            if child.tag == "size":
+                for size in child:
+                    class_bnd_box["size"][size.tag] = int(size.text)
+            if child.tag == "object":
+                current_tag = ""
+                for elem in child:
+                    bnd_dict = {}
+                    if elem.tag == "name":
+                        if elem.text not in self.class_dictionary.keys():
+                            self.class_dictionary[elem.text] = self.classes
+                            self.classes += 1
+                        if elem.text not in class_bnd_box["classes"].keys():
+                            class_bnd_box["classes"][elem.text] = []
+                        current_tag = elem.text
+                    if elem.tag == "bndbox":
+                        for coord in elem:
+                            bnd_dict[coord.tag] = float(coord.text)
+                        class_bnd_box["classes"][current_tag].append(bnd_dict)
+        return class_bnd_box
+
+    def _generate_mask_for_annotation(self, annotation):
+            class_data_dict = self._get_annotations(annotation)
+
+
 
     def _add_operation(self, pipeline):
         '''
