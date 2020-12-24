@@ -18,6 +18,7 @@ import random
 import uuid
 from abc import ABC, abstractclassmethod
 import xml.etree.ElementTree as ET
+from .data import SphinxData
 
 
 class AbstractBuilder(ABC):
@@ -193,6 +194,9 @@ class Builder(AbstractBuilder):
 
         if "save_annotation_mask" not in self.config.keys():
             self.save_annotation_mask = False
+        
+        if "save_annotation_mask" in self.config.keys() and self.config["save_annotation_mask"] == True:
+            os.mkdir(join(self.output_dir, "annotation_mask"))
 
         self.setting_generator_params = False
         self.class_dictionary = {}
@@ -243,8 +247,6 @@ class Builder(AbstractBuilder):
 
     def _generate_mask_for_annotation(self, annotation):
             class_data_dict = self._get_annotations(annotation)
-
-
 
     def _add_operation(self, pipeline):
         '''
@@ -349,17 +351,17 @@ class Builder(AbstractBuilder):
 
     def _load_entities(self, data_sample_list):
         image_mask_list = []
-        entity_dict = {}
+        sd = SphinxData()
         for data_dict in data_sample_list:
-            entity_dict["image"] = Image.open(data_dict["image"])
+            sd.image = Image.open(data_dict["image"])
             if data_dict["mask"] is not None:
-                entity_dict["mask"] = Image.open(data_dict["mask"])
+                sd.mask = Image.open(data_dict["mask"])
             if data_dict["annotation"] is not None:
                 xmlobject = ET.parse(data_dict["annotation"])
-                entity_dict["annotation_mask"] = self._generate_mask_for_annotation(xmlobject)
-                entity_dict["annotation"] = xmlobject
-            image_mask_list.append(entity_dict)
-        del entity_dict
+                sd.annotation_mask = self._generate_mask_for_annotation(xmlobject)
+                sd.annotation = xmlobject
+            image_mask_list.append(sd)
+        del sd
         return image_mask_list
 
     def _save_entities_to_disk(self, entities):
@@ -368,13 +370,13 @@ class Builder(AbstractBuilder):
         '''
         for ets in entities:
             filename = str(uuid.uuid4())
-            ets["image"].save(join(self.output_dir,"images") +"/{}.png".format(filename))
-            if ets["mask"] is not None:
-                ets["mask"].save(join(self.output_dir,"images") +"/{}.png".format(filename))
-            if ets["annotation"] is not None:
-                ets["mask"].save(join(self.output_dir,"images") +"/{}.png".format(filename))
+            ets.image.save(join(self.output_dir,"images") +"/{}.png".format(filename))
+            if ets.mask is not None:
+                ets.mask.save(join(self.output_dir,"masks") +"/{}.png".format(filename))
+            if ets.annotation is not None:
+                ets.mask.write(open(join(self.output_dir,"annotation") +"/{}.xml".format(filename), 'a'), encoding='unicode')
             if self.save_annotation_mask:
-                ets["anotation_mask"].save(join(self.output_dir,"images") +"/{}.png".format(filename))
+                ets.annotation_mask.save(join(self.output_dir,"annotation_mask") +"/{}.png".format(filename))
 
     def calculate_and_set_generator_params(self, batch_size=None):
         self.setting_generator_params = True
