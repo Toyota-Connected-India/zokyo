@@ -13,7 +13,7 @@
             "args": {
                 "probability": 1,
                 "is_mask": true,
-                "label": 7
+                "mask_label": 7
               }
         }
     ]

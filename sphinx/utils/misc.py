@@ -29,6 +29,7 @@ MAX_VALUES_BY_DTYPE = {
     np.dtype("float32"): 1.0,
 }
 
+
 def get_git_revision_short_hash():
     """Get the short revision hash of a git commit
 
