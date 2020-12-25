@@ -407,7 +407,7 @@ class Builder(AbstractBuilder):
                 self.batch_size = batch_size
 
         else:
-            if self.batch_size is None:
+            if batch_size is None:
                 raise ValueError("Batch size cannot be none !!")
             self.batch_size = batch_size
             self.sample_factor = self.sample // self.batch_size
@@ -426,7 +426,7 @@ class Builder(AbstractBuilder):
                     for i in range(self.sample_factor):
                         data_list = data_path_list[i:(i + 1) * (self.internal_batch + 1) - 1]
                         entities = self._load_entities(data_list)
-                        pipeline = DataPipeline(data_dictionary=entities)
+                        pipeline = DataPipeline(entities=entities)
                         pipeline = self._add_operation(pipeline=pipeline)
                         result_entities = pipeline.sample_for_generator(batch_size=self.batch_size)
                         del pipeline 
@@ -438,7 +438,7 @@ class Builder(AbstractBuilder):
                         indexlist = random.sample(range(0, self.data_len), self.internal_batch)
                         data_list = [data_path_list[i] for i in indexlist]
                         entites = self._load_entities(data_list)
-                        pipeline = DataPipeline(data_dictionary=entites)
+                        pipeline = DataPipeline(entities=entites)
                         pipeline = self._add_operation(pipeline=pipeline)
                         images = pipeline.sample_for_generator(batch_size=self.batch_size)
                         del pipeline
@@ -449,7 +449,7 @@ class Builder(AbstractBuilder):
         else:
             if self.setting_generator_params:
                 entities = self._load_entities(data_path_list)
-                pipeline = DataPipeline(data_dictionary=entities)
+                pipeline = DataPipeline(entities=entities)
                 pipeline = self._add_operation(pipeline)
                 images = pipeline.sample(self.sample)
                 if not infinite_generator:
@@ -474,7 +474,7 @@ class Builder(AbstractBuilder):
         if not self.batch_ingestion:
             data_path_list = self._check_and_populate_path()
             entities = self._load_entities(data_path_list)
-            pipeline = DataPipeline(data_dictionary=entities)
+            pipeline = DataPipeline(entities=entities)
             pipeline = self._add_operation(pipeline)
             result_entities = pipeline.sample(self.sample)
             self._save_entities_to_disk(result_entities)
