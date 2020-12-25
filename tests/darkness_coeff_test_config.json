@@ -14,7 +14,7 @@
                 "probability": 1,
                 "darkness": 0.6,
                 "is_mask": true,
-                "label": 7
+                "mask_label": 7
               }
         }
     ]

@@ -43,6 +43,12 @@ class EqualizeScene(Operation):
         Operation.__init__(self, self.args.probability)
 
     def perform_operation(self, entities):
+        def equalizeHist(image):
+            img_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
+            img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
+            img_rgb = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
+            return img_rgb
+
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
@@ -51,7 +57,7 @@ class EqualizeScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.mask
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, cv2.equalizeHist)
+                    image = apply_augmentation(image, image_mask, self.args.mask_label, equalizeHist)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -62,7 +68,7 @@ class EqualizeScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.annotation_mask
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, cv2.equalizeHist)
+                    image = apply_augmentation(image, image_mask, self.args.annotation_label, equalizeHist)
                     entities.image = Image.fromarray(image)
                     return entities
 

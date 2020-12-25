@@ -3,7 +3,6 @@ import numpy as np
 from Augmentor.Operations import Operation
 import random
 from tqdm import tqdm
-from .utils import check_and_change_format
 
 
 class DataPipeline(object):
