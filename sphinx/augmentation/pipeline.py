@@ -14,7 +14,8 @@ class DataPipeline(object):
         if isinstance(operation, Operation):
             self.operations.append(operation)
         else:
-            raise TypeError("Must be of type Augmentor Operation or a Sphinx Operation to be added to the pipeline.")
+            raise TypeError(
+                "Must be of type Augmentor Operation or a Sphinx Operation to be added to the pipeline.")
 
     def remove_operation(self, operation_index=-1):
         self.operations.pop(operation_index)
@@ -28,7 +29,8 @@ class DataPipeline(object):
             for operation in self.operations:
                 r = round(random.uniform(0, 1), 1)
                 if r <= operation.probability:
-                    entities_to_yield = operation.perform_operation(entities_to_yield)
+                    entities_to_yield = operation.perform_operation(
+                        entities_to_yield)
             batch.append(entities_to_yield)
         return batch
 
@@ -40,6 +42,7 @@ class DataPipeline(object):
             for operation in self.operations:
                 r = round(random.uniform(0, 1), 1)
                 if r <= operation.probability:
-                    entities_to_return = operation.perform_operation(entities_to_return)
+                    entities_to_return = operation.perform_operation(
+                        entities_to_return)
             batch.append(entities_to_return)
         return batch

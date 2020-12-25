@@ -195,8 +195,9 @@ class Builder(AbstractBuilder):
 
         if "save_annotation_mask" not in self.config.keys():
             self.save_annotation_mask = False
-        
-        if "save_annotation_mask" in self.config.keys() and self.config["save_annotation_mask"] == True:
+
+        if "save_annotation_mask" in self.config.keys(
+        ) and self.config["save_annotation_mask"] == True:
             os.mkdir(join(self.output_dir, "annotation_mask"))
 
         self.setting_generator_params = False
@@ -247,13 +248,21 @@ class Builder(AbstractBuilder):
         return class_bnd_box
 
     def _generate_mask_for_annotation(self, annotation):
-            current_image_class_data_dict = self._get_annotations(annotation)
-            annotation_mask = np.zeros((current_image_class_data_dict["size"]["height"], current_image_class_data_dict["size"]["width"], current_image_class_data_dict["size"]["depth"]), dtype=np.uint8)
-            for cat in current_image_class_data_dict["classes"].keys():
-                for bnd in current_image_class_data_dict["classes"][cat]:
-                    color = (self.class_dictionary[cat], self.class_dictionary[cat], self.class_dictionary[cat])
-                    annotation_mask = cv2.rectangle(annotation_mask, (bnd["xmin"],bnd["ymin"]), (bnd["xmax"],bnd["ymax"]), color, -1)
-            return annotation_mask
+        current_image_class_data_dict = self._get_annotations(annotation)
+        annotation_mask = np.zeros(
+            (current_image_class_data_dict["size"]["height"],
+             current_image_class_data_dict["size"]["width"],
+             current_image_class_data_dict["size"]["depth"]),
+            dtype=np.uint8)
+        for cat in current_image_class_data_dict["classes"].keys():
+            for bnd in current_image_class_data_dict["classes"][cat]:
+                color = (
+                    self.class_dictionary[cat],
+                    self.class_dictionary[cat],
+                    self.class_dictionary[cat])
+                annotation_mask = cv2.rectangle(
+                    annotation_mask, (bnd["xmin"], bnd["ymin"]), (bnd["xmax"], bnd["ymax"]), color, -1)
+        return annotation_mask
 
     def _add_operation(self, pipeline):
         '''
@@ -292,33 +301,30 @@ class Builder(AbstractBuilder):
                 "Input folder not found in the directory {}".format(
                     self.input_dir))
 
-        image_list = os.listdir(self.input_dir)
-        image_list.sort()
+        image_list = sorted(os.listdir(self.input_dir))
 
         if "mask_dir" in self.__dict__.keys():
-            mask_list = os.listdir(self.mask_dir)
-            mask_list.sort()
+            mask_list = sorted(os.listdir(self.mask_dir))
             for image, mask in zip(image_list, mask_list):
                 if image.split('.')[-1] in self._image_extension_list and \
-                    mask.split('.')[-1] in self._image_extension_list:
+                        mask.split('.')[-1] in self._image_extension_list:
                     image_mask_dict = {
-                        "image" : join(self.input_dir, image),
-                        "mask"  : join(self.mask_dir, mask),
-                        "annotation" : None
+                        "image": join(self.input_dir, image),
+                        "mask": join(self.mask_dir, mask),
+                        "annotation": None
                     }
                     _image_mask_pair.append(image_mask_dict)
 
         if "annotation_dir" in self.__dict__.keys():
-            annotation_list = os.listdir(self.annotation_dir)
-            annotation_list.sort()
+            annotation_list = sorted(os.listdir(self.annotation_dir))
             for image, annotation in zip(image_list, annotation_list):
                 if image.split('.')[-1] in self._image_extension_list and \
                         annotation.split('.')[-1] in ["xml"]:
-                    
+
                     image_annotation_dict = {
-                        "image" : join(self.input_dir, image),
-                        "mask"  : None,
-                        "annotation"  : join(self.annotation_dir, annotation)
+                        "image": join(self.input_dir, image),
+                        "mask": None,
+                        "annotation": join(self.annotation_dir, annotation)
                     }
                     _image_mask_pair.append(image_annotation_dict)
 
@@ -327,17 +333,18 @@ class Builder(AbstractBuilder):
             annotation_list = os.listdir(self.annotation_dir)
             mask_list.sort()
             annotation_list.sort()
-            for image, mask, annotation in zip(image_list, mask_list, annotation_list):
+            for image, mask, annotation in zip(
+                    image_list, mask_list, annotation_list):
                 if image.split('.')[-1] in self._image_extension_list and \
                     mask.split('.')[-1] in self._image_extension_list and \
                         annotation.split('.')[-1] in ["xml"]:
                     image_mask_annotation_dict = {
-                        "image" : join(self.input_dir, image),
-                        "mask"  : join(self.mask_dir, mask),
-                        "annotation"  : join(self.annotation_dir, annotation)
+                        "image": join(self.input_dir, image),
+                        "mask": join(self.mask_dir, mask),
+                        "annotation": join(self.annotation_dir, annotation)
                     }
                     _image_mask_pair.append(image_mask_annotation_dict)
-        
+
         return _image_mask_pair
 
     def _image_list_factory(self):
@@ -349,12 +356,12 @@ class Builder(AbstractBuilder):
                 "Input folder not found in the directory {}".format(
                     self.input_dir))
         input_data_list = [
-                            {
-                             "image" : join(self.input_dir, filename),
-                             "mask" : None,
-                             "annotation" : None
-                            }
-                           for filename in os.listdir(self.input_dir)]
+            {
+                "image": join(self.input_dir, filename),
+                "mask": None,
+                "annotation": None
+            }
+            for filename in os.listdir(self.input_dir)]
         return input_data_list
 
     def _check_and_populate_path(self):
@@ -373,7 +380,8 @@ class Builder(AbstractBuilder):
                 sd.mask = Image.open(data_dict["mask"])
             if data_dict["annotation"] is not None:
                 xmlobject = ET.parse(data_dict["annotation"])
-                sd.annotation_mask = self._generate_mask_for_annotation(xmlobject)
+                sd.annotation_mask = self._generate_mask_for_annotation(
+                    xmlobject)
                 sd.annotation = xmlobject
             image_mask_list.append(sd)
         del sd
@@ -385,13 +393,32 @@ class Builder(AbstractBuilder):
         '''
         for ets in entities:
             filename = str(uuid.uuid4())
-            ets.image.save(join(self.output_dir,"images") +"/{}.png".format(filename))
+            ets.image.save(
+                join(
+                    self.output_dir,
+                    "images") +
+                "/{}.png".format(filename))
             if ets.mask is not None:
-                ets.mask.save(join(self.output_dir,"masks") +"/{}.png".format(filename))
+                ets.mask.save(
+                    join(
+                        self.output_dir,
+                        "masks") +
+                    "/{}.png".format(filename))
             if ets.annotation is not None:
-                ets.annotation.write(open(join(self.output_dir,"annotations") +"/{}.xml".format(filename), 'a'), encoding='unicode')
+                ets.annotation.write(
+                    open(
+                        join(
+                            self.output_dir,
+                            "annotations") +
+                        "/{}.xml".format(filename),
+                        'a'),
+                    encoding='unicode')
             if self.save_annotation_mask:
-                ets.annotation_mask.save(join(self.output_dir,"annotation_mask") +"/{}.png".format(filename))
+                ets.annotation_mask.save(
+                    join(
+                        self.output_dir,
+                        "annotation_mask") +
+                    "/{}.png".format(filename))
 
     def calculate_and_set_generator_params(self, batch_size=None):
         self.setting_generator_params = True
@@ -432,27 +459,32 @@ class Builder(AbstractBuilder):
             if self.setting_generator_params:
                 if not infinite_generator:
                     for i in range(self.sample_factor):
-                        data_list = data_path_list[i:(i + 1) * (self.internal_batch + 1) - 1]
+                        data_list = data_path_list[i:(
+                            i + 1) * (self.internal_batch + 1) - 1]
                         entities = self._load_entities(data_list)
                         pipeline = DataPipeline(entities=entities)
                         pipeline = self._add_operation(pipeline=pipeline)
-                        result_entities = pipeline.sample_for_generator(batch_size=self.batch_size)
-                        del pipeline 
+                        result_entities = pipeline.sample_for_generator(
+                            batch_size=self.batch_size)
+                        del pipeline
                         yield result_entities
                 else:
                     if self.batch_size is None:
                         raise ValueError("Batch Size not found")
                     while True:
-                        indexlist = random.sample(range(0, self.data_len), self.internal_batch)
+                        indexlist = random.sample(
+                            range(0, self.data_len), self.internal_batch)
                         data_list = [data_path_list[i] for i in indexlist]
                         entites = self._load_entities(data_list)
                         pipeline = DataPipeline(entities=entites)
                         pipeline = self._add_operation(pipeline=pipeline)
-                        images = pipeline.sample_for_generator(batch_size=self.batch_size)
+                        images = pipeline.sample_for_generator(
+                            batch_size=self.batch_size)
                         del pipeline
                         yield images
             else:
-                raise Exception("Did you call calculate_and_set_generator_params method ?")
+                raise Exception(
+                    "Did you call calculate_and_set_generator_params method ?")
 
         else:
             if self.setting_generator_params:
@@ -489,7 +521,8 @@ class Builder(AbstractBuilder):
 
         else:
             self.calculate_and_set_generator_params(batch_size=batch_save_size)
-            image_generator = self.process_and_generate(infinite_generator=False)
+            image_generator = self.process_and_generate(
+                infinite_generator=False)
             pbar = tqdm(total=self.sample_factor)
             while True:
                 try:

@@ -45,7 +45,7 @@ class EqualizeScene(Operation):
     def perform_operation(self, entities):
         def equalizeHist(image):
             img_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
-            img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
+            img_yuv[:, :, 0] = cv2.equalizeHist(img_yuv[:, :, 0])
             img_rgb = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
             return img_rgb
 
@@ -57,7 +57,8 @@ class EqualizeScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.mask
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, equalizeHist)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, equalizeHist)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -68,7 +69,8 @@ class EqualizeScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.annotation_mask
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, equalizeHist)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, equalizeHist)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -113,7 +115,8 @@ class DarkenScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.mask
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, darken)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, darken)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -124,7 +127,8 @@ class DarkenScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.annotation_mask
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, darken)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, darken)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -170,7 +174,8 @@ class BrightenScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.mask
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, brighten)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, brighten)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -181,7 +186,8 @@ class BrightenScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.annotation_mask
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, brighten)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, brighten)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -220,28 +226,33 @@ class RandomBrightness(Operation):
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
-                    entities.image = Image.fromarray(random_brighten(entities.image))
+                    entities.image = Image.fromarray(
+                        random_brighten(entities.image))
                     return entities
                 else:
                     image = entities.image
                     image_mask = entities.mask
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, random_brighten)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, random_brighten)
                     entities.image = Image.fromarray(Image.fromarray(image))
                     return entities
 
             if self.args.is_annotation is True:
                 if self.args.annotation_label is None:
-                    entities.image = Image.fromarray(random_brighten(entities.image))
+                    entities.image = Image.fromarray(
+                        random_brighten(entities.image))
                     return entities
                 else:
                     image = entities.image
                     image_mask = entities.annotation_mask
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, random_brighten)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, random_brighten)
                     entities.image = Image.fromarray(image)
                     return entities
 
             if not self.is_mask and not self.is_annotation:
-                entities.image = Image.fromarray(random_brighten(entities.image))
+                entities.image = Image.fromarray(
+                    random_brighten(entities.image))
                 return entities
 
         return do(entities)
@@ -275,7 +286,8 @@ class SnowScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.mask
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, snow)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, snow)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -286,7 +298,8 @@ class SnowScene(Operation):
                 else:
                     image = entities.image
                     image_mask = entities.annotation_mask
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, snow)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, snow)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -328,30 +341,37 @@ class RadialLensDistortion(Operation):
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
-                    entities.image = Image.fromarray(radial_distort(entities.image))
-                    entities.mask = Image.fromarray(radial_distort(entities.mask))
+                    entities.image = Image.fromarray(
+                        radial_distort(entities.image))
+                    entities.mask = Image.fromarray(
+                        radial_distort(entities.mask))
                     return entities
                 else:
                     image = entities.image
                     image_mask = entities.mask
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, radial_distort)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, radial_distort)
                     entities.image = Image.fromarray(image)
                     return entities
 
             if self.args.is_annotation is True:
                 if self.args.annotation_label is None:
-                    entities.image = Image.fromarray(radial_distort(entities.image))
-                    entities.annotation_mask = Image.fromarray(radial_distort(entities.annotation_mask))
+                    entities.image = Image.fromarray(
+                        radial_distort(entities.image))
+                    entities.annotation_mask = Image.fromarray(
+                        radial_distort(entities.annotation_mask))
                     return entities
                 else:
                     image = entities.image
                     image_mask = entities.annotation_mask
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, radial_distort)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, radial_distort)
                     entities.image = Image.fromarray(image)
                     return entities
 
             if not self.is_mask and not self.is_annotation:
-                entities.image = Image.fromarray(radial_distort(entities.image))
+                entities.image = Image.fromarray(
+                    radial_distort(entities.image))
                 return entities
 
         return do(entities)
@@ -379,30 +399,37 @@ class TangentialLensDistortion(Operation):
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
-                    entities.image = Image.fromarray(tangential_distort(entities.image))
-                    entities.mask = Image.fromarray(tangential_distort(entities.mask))
+                    entities.image = Image.fromarray(
+                        tangential_distort(entities.image))
+                    entities.mask = Image.fromarray(
+                        tangential_distort(entities.mask))
                     return entities
                 else:
                     image = entities.image
                     image_mask = entities.mask
-                    image = apply_augmentation(image, image_mask, self.args.mask_label, tangential_distort)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label, tangential_distort)
                     entities.image = Image.fromarray(image)
                     return entities
 
             if self.args.is_annotation is True:
                 if self.args.annotation_label is None:
-                    entities.image = Image.fromarray(tangential_distort(entities.image))
-                    entities.annotation_mask = Image.fromarray(tangential_distort(entities.annotation_mask))
+                    entities.image = Image.fromarray(
+                        tangential_distort(entities.image))
+                    entities.annotation_mask = Image.fromarray(
+                        tangential_distort(entities.annotation_mask))
                     return entities
                 else:
                     image = entities.image
                     image_mask = entities.annotation_mask
-                    image = apply_augmentation(image, image_mask, self.args.annotation_label, tangential_distort)
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label, tangential_distort)
                     entities.image = Image.fromarray(image)
                     return entities
 
             if not self.is_mask and not self.is_annotation:
-                entities.image = Image.fromarray(tangential_distort(entities.image))
+                entities.image = Image.fromarray(
+                    tangential_distort(entities.image))
                 return entities
 
         return do(entities)
@@ -545,7 +572,8 @@ class SunFlare(Operation):
         Operation.__init__(self, args.probability)
 
     def perform_operation(self, entities):
-        def sun_flare(image, flare_center=-1, angle=-1, no_of_flare_circles=3, src_radius=100, src_color=(255, 255, 255)):
+        def sun_flare(image, flare_center=-1, angle=-1, no_of_flare_circles=3,
+                      src_radius=100, src_color=(255, 255, 255)):
             def flare_source(image, point, radius, src_color):
                 overlay = image.copy()
                 output = image.copy()
@@ -579,19 +607,21 @@ class SunFlare(Operation):
                     r = random.randint(0, len(x) - 1)
                     rad = random.randint(1, imshape[0] // 100 - 2)
                     cv2.circle(
-                            overlay, 
-                            (int(x[r]), int(y[r])), 
-                            rad**3, 
-                            (random.randint(max(src_color[0] - 50, 0), src_color[0]), 
-                            random.randint(max(src_color[1] - 50, 0), src_color[1]), 
-                            random.randint(max(src_color[2] - 50, 0), src_color[2])), 
-                            - 1
-                            )
-                    cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)
+                        overlay,
+                        (int(x[r]), int(y[r])),
+                        rad**3,
+                        (random.randint(max(src_color[0] - 50, 0), src_color[0]),
+                         random.randint(
+                             max(src_color[1] - 50, 0), src_color[1]),
+                         random.randint(max(src_color[2] - 50, 0), src_color[2])),
+                        - 1
+                    )
+                    cv2.addWeighted(
+                        overlay, alpha, output, 1 - alpha, 0, output)
                 output = flare_source(
-                            output, (int(
-                            flare_center[0]), int(
-                            flare_center[1])), src_radius, src_color)
+                    output, (int(
+                        flare_center[0]), int(
+                        flare_center[1])), src_radius, src_color)
                 return output
 
             image = np.array(image, dtype=np.uint8)
