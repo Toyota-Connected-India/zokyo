@@ -19,6 +19,7 @@ import uuid
 from abc import ABC, abstractclassmethod
 import xml.etree.ElementTree as ET
 from .data import SphinxData
+import cv2
 
 
 class AbstractBuilder(ABC):
@@ -241,12 +242,18 @@ class Builder(AbstractBuilder):
                         current_tag = elem.text
                     if elem.tag == "bndbox":
                         for coord in elem:
-                            bnd_dict[coord.tag] = float(coord.text)
+                            bnd_dict[coord.tag] = int(coord.text)
                         class_bnd_box["classes"][current_tag].append(bnd_dict)
         return class_bnd_box
 
     def _generate_mask_for_annotation(self, annotation):
-            class_data_dict = self._get_annotations(annotation)
+            current_image_class_data_dict = self._get_annotations(annotation)
+            annotation_mask = np.zeros((current_image_class_data_dict["size"]["height"], current_image_class_data_dict["size"]["width"], current_image_class_data_dict["size"]["depth"]), dtype=np.uint8)
+            for cat in current_image_class_data_dict["classes"].keys():
+                for bnd in current_image_class_data_dict["classes"][cat]:
+                    color = (current_image_class_data_dict[cat], current_image_class_data_dict[cat], current_image_class_data_dict[cat])
+                    annotation_mask = cv2.rectangle(annotation_mask, (bnd["xmin"],bnd["ymin"]), (bnd["xmax"],bnd["ymax"]), color, -1)
+            return annotation_mask
 
     def _add_operation(self, pipeline):
         '''
