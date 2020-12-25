@@ -519,7 +519,7 @@ class MotionBlur(Operation):
         self.blurness = args.blurness
 
     def perform_operation(self, images):
-        pass
+        raise NotImplementedError("Motionblur not implemented")
 
 
 class FogScene(Operation):
@@ -530,7 +530,7 @@ class FogScene(Operation):
         self.fogness = args.fogness
 
     def perform_operation(self, images):
-        pass
+        raise NotImplementedError("FogScene not implemented")
 
 
 class SunFlare(Operation):

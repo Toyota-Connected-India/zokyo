@@ -448,8 +448,8 @@ class Builder(AbstractBuilder):
 
         else:
             if self.setting_generator_params:
-                images = self._load_entities(self.data_len)
-                pipeline = DataPipeline(images=images)
+                entities = self._load_entities(data_path_list)
+                pipeline = DataPipeline(data_dictionary=entities)
                 pipeline = self._add_operation(pipeline)
                 images = pipeline.sample(self.sample)
                 if not infinite_generator:
@@ -492,4 +492,4 @@ class Builder(AbstractBuilder):
                     break
 
     def get_keras_generator(self, batch_size=None):
-        pass
+        raise NotImplementedError("Keras generator not implemented")
