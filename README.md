@@ -62,25 +62,51 @@ Sample Configuration json for sphinx
 
 ```
 {
-    "input_dir" : "tests/images",
-    "mask_dir" : "tests/masks",
-    "output_dir": "tests/output",
-    "sample" : 6,
-    "multi_threaded" : false,
-    "batch_ingestion": false,
-    "run_all" : false,
-    "operations": [
-        {
-            "operation": "EqualizeScene",
-            "operation_module" : "sphinx.augmentation",
-            "args": {
-                "probability": 1,
-                "is_mask": true,
-                "label": 7
-              }
+            "input_dir" : "images",
+            "output_dir" : "output",
+            "annotation_dir" : "annotations",
+            "annotation_format" : "pascal_voc",
+            "mask_dir" : "mask"
+            "sample" : 5000,
+            "multi_threaded" : true,
+            "run_all" : false,
+            "batch_ingestion": true,
+            "internal_batch": 20,
+            "save_annotation_mask" : false,
+            "operations":[
+                {
+                    "operation": "DarkenScene",
+                    "operation_module" : "sphinx.augmentation",
+                    "args": {
+                        "probability": 0.7,
+                        "darkness" : 0.5,
+                        "is_mask" : true,
+                        "mask_label" : 2,
+                        "is_annotation" : true,
+                        "annotation_label : 1
+                    }
+                },
+                {
+                    "operation": "Equalize",
+                    "operation_module" : "sphinx.augmentation",
+                    "args": {
+                        "probability": 0.5,
+                        "is_mask" : true,
+                        "label" : 2
+                    }
+                },
+                {
+                    "operation": "RadialLensDistortion",
+                    "operation_module" : "sphinx.augmentation",
+                    "args": {
+                        "probability": 0.5,
+                        "is_annotation" : true,
+                        "distortiontype" : "NegativeBarrel",
+                        "is_mask" : true,
+                    }
+                }
+            ]
         }
-    ]
-}
 ```
 
 ```
