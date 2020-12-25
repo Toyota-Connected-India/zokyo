@@ -2,8 +2,8 @@ import numpy as np
 from xml.etree import ElementTree
 
 class SphinxData(object):    
-    image: np.ndarray
-    mask: np.ndarray
-    annotation_mask: np.ndarray
-    annotation: ElementTree
+    image: np.ndarray = None
+    mask: np.ndarray = None
+    annotation_mask: np.ndarray = None
+    annotation: ElementTree = None
         

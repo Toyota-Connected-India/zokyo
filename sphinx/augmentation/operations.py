@@ -102,7 +102,7 @@ class DarkenScene(Operation):
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
-                    entities.image = darken(entities.image)
+                    entities.image = Image.fromarray(darken(entities.image))
                     return entities
                 else:
                     image = entities.image
@@ -113,7 +113,7 @@ class DarkenScene(Operation):
 
             if self.args.is_annotation is True:
                 if self.args.annotation_label is None:
-                    entities.image = darken(entities.image)
+                    entities.image = Image.fromarray(darken(entities.image))
                     return entities
                 else:
                     image = entities.image
@@ -123,7 +123,7 @@ class DarkenScene(Operation):
                     return entities
 
             if not self.is_mask and not self.is_annotation:
-                entities.image = darken(entities.image)
+                entities.image = Image.fromarray(darken(entities.image))
                 return entities
 
         return do(entities)
@@ -159,7 +159,7 @@ class BrightenScene(Operation):
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
-                    entities.image = brighten(entities.image)
+                    entities.image = Image.fromarray(brighten(entities.image))
                     return entities
                 else:
                     image = entities.image
@@ -170,7 +170,7 @@ class BrightenScene(Operation):
 
             if self.args.is_annotation is True:
                 if self.args.annotation_label is None:
-                    entities.image = brighten(entities.image)
+                    entities.image = Image.fromarray(brighten(entities.image))
                     return entities
                 else:
                     image = entities.image
@@ -180,7 +180,7 @@ class BrightenScene(Operation):
                     return entities
 
             if not self.is_mask and not self.is_annotation:
-                entities.image = brighten(entities.image)
+                entities.image = Image.fromarray(brighten(entities.image))
                 return entities
 
         return do(entities)
@@ -214,18 +214,18 @@ class RandomBrightness(Operation):
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
-                    entities.image = random_brighten(entities.image)
+                    entities.image = Image.fromarray(random_brighten(entities.image))
                     return entities
                 else:
                     image = entities.image
                     image_mask = entities.mask
                     image = apply_augmentation(image, image_mask, self.args.mask_label, random_brighten)
-                    entities.image = Image.fromarray(image)
+                    entities.image = Image.fromarray(Image.fromarray(image))
                     return entities
 
             if self.args.is_annotation is True:
                 if self.args.annotation_label is None:
-                    entities.image = random_brighten(entities.image)
+                    entities.image = Image.fromarray(random_brighten(entities.image))
                     return entities
                 else:
                     image = entities.image
@@ -235,7 +235,7 @@ class RandomBrightness(Operation):
                     return entities
 
             if not self.is_mask and not self.is_annotation:
-                entities.image = random_brighten(entities.image)
+                entities.image = Image.fromarray(random_brighten(entities.image))
                 return entities
 
         return do(entities)
@@ -264,7 +264,7 @@ class SnowScene(Operation):
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
-                    entities.image = snow(entities.image)
+                    entities.image = Image.fromarray(snow(entities.image))
                     return entities
                 else:
                     image = entities.image
@@ -275,7 +275,7 @@ class SnowScene(Operation):
 
             if self.args.is_annotation is True:
                 if self.args.annotation_label is None:
-                    entities.image = snow(entities.image)
+                    entities.image = Image.fromarray(snow(entities.image))
                     return entities
                 else:
                     image = entities.image
@@ -285,7 +285,7 @@ class SnowScene(Operation):
                     return entities
 
             if not self.is_mask and not self.is_annotation:
-                entities.image = snow(entities.image)
+                entities.image = Image.fromarray(snow(entities.image))
                 return entities
 
         return do(entities)
@@ -322,8 +322,8 @@ class RadialLensDistortion(Operation):
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
-                    entities.image = radial_distort(entities.image)
-                    entities.mask = radial_distort(entities.mask)
+                    entities.image = Image.fromarray(radial_distort(entities.image))
+                    entities.mask = Image.fromarray(radial_distort(entities.mask))
                     return entities
                 else:
                     image = entities.image
@@ -334,8 +334,8 @@ class RadialLensDistortion(Operation):
 
             if self.args.is_annotation is True:
                 if self.args.annotation_label is None:
-                    entities.image = radial_distort(entities.image)
-                    entities.annotation_mask = radial_distort(entities.annotation_mask)
+                    entities.image = Image.fromarray(radial_distort(entities.image))
+                    entities.annotation_mask = Image.fromarray(radial_distort(entities.annotation_mask))
                     return entities
                 else:
                     image = entities.image
@@ -345,7 +345,7 @@ class RadialLensDistortion(Operation):
                     return entities
 
             if not self.is_mask and not self.is_annotation:
-                entities.image = radial_distort(entities.image)
+                entities.image = Image.fromarray(radial_distort(entities.image))
                 return entities
 
         return do(entities)
@@ -373,8 +373,8 @@ class TangentialLensDistortion(Operation):
         def do(entities):
             if self.args.is_mask is True:
                 if self.args.mask_label is None:
-                    entities.image = tangential_distort(entities.image)
-                    entities.mask = tangential_distort(entities.mask)
+                    entities.image = Image.fromarray(tangential_distort(entities.image))
+                    entities.mask = Image.fromarray(tangential_distort(entities.mask))
                     return entities
                 else:
                     image = entities.image
@@ -385,8 +385,8 @@ class TangentialLensDistortion(Operation):
 
             if self.args.is_annotation is True:
                 if self.args.annotation_label is None:
-                    entities.image = tangential_distort(entities.image)
-                    entities.annotation_mask = tangential_distort(entities.annotation_mask)
+                    entities.image = Image.fromarray(tangential_distort(entities.image))
+                    entities.annotation_mask = Image.fromarray(tangential_distort(entities.annotation_mask))
                     return entities
                 else:
                     image = entities.image
@@ -396,7 +396,7 @@ class TangentialLensDistortion(Operation):
                     return entities
 
             if not self.is_mask and not self.is_annotation:
-                entities.image = tangential_distort(entities.image)
+                entities.image = Image.fromarray(tangential_distort(entities.image))
                 return entities
 
         return do(entities)
@@ -504,7 +504,7 @@ class RainScene(Operation):
             return image_rgb
 
         def do(entities):
-            entities.image = rain(entities.image)
+            entities.image = Image.fromarray(rain(entities.image))
             return entities
 
         return do(entities)
@@ -616,7 +616,7 @@ class SunFlare(Operation):
             return image_RGB
 
         def do(entities):
-            entities.image = sun_flare(entities.image)
+            entities.image = Image.fromarray(sun_flare(entities.image))
             return entities
 
         return do(entities)
