@@ -6,4 +6,3 @@ class SphinxData(object):
     mask: np.ndarray = None
     annotation_mask: np.ndarray = None
     annotation: ElementTree = None
-        

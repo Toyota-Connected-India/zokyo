@@ -375,7 +375,6 @@ class Builder(AbstractBuilder):
         '''
             TODO: Parallelize saving the images to disk
         '''
-        print(len(entities))
         for ets in entities:
             filename = str(uuid.uuid4())
             ets.image.save(join(self.output_dir,"images") +"/{}.png".format(filename))

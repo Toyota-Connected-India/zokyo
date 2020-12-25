@@ -30,7 +30,7 @@ class DataPipeline(object):
                 if r <= operation.probability:
                     entities_to_yield = operation.perform_operation(entities_to_yield)
             batch.append(entities_to_yield)
-            return batch
+        return batch
 
     def sample(self, n):
         batch = []
@@ -42,4 +42,4 @@ class DataPipeline(object):
                 if r <= operation.probability:
                     entities_to_return = operation.perform_operation(entities_to_return)
             batch.append(entities_to_return)
-            return batch
+        return batch
