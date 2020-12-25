@@ -105,7 +105,7 @@ class Builder(AbstractBuilder):
             raise FileNotFoundError("{} not found".format(config_json))
 
         self.batch_size = None
-        self._extension_list = ["png", "jpg", "jpeg", "bmp"]
+        self._image_extension_list = ["png", "jpg", "jpeg", "bmp"]
 
         with open(config_json) as config_file:
             self.config = json.load(config_file)
@@ -251,7 +251,7 @@ class Builder(AbstractBuilder):
             annotation_mask = np.zeros((current_image_class_data_dict["size"]["height"], current_image_class_data_dict["size"]["width"], current_image_class_data_dict["size"]["depth"]), dtype=np.uint8)
             for cat in current_image_class_data_dict["classes"].keys():
                 for bnd in current_image_class_data_dict["classes"][cat]:
-                    color = (current_image_class_data_dict[cat], current_image_class_data_dict[cat], current_image_class_data_dict[cat])
+                    color = (self.class_dictionary[cat], self.class_dictionary[cat], self.class_dictionary[cat])
                     annotation_mask = cv2.rectangle(annotation_mask, (bnd["xmin"],bnd["ymin"]), (bnd["xmax"],bnd["ymax"]), color, -1)
             return annotation_mask
 
@@ -299,23 +299,28 @@ class Builder(AbstractBuilder):
             mask_list = os.listdir(self.mask_dir)
             mask_list.sort()
             for image, mask in zip(image_list, mask_list):
-                image_mask_dict = {
-                    "image" : join(self.input_dir, image),
-                    "mask"  : join(self.mask_dir, mask),
-                    "annotation" : None
-                }
-                _image_mask_pair.append(image_mask_dict)
+                if image.split('.')[-1] in self._image_extension_list and \
+                    mask.split('.')[-1] in self._image_extension_list:
+                    image_mask_dict = {
+                        "image" : join(self.input_dir, image),
+                        "mask"  : join(self.mask_dir, mask),
+                        "annotation" : None
+                    }
+                    _image_mask_pair.append(image_mask_dict)
 
         if "annotation_dir" in self.__dict__.keys():
             annotation_list = os.listdir(self.annotation_dir)
             annotation_list.sort()
             for image, annotation in zip(image_list, annotation_list):
-                image_annotation_dict = {
-                    "image" : join(self.input_dir, image),
-                    "mask"  : None,
-                    "annotation"  : join(self.annotation_dir, annotation)
-                }
-                _image_mask_pair.append(image_annotation_dict)
+                if image.split('.')[-1] in self._image_extension_list and \
+                        annotation.split('.')[-1] in ["xml"]:
+                    
+                    image_annotation_dict = {
+                        "image" : join(self.input_dir, image),
+                        "mask"  : None,
+                        "annotation"  : join(self.annotation_dir, annotation)
+                    }
+                    _image_mask_pair.append(image_annotation_dict)
 
         if "mask_dir" in self.__dict__.keys() and "annotation_dir" in self.__dict__.keys():
             mask_list = os.listdir(self.mask_dir)
@@ -323,13 +328,16 @@ class Builder(AbstractBuilder):
             mask_list.sort()
             annotation_list.sort()
             for image, mask, annotation in zip(image_list, mask_list, annotation_list):
-                image_mask_annotation_dict = {
-                    "image" : join(self.input_dir, image),
-                    "mask"  : join(self.mask_dir, mask),
-                    "annotation"  : join(self.annotation_dir, annotation)
-                }
-                _image_mask_pair.append(image_mask_annotation_dict)
-
+                if image.split('.')[-1] in self._image_extension_list and \
+                    mask.split('.')[-1] in self._image_extension_list and \
+                        annotation.split('.')[-1] in ["xml"]:
+                    image_mask_annotation_dict = {
+                        "image" : join(self.input_dir, image),
+                        "mask"  : join(self.mask_dir, mask),
+                        "annotation"  : join(self.annotation_dir, annotation)
+                    }
+                    _image_mask_pair.append(image_mask_annotation_dict)
+        
         return _image_mask_pair
 
     def _image_list_factory(self):
@@ -381,7 +389,7 @@ class Builder(AbstractBuilder):
             if ets.mask is not None:
                 ets.mask.save(join(self.output_dir,"masks") +"/{}.png".format(filename))
             if ets.annotation is not None:
-                ets.mask.write(open(join(self.output_dir,"annotation") +"/{}.xml".format(filename), 'a'), encoding='unicode')
+                ets.annotation.write(open(join(self.output_dir,"annotations") +"/{}.xml".format(filename), 'a'), encoding='unicode')
             if self.save_annotation_mask:
                 ets.annotation_mask.save(join(self.output_dir,"annotation_mask") +"/{}.png".format(filename))
 
