@@ -196,7 +196,7 @@ class Builder(AbstractBuilder):
             self.save_annotation_mask = False
 
         if "save_annotation_mask" in self.config.keys(
-        ) and self.config["save_annotation_mask"] == True:
+        ) and self.config["save_annotation_mask"] is True:
             os.mkdir(join(self.output_dir, "annotation_mask"))
 
         self.setting_generator_params = False
