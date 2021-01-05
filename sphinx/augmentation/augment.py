@@ -477,10 +477,10 @@ class Builder(AbstractBuilder):
                         entites = self._load_entities(data_list)
                         pipeline = DataPipeline(entities=entites)
                         pipeline = self._add_operation(pipeline=pipeline)
-                        images = pipeline.sample_for_generator(
+                        result_entities = pipeline.sample_for_generator(
                             batch_size=self.batch_size)
                         del pipeline
-                        yield images
+                        yield result_entities
             else:
                 raise Exception(
                     "Did you call calculate_and_set_generator_params method ?")
@@ -490,16 +490,16 @@ class Builder(AbstractBuilder):
                 entities = self._load_entities(data_path_list)
                 pipeline = DataPipeline(entities=entities)
                 pipeline = self._add_operation(pipeline)
-                images = pipeline.sample(self.sample)
+                result_entities = pipeline.sample(self.sample)
                 if not infinite_generator:
                     for i in range(self.sample_factor):
-                        yield images[i:(i + 1) * (self.batch_size + 1) - 1]
+                        yield result_entities[i:(i + 1) * (self.batch_size + 1) - 1]
                 else:
                     while True:
                         indexlist = random.sample(
                             range(0, self.sample), self.batch_size)
-                        ims = [images[i] for i in indexlist]
-                        yield ims
+                        results = [result_entities[i] for i in indexlist]
+                        yield results
 
             else:
                 raise Exception(
