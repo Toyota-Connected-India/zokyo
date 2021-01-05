@@ -533,4 +533,4 @@ class Builder(AbstractBuilder):
                     break
 
     def get_keras_generator(self, batch_size=None):
-        raise NotImplementedError("Keras generator not implemented")
+        raise NotImplementedError("Keras generator not implemented yet")
