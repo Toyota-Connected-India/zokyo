@@ -8,7 +8,6 @@ import json
 import importlib
 import re
 
-from jedi.plugins.stdlib import StaticMethodObject
 from .pipeline import DataPipeline
 from PIL import Image
 from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented, ConfigurationError
