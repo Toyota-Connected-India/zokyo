@@ -19,6 +19,7 @@ from abc import ABC, abstractclassmethod
 import xml.etree.ElementTree as ET
 from .data import SphinxData
 import cv2
+from .utils import change_pascal_annotation
 
 
 class AbstractBuilder(ABC):
@@ -404,6 +405,8 @@ class Builder(AbstractBuilder):
                         "masks") +
                     "/{}.png".format(filename))
             if ets.annotation is not None:
+                image_dir = join(self.output_dir, "images")
+                ets.annotation = change_pascal_annotation(ets.annotation, image_dir, filename=filename+".png")
                 ets.annotation.write(
                     open(
                         join(
@@ -509,7 +512,6 @@ class Builder(AbstractBuilder):
         '''
             Process the files and save to disk
         '''
-
         if not self.batch_ingestion:
             data_path_list = self._check_and_populate_path()
             entities = self._load_entities(data_path_list)
@@ -517,7 +519,6 @@ class Builder(AbstractBuilder):
             pipeline = self._add_operation(pipeline)
             result_entities = pipeline.sample(self.sample)
             self._save_entities_to_disk(result_entities)
-
         else:
             self.calculate_and_set_generator_params(batch_size=batch_save_size)
             image_generator = self.process_and_generate(
