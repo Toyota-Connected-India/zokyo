@@ -14,6 +14,7 @@ import warnings
 import math
 from .utils import apply_augmentation
 
+
 class Operation(object):
     def __init__(self, probability):
         self.probability = probability

@@ -225,7 +225,7 @@ class Builder(AbstractBuilder):
                 'save_annotation_mask',
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
-    
+
     def get_builder_logger(self):
         return self.logger
 
@@ -414,7 +414,8 @@ class Builder(AbstractBuilder):
                     "/{}.png".format(filename))
             if ets.annotation is not None:
                 image_dir = join(self.output_dir, "images")
-                ets.annotation = change_pascal_annotation(ets.annotation, image_dir, filename=filename+".png")
+                ets.annotation = change_pascal_annotation(
+                    ets.annotation, image_dir, filename=filename + ".png")
                 ets.annotation.write(
                     open(
                         join(
@@ -439,17 +440,21 @@ class Builder(AbstractBuilder):
                     "Provide batch size or internal batch as batch_ingestion mode is set to \"True\"")
 
             elif batch_size is None:
-                self.sample_factor = math.ceil(self.data_len / self.internal_batch)
+                self.sample_factor = math.ceil(
+                    self.data_len / self.internal_batch)
                 self.batch_size = math.ceil(self.sample / self.sample_factor)
 
             elif self.internal_batch is None:
                 self.sample_factor = math.ceil(self.sample / batch_size)
-                self.internal_batch = math.ceil(self.data_len / self.sample_factor)
+                self.internal_batch = math.ceil(
+                    self.data_len / self.sample_factor)
                 self.batch_size = batch_size
 
             else:
-                self.logger.info("\"Sample\" wont be taken into consideration if both internal_batch and batch_size is given")
-                self.sample_factor = math.ceil(self.data_len / self.internal_batch)
+                self.logger.info(
+                    "\"Sample\" wont be taken into consideration if both internal_batch and batch_size is given")
+                self.sample_factor = math.ceil(
+                    self.data_len / self.internal_batch)
                 self.batch_size = batch_size
 
         else:
@@ -479,7 +484,9 @@ class Builder(AbstractBuilder):
                         data_list = data_path_list[i:(i + self.internal_batch)]
                         entities = self._load_entities(data_list)
                         self.logger.info("val : {}".format(i))
-                        self.logger.info("Entities num: {}".format(len(entities)))
+                        self.logger.info(
+                            "Entities num: {}".format(
+                                len(entities)))
                         pipeline = DataPipeline(entities=entities)
                         pipeline = self._add_operation(pipeline=pipeline)
                         result_entities = pipeline.sample_for_generator(

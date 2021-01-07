@@ -11,6 +11,7 @@ def apply_augmentation(image, mask, label, function):
     image[mask == label] = augmented_segment[mask == label]
     return image
 
+
 def change_pascal_annotation(annotation, image_dir, filename):
     root = annotation.getroot()
     for child in root:

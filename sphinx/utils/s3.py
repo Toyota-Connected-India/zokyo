@@ -1,5 +1,6 @@
 import os
 
+
 def _find_latest_dir(s3_bucket, dir_path):
     """
     Finds the latest model directory by using the directory name. Since
