@@ -20,6 +20,9 @@ import xml.etree.ElementTree as ET
 from .data import SphinxData
 import cv2
 from .utils import change_pascal_annotation
+from ..utils.logging import get_logger
+import logging
+import math
 
 
 class AbstractBuilder(ABC):
@@ -53,16 +56,16 @@ class Builder(AbstractBuilder):
         Builder class to create augmentor Pipeline object
         Config file is a json map used to define Operations and their properties
         {
-            "input_dir" : "images",
-            "output_dir" : "output",
-            "annotation_dir" : "annotations",
-            "annotation_format" : "pascal_voc",
-            "mask_dir" : "mask"
-            "sample" : 5000,
-            "multi_threaded" : true,
+            "input_dir" : "tests/images",
+            "mask_dir" : "tests/masks",
+            "output_dir": "tests/output",
+            "annotation_dir": "tests/annotation",
+            "annotation_format": "pascal_voc",
+            "sample" : 50,
+            "multi_threaded" : false,
             "run_all" : false,
             "batch_ingestion": true,
-            "internal_batch": 20,
+            "internal_batch": 5,
             "save_annotation_mask" : false,
             "operations":[
                 {
@@ -74,11 +77,11 @@ class Builder(AbstractBuilder):
                         "is_mask" : true,
                         "mask_label" : 2,
                         "is_annotation" : true,
-                        "annotation_label : 1
+                        "annotation_label" : 1
                     }
                 },
                 {
-                    "operation": "Equalize",
+                    "operation": "EqualizeScene",
                     "operation_module" : "sphinx.augmentation",
                     "args": {
                         "probability": 0.5,
@@ -93,7 +96,7 @@ class Builder(AbstractBuilder):
                         "probability": 0.5,
                         "is_annotation" : true,
                         "distortiontype" : "NegativeBarrel",
-                        "is_mask" : true,
+                        "is_mask" : true
                     }
                 }
             ]
@@ -106,6 +109,7 @@ class Builder(AbstractBuilder):
 
         self.batch_size = None
         self._image_extension_list = ["png", "jpg", "jpeg", "bmp"]
+        self.logger = get_logger("Sphinx Builder", level=logging.INFO)
 
         with open(config_json) as config_file:
             self.config = json.load(config_file)
@@ -220,6 +224,9 @@ class Builder(AbstractBuilder):
                 'save_annotation_mask',
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
+    
+    def get_builder_logger(self):
+        return self.logger
 
     def _get_annotations(self, annotation):
         root = annotation.getroot()
@@ -431,16 +438,17 @@ class Builder(AbstractBuilder):
                     "Provide batch size or internal batch as batch_ingestion mode is set to \"True\"")
 
             elif batch_size is None:
-                self.sample_factor = self.data_len // self.internal_batch
-                self.batch_size = self.sample // self.sample_factor
+                self.sample_factor = math.ceil(self.data_len / self.internal_batch)
+                self.batch_size = math.ceil(self.sample / self.sample_factor)
 
             elif self.internal_batch is None:
-                self.sample_factor = self.sample // batch_size
-                self.internal_batch = self.data_len // self.sample_factor
+                self.sample_factor = math.ceil(self.sample / batch_size)
+                self.internal_batch = math.ceil(self.data_len / self.sample_factor)
                 self.batch_size = batch_size
 
             else:
-                self.sample_factor = self.data_len // self.internal_batch
+                self.logger.info("\"Sample\" wont be taken into consideration if both internal_batch and batch_size is given")
+                self.sample_factor = math.ceil(self.data_len / self.internal_batch)
                 self.batch_size = batch_size
 
         else:
@@ -456,14 +464,19 @@ class Builder(AbstractBuilder):
         '''
 
         data_path_list = self._check_and_populate_path()
+        self.logger.info("internal batch : {}".format(self.internal_batch))
+        self.logger.info("sample factor : {}".format(self.sample_factor))
+        self.logger.info("batch size : {}".format(self.batch_size))
 
         if self.batch_ingestion:
             if self.setting_generator_params:
                 if not infinite_generator:
                     for i in range(self.sample_factor):
                         data_list = data_path_list[i:(
-                            i + 1) * (self.internal_batch + 1) - 1]
+                            i + self.internal_batch)]
                         entities = self._load_entities(data_list)
+                        self.logger.info("val : {}".format(i))
+                        self.logger.info("Entities num: {}".format(len(entities)))
                         pipeline = DataPipeline(entities=entities)
                         pipeline = self._add_operation(pipeline=pipeline)
                         result_entities = pipeline.sample_for_generator(
@@ -496,7 +509,7 @@ class Builder(AbstractBuilder):
                 result_entities = pipeline.sample(self.sample)
                 if not infinite_generator:
                     for i in range(self.sample_factor):
-                        yield result_entities[i:(i + 1) * (self.batch_size + 1) - 1]
+                        yield result_entities[i:(i + self.batch_size)]
                 else:
                     while True:
                         indexlist = random.sample(

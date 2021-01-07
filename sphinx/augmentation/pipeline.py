@@ -1,6 +1,6 @@
 from PIL import Image
 import numpy as np
-from Augmentor.Operations import Operation
+from .operations import Operation
 import random
 from tqdm import tqdm
 import os

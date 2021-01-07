@@ -3,8 +3,6 @@
 # ashok.ramadass@toyotaconnected.com, ]
 
 import cv2
-from Augmentor.Operations import Operation
-
 from numpy.lib import histograms
 from ..utils.CustomExceptions import CoefficientNotinRangeError, InvalidImageArrayError, CrucialValueNotFoundError
 from ..utils.misc import from_float, to_float
@@ -15,6 +13,16 @@ from random import randint
 import warnings
 import math
 from .utils import apply_augmentation
+
+class Operation(object):
+    def __init__(self, probability):
+        self.probability = probability
+
+    def __str__(self):
+        return self.__class__.__name__
+
+    def perform_operation(self, images):
+        raise RuntimeError("Illegal call to base class.")
 
 
 class ArgsClass(object):
@@ -260,8 +268,8 @@ class RandomBrightness(Operation):
 
 class SnowScene(Operation):
     def __init__(self, **kwargs):
-        args = ArgsClass(**kwargs)
-        Operation.__init__(self, args.probability)
+        self.args = ArgsClass(**kwargs)
+        Operation.__init__(self, self.args.probability)
 
     def perform_operation(self, entities):
         def snow(image):
@@ -312,18 +320,18 @@ class SnowScene(Operation):
 
 class RadialLensDistortion(Operation):
     def __init__(self, **kwargs):
-        args = ArgsClass(**kwargs)
-        Operation.__init__(self, args.probability)
+        self.args = ArgsClass(**kwargs)
+        Operation.__init__(self, self.args.probability)
 
-        if args.distortiontype not in ["NegativeBarrel", "PinCushion"]:
+        if self.args.distortiontype not in ["NegativeBarrel", "PinCushion"]:
             raise ValueError(
                 "distortiontype must be one of ({}). Got: {}".format(
                     ["NegativeBarrel", "PinCushion"], args.rain_type)
             )
 
-        if (args.distortiontype == "NegativeBarrel"):
+        if (self.args.distortiontype == "NegativeBarrel"):
             self.radialk1 = -1 * randint(0, 10) / 10
-        elif (args.distortiontype != "PinCushion"):
+        elif (self.args.distortiontype != "PinCushion"):
             self.radialk1 = randint(0, 10) / 10
 
     def perform_operation(self, entities):
@@ -379,8 +387,8 @@ class RadialLensDistortion(Operation):
 
 class TangentialLensDistortion(Operation):
     def __init__(self, **kwargs):
-        args = ArgsClass(**kwargs)
-        Operation.__init__(self, args.probability)
+        self.args = ArgsClass(**kwargs)
+        Operation.__init__(self, self.args.probability)
         self.tangentialP1 = randint(-10, 10) / 100
         self.tangentialP2 = randint(-10, 10) / 100
 
@@ -545,11 +553,11 @@ class RainScene(Operation):
 
 class MotionBlur(Operation):
     def __init__(self, **kwargs):
-        args = ArgsClass(**kwargs)
-        if 'blurness' not in args.__dict__.keys():
+        self.args = ArgsClass(**kwargs)
+        if 'blurness' not in self.args.__dict__.keys():
             raise CrucialValueNotFoundError(
                 "MotionBlur", "blurness coefficient")
-        self.blurness = args.blurness
+        self.blurness = self.args.blurness
 
     def perform_operation(self, images):
         raise NotImplementedError("Motionblur not implemented")
@@ -557,10 +565,10 @@ class MotionBlur(Operation):
 
 class FogScene(Operation):
     def __init__(self, **kwargs):
-        args = ArgsClass(**kwargs)
-        if 'fogness' not in args.__dict__.keys():
+        self.args = ArgsClass(**kwargs)
+        if 'fogness' not in self.args.__dict__.keys():
             raise CrucialValueNotFoundError("FogScene", "Fogness coefficient")
-        self.fogness = args.fogness
+        self.fogness = self.args.fogness
 
     def perform_operation(self, images):
         raise NotImplementedError("FogScene not implemented")
@@ -568,8 +576,8 @@ class FogScene(Operation):
 
 class SunFlare(Operation):
     def __init__(self, **kwargs):
-        args = ArgsClass(**kwargs)
-        Operation.__init__(self, args.probability)
+        self.args = ArgsClass(**kwargs)
+        Operation.__init__(self, self.args.probability)
 
     def perform_operation(self, entities):
         def sun_flare(image, flare_center=-1, angle=-1, no_of_flare_circles=3,
