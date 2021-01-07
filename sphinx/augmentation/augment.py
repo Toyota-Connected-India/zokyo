@@ -23,6 +23,7 @@ from .utils import change_pascal_annotation
 from ..utils.logging import get_logger
 import logging
 import math
+from itertools import cycle
 
 
 class AbstractBuilder(ABC):
@@ -455,7 +456,7 @@ class Builder(AbstractBuilder):
             if batch_size is None:
                 raise ValueError("Batch size cannot be none !!")
             self.batch_size = batch_size
-            self.sample_factor = self.sample // self.batch_size
+            self.sample_factor = math.ceil(self.sample / self.batch_size)
 
     def process_and_generate(self, infinite_generator=False):
         '''
@@ -471,9 +472,11 @@ class Builder(AbstractBuilder):
         if self.batch_ingestion:
             if self.setting_generator_params:
                 if not infinite_generator:
-                    for i in range(self.sample_factor):
-                        data_list = data_path_list[i:(
-                            i + self.internal_batch)]
+                    sample_factor_count = 0
+                    for i in cycle(range(self.data_len)):
+                        if sample_factor_count == self.sample_factor:
+                            break
+                        data_list = data_path_list[i:(i + self.internal_batch)]
                         entities = self._load_entities(data_list)
                         self.logger.info("val : {}".format(i))
                         self.logger.info("Entities num: {}".format(len(entities)))
@@ -481,6 +484,7 @@ class Builder(AbstractBuilder):
                         pipeline = self._add_operation(pipeline=pipeline)
                         result_entities = pipeline.sample_for_generator(
                             batch_size=self.batch_size)
+                        sample_factor_count += 1
                         del pipeline
                         yield result_entities
                 else:

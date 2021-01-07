@@ -14,11 +14,14 @@ pipeline.calculate_and_set_generator_params(batch_size=2)
 gen = pipeline.process_and_generate()
 
 i = 0
+total_entities = 0
 
 while True:
     try:
         res = next(gen)
-        print(i, len(res))
-        i += 1
+        total_entities += len(res)
     except StopIteration:
         break
+
+print(total_entities)
+
