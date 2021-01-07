@@ -25,7 +25,7 @@ class OperationsTest(unittest.TestCase):
 
     def test_brighten_scene(self):
         builder = Builder("tests/brighten_scene_test_config.json")
-        builder.process_and_save()
+        builder.process_and_save(internal_batch_size=2)
         assert len(os.listdir('tests/output/images')) == 6
         assert len(os.listdir('tests/output/masks')) == 6
         shutil.rmtree('tests/output/images')

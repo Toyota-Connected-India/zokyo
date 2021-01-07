@@ -195,9 +195,6 @@ class Builder(AbstractBuilder):
                     raise NotImplementedError(
                         "Annotation format not supported, pascal_voc is the only supported format")
 
-        if "internal_batch" not in self.config.keys():
-            self.internal_batch = None
-
         if "save_annotation_mask" not in self.config.keys():
             self.save_annotation_mask = False
 
@@ -431,20 +428,22 @@ class Builder(AbstractBuilder):
                         "annotation_mask") +
                     "/{}.png".format(filename))
 
-    def calculate_and_set_generator_params(self, batch_size=None):
+    def calculate_and_set_generator_params(
+            self, batch_size=None, internal_batch=None):
         self.setting_generator_params = True
 
         if self.batch_ingestion:
-            if batch_size is None and self.internal_batch is None:
+            if batch_size is None and internal_batch is None:
                 raise ValueError(
                     "Provide batch size or internal batch as batch_ingestion mode is set to \"True\"")
 
             elif batch_size is None:
                 self.sample_factor = math.ceil(
-                    self.data_len / self.internal_batch)
+                    self.data_len / internal_batch)
                 self.batch_size = math.ceil(self.sample / self.sample_factor)
+                self.internal_batch = internal_batch
 
-            elif self.internal_batch is None:
+            elif internal_batch is None:
                 self.sample_factor = math.ceil(self.sample / batch_size)
                 self.internal_batch = math.ceil(
                     self.data_len / self.sample_factor)
@@ -454,8 +453,9 @@ class Builder(AbstractBuilder):
                 self.logger.info(
                     "\"Sample\" wont be taken into consideration if both internal_batch and batch_size is given")
                 self.sample_factor = math.ceil(
-                    self.data_len / self.internal_batch)
+                    self.data_len / internal_batch)
                 self.batch_size = batch_size
+                self.internal_batch = internal_batch
 
         else:
             if batch_size is None:
@@ -532,7 +532,7 @@ class Builder(AbstractBuilder):
                 raise Exception(
                     "\nDid you call calculate_and_set_generator_params method ?")
 
-    def process_and_save(self, batch_save_size=None):
+    def process_and_save(self, batch_save_size=None, internal_batch_size=None):
         '''
             Process the files and save to disk
         '''
@@ -544,7 +544,8 @@ class Builder(AbstractBuilder):
             result_entities = pipeline.sample(self.sample)
             self._save_entities_to_disk(result_entities)
         else:
-            self.calculate_and_set_generator_params(batch_size=batch_save_size)
+            self.calculate_and_set_generator_params(
+                batch_size=batch_save_size, internal_batch=internal_batch_size)
             image_generator = self.process_and_generate(
                 infinite_generator=False)
             pbar = tqdm(total=self.sample_factor)

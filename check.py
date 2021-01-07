@@ -10,7 +10,7 @@ except:
     pass
 
 pipeline = Builder(config_json="tests/test_config.json")
-pipeline.calculate_and_set_generator_params(batch_size=2)
+pipeline.calculate_and_set_generator_params()
 gen = pipeline.process_and_generate()
 
 i = 0
