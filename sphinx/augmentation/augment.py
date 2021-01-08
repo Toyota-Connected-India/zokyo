@@ -8,7 +8,6 @@ import json
 import importlib
 import re
 
-from jedi.plugins.stdlib import StaticMethodObject
 from .pipeline import DataPipeline
 from PIL import Image
 from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented, ConfigurationError
@@ -20,6 +19,11 @@ from abc import ABC, abstractclassmethod
 import xml.etree.ElementTree as ET
 from .data import SphinxData
 import cv2
+from .utils import change_pascal_annotation
+from ..utils.logging import get_logger
+import logging
+import math
+from itertools import cycle
 
 
 class AbstractBuilder(ABC):
@@ -53,16 +57,16 @@ class Builder(AbstractBuilder):
         Builder class to create augmentor Pipeline object
         Config file is a json map used to define Operations and their properties
         {
-            "input_dir" : "images",
-            "output_dir" : "output",
-            "annotation_dir" : "annotations",
-            "annotation_format" : "pascal_voc",
-            "mask_dir" : "mask"
-            "sample" : 5000,
-            "multi_threaded" : true,
+            "input_dir" : "tests/images",
+            "mask_dir" : "tests/masks",
+            "output_dir": "tests/output",
+            "annotation_dir": "tests/annotation",
+            "annotation_format": "pascal_voc",
+            "sample" : 50,
+            "multi_threaded" : false,
             "run_all" : false,
             "batch_ingestion": true,
-            "internal_batch": 20,
+            "internal_batch": 5,
             "save_annotation_mask" : false,
             "operations":[
                 {
@@ -74,11 +78,11 @@ class Builder(AbstractBuilder):
                         "is_mask" : true,
                         "mask_label" : 2,
                         "is_annotation" : true,
-                        "annotation_label : 1
+                        "annotation_label" : 1
                     }
                 },
                 {
-                    "operation": "Equalize",
+                    "operation": "EqualizeScene",
                     "operation_module" : "sphinx.augmentation",
                     "args": {
                         "probability": 0.5,
@@ -93,7 +97,7 @@ class Builder(AbstractBuilder):
                         "probability": 0.5,
                         "is_annotation" : true,
                         "distortiontype" : "NegativeBarrel",
-                        "is_mask" : true,
+                        "is_mask" : true
                     }
                 }
             ]
@@ -106,6 +110,7 @@ class Builder(AbstractBuilder):
 
         self.batch_size = None
         self._image_extension_list = ["png", "jpg", "jpeg", "bmp"]
+        self.logger = get_logger("Sphinx Builder", level=logging.INFO)
 
         with open(config_json) as config_file:
             self.config = json.load(config_file)
@@ -190,14 +195,11 @@ class Builder(AbstractBuilder):
                     raise NotImplementedError(
                         "Annotation format not supported, pascal_voc is the only supported format")
 
-        if "internal_batch" not in self.config.keys():
-            self.internal_batch = None
-
         if "save_annotation_mask" not in self.config.keys():
             self.save_annotation_mask = False
 
         if "save_annotation_mask" in self.config.keys(
-        ) and self.config["save_annotation_mask"] == True:
+        ) and self.config["save_annotation_mask"] is True:
             os.mkdir(join(self.output_dir, "annotation_mask"))
 
         self.setting_generator_params = False
@@ -220,6 +222,9 @@ class Builder(AbstractBuilder):
                 'save_annotation_mask',
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
+
+    def get_builder_logger(self):
+        return self.logger
 
     def _get_annotations(self, annotation):
         root = annotation.getroot()
@@ -405,6 +410,9 @@ class Builder(AbstractBuilder):
                         "masks") +
                     "/{}.png".format(filename))
             if ets.annotation is not None:
+                image_dir = join(self.output_dir, "images")
+                ets.annotation = change_pascal_annotation(
+                    ets.annotation, image_dir, filename=filename + ".png")
                 ets.annotation.write(
                     open(
                         join(
@@ -420,32 +428,40 @@ class Builder(AbstractBuilder):
                         "annotation_mask") +
                     "/{}.png".format(filename))
 
-    def calculate_and_set_generator_params(self, batch_size=None):
+    def calculate_and_set_generator_params(
+            self, batch_size=None, internal_batch=None):
         self.setting_generator_params = True
 
         if self.batch_ingestion:
-            if batch_size is None and self.internal_batch is None:
+            if batch_size is None and internal_batch is None:
                 raise ValueError(
                     "Provide batch size or internal batch as batch_ingestion mode is set to \"True\"")
 
             elif batch_size is None:
-                self.sample_factor = self.data_len // self.internal_batch
-                self.batch_size = self.sample // self.sample_factor
+                self.sample_factor = math.ceil(
+                    self.data_len / internal_batch)
+                self.batch_size = math.ceil(self.sample / self.sample_factor)
+                self.internal_batch = internal_batch
 
-            elif self.internal_batch is None:
-                self.sample_factor = self.sample // batch_size
-                self.internal_batch = self.data_len // self.sample_factor
+            elif internal_batch is None:
+                self.sample_factor = math.ceil(self.sample / batch_size)
+                self.internal_batch = math.ceil(
+                    self.data_len / self.sample_factor)
                 self.batch_size = batch_size
 
             else:
-                self.sample_factor = self.data_len // self.internal_batch
+                self.logger.info(
+                    "\"Sample\" wont be taken into consideration if both internal_batch and batch_size is given")
+                self.sample_factor = math.ceil(
+                    self.data_len / internal_batch)
                 self.batch_size = batch_size
+                self.internal_batch = internal_batch
 
         else:
             if batch_size is None:
                 raise ValueError("Batch size cannot be none !!")
             self.batch_size = batch_size
-            self.sample_factor = self.sample // self.batch_size
+            self.sample_factor = math.ceil(self.sample / self.batch_size)
 
     def process_and_generate(self, infinite_generator=False):
         '''
@@ -454,18 +470,28 @@ class Builder(AbstractBuilder):
         '''
 
         data_path_list = self._check_and_populate_path()
+        self.logger.info("internal batch : {}".format(self.internal_batch))
+        self.logger.info("sample factor : {}".format(self.sample_factor))
+        self.logger.info("batch size : {}".format(self.batch_size))
 
         if self.batch_ingestion:
             if self.setting_generator_params:
                 if not infinite_generator:
-                    for i in range(self.sample_factor):
-                        data_list = data_path_list[i:(
-                            i + 1) * (self.internal_batch + 1) - 1]
+                    sample_factor_count = 0
+                    for i in cycle(range(self.data_len)):
+                        if sample_factor_count == self.sample_factor:
+                            break
+                        data_list = data_path_list[i:(i + self.internal_batch)]
                         entities = self._load_entities(data_list)
+                        self.logger.info("val : {}".format(i))
+                        self.logger.info(
+                            "Entities num: {}".format(
+                                len(entities)))
                         pipeline = DataPipeline(entities=entities)
                         pipeline = self._add_operation(pipeline=pipeline)
                         result_entities = pipeline.sample_for_generator(
                             batch_size=self.batch_size)
+                        sample_factor_count += 1
                         del pipeline
                         yield result_entities
                 else:
@@ -478,10 +504,10 @@ class Builder(AbstractBuilder):
                         entites = self._load_entities(data_list)
                         pipeline = DataPipeline(entities=entites)
                         pipeline = self._add_operation(pipeline=pipeline)
-                        images = pipeline.sample_for_generator(
+                        result_entities = pipeline.sample_for_generator(
                             batch_size=self.batch_size)
                         del pipeline
-                        yield images
+                        yield result_entities
             else:
                 raise Exception(
                     "Did you call calculate_and_set_generator_params method ?")
@@ -491,26 +517,25 @@ class Builder(AbstractBuilder):
                 entities = self._load_entities(data_path_list)
                 pipeline = DataPipeline(entities=entities)
                 pipeline = self._add_operation(pipeline)
-                images = pipeline.sample(self.sample)
+                result_entities = pipeline.sample(self.sample)
                 if not infinite_generator:
                     for i in range(self.sample_factor):
-                        yield images[i:(i + 1) * (self.batch_size + 1) - 1]
+                        yield result_entities[i:(i + self.batch_size)]
                 else:
                     while True:
                         indexlist = random.sample(
                             range(0, self.sample), self.batch_size)
-                        ims = [images[i] for i in indexlist]
-                        yield ims
+                        results = [result_entities[i] for i in indexlist]
+                        yield results
 
             else:
                 raise Exception(
                     "\nDid you call calculate_and_set_generator_params method ?")
 
-    def process_and_save(self, batch_save_size=None):
+    def process_and_save(self, batch_save_size=None, internal_batch_size=None):
         '''
             Process the files and save to disk
         '''
-
         if not self.batch_ingestion:
             data_path_list = self._check_and_populate_path()
             entities = self._load_entities(data_path_list)
@@ -518,9 +543,9 @@ class Builder(AbstractBuilder):
             pipeline = self._add_operation(pipeline)
             result_entities = pipeline.sample(self.sample)
             self._save_entities_to_disk(result_entities)
-
         else:
-            self.calculate_and_set_generator_params(batch_size=batch_save_size)
+            self.calculate_and_set_generator_params(
+                batch_size=batch_save_size, internal_batch=internal_batch_size)
             image_generator = self.process_and_generate(
                 infinite_generator=False)
             pbar = tqdm(total=self.sample_factor)
@@ -533,4 +558,4 @@ class Builder(AbstractBuilder):
                     break
 
     def get_keras_generator(self, batch_size=None):
-        raise NotImplementedError("Keras generator not implemented")
+        raise NotImplementedError("Keras generator not implemented yet")

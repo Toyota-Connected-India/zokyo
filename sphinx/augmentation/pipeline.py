@@ -1,13 +1,14 @@
 from PIL import Image
 import numpy as np
-from Augmentor.Operations import Operation
+from .operations import Operation
 import random
 from tqdm import tqdm
+import os
 
 
 class DataPipeline(object):
-    def __init__(self, entities):
-        self.augmentor_images = entities
+    def __init__(self, entities, **kwargs):
+        self.augmentable_entities = entities
         self.operations = []
 
     def add_operation(self, operation):
@@ -24,8 +25,8 @@ class DataPipeline(object):
         batch_size = 1 if (batch_size < 1) else batch_size
         batch = []
         for _ in range(0, batch_size):
-            index = random.randint(0, len(self.augmentor_images) - 1)
-            entities_to_yield = self.augmentor_images[index]
+            index = random.randint(0, len(self.augmentable_entities) - 1)
+            entities_to_yield = self.augmentable_entities[index]
             for operation in self.operations:
                 r = round(random.uniform(0, 1), 1)
                 if r <= operation.probability:
@@ -37,8 +38,8 @@ class DataPipeline(object):
     def sample(self, n):
         batch = []
         for _ in tqdm(range(0, n)):
-            index = random.randint(0, len(self.augmentor_images) - 1)
-            entities_to_return = self.augmentor_images[index]
+            index = random.randint(0, len(self.augmentable_entities) - 1)
+            entities_to_return = self.augmentable_entities[index]
             for operation in self.operations:
                 r = round(random.uniform(0, 1), 1)
                 if r <= operation.probability:

@@ -1,17 +1,4 @@
 import os
-import logging
-
-log_fmt = '%(asctime)s [%(name)s] [%(levelname)s] %(message)s'
-formatter = logging.Formatter(log_fmt)
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-console_handler.setFormatter(formatter)
-logging.basicConfig(level=logging.INFO,
-                    format=log_fmt,
-                    datefmt='%m-%d %H:%M:%S',
-                    handlers=[console_handler])
-
-log = logging.getLogger('regression')
 
 
 def _find_latest_dir(s3_bucket, dir_path):
