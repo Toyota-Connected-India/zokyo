@@ -1,9 +1,9 @@
-import numpy as np
+from PIL import Image
 from xml.etree import ElementTree
 
 
 class SphinxData(object):
-    image: np.ndarray = None
-    mask: np.ndarray = None
-    annotation_mask: np.ndarray = None
+    image: Image.Image = None
+    mask: Image.Image = None
+    annotation_mask: Image.Image = None
     annotation: ElementTree = None
