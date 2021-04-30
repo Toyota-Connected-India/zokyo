@@ -378,8 +378,8 @@ class Builder(AbstractBuilder):
 
     def _load_entities(self, data_sample_list):
         image_mask_list = []
-        sd = SphinxData()
         for data_dict in data_sample_list:
+            sd = SphinxData()
             sd.image = Image.open(data_dict["image"])
             if data_dict["mask"] is not None:
                 sd.mask = Image.open(data_dict["mask"])
@@ -389,7 +389,7 @@ class Builder(AbstractBuilder):
                     xmlobject)
                 sd.annotation = xmlobject
             image_mask_list.append(sd)
-        del sd
+            del sd
         return image_mask_list
 
     def _save_entities_to_disk(self, entities):
