@@ -484,7 +484,8 @@ class Builder(AbstractBuilder):
                     for i in cycle(range(self.data_len)):
                         if sample_factor_count == self.sample_factor:
                             break
-                        data_list = data_path_list[i:(i + self.internal_batch)]
+                        s = i*self.internal_batch
+                        data_list = data_path_list[s:(s + self.internal_batch)]
                         entities = self._load_entities(data_list)
                         self.logger.info("val : {}".format(i))
                         self.logger.info(
