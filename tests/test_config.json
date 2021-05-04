@@ -4,21 +4,21 @@
     "output_dir": "tests/output",
     "annotation_dir": "tests/annotation",
     "annotation_format": "pascal_voc",
-    "sample" : 500,
+    "sample" : 12,
     "multi_threaded" : false,
     "run_all" : false,
     "batch_ingestion": true,
     "process_and_yield": false,
-    "save_annotation_mask" : false,
+    "save_annotation_mask" : true,
     "operations":[
         {
             "operation": "DarkenScene",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 0.7,
+                "probability": 0.6,
                 "darkness" : 0.5,
                 "is_mask" : true,
-                "mask_label" : 2,
+                "mask_label" : 7,
                 "is_annotation" : true,
                 "annotation_label" : 1
             }
@@ -27,19 +27,11 @@
             "operation": "EqualizeScene",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 0.5,
+                "probability": 0.4,
                 "is_mask" : true,
-                "label" : 2
-            }
-        },
-        {
-            "operation": "RadialLensDistortion",
-            "operation_module" : "sphinx.augmentation",
-            "args": {
-                "probability": 0.5,
+                "mask_label" : 7,
                 "is_annotation" : true,
-                "distortiontype" : "NegativeBarrel",
-                "is_mask" : true
+                "annotation_label" : 1
             }
         }
     ]

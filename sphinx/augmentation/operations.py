@@ -327,7 +327,7 @@ class RadialLensDistortion(Operation):
         if self.args.distortiontype not in ["NegativeBarrel", "PinCushion"]:
             raise ValueError(
                 "distortiontype must be one of ({}). Got: {}".format(
-                    ["NegativeBarrel", "PinCushion"], args.rain_type)
+                    ["NegativeBarrel", "PinCushion"], self.args.rain_type)
             )
 
         if (self.args.distortiontype == "NegativeBarrel"):
