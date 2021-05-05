@@ -26,7 +26,7 @@ class DataPipeline(object):
         batch = []
         for _ in range(0, batch_size):
             index = random.randint(0, len(self.augmentable_entities) - 1)
-            entities_to_yield = self.augmentable_entities[index]
+            entities_to_yield = self.augmentable_entities[index].copy()
             for operation in self.operations:
                 r = round(random.uniform(0, 1), 1)
                 if r <= operation.probability:
@@ -39,7 +39,7 @@ class DataPipeline(object):
         batch = []
         for _ in tqdm(range(0, n)):
             index = random.randint(0, len(self.augmentable_entities) - 1)
-            entities_to_return = self.augmentable_entities[index]
+            entities_to_return = self.augmentable_entities[index].copy()
             for operation in self.operations:
                 r = round(random.uniform(0, 1), 1)
                 if r <= operation.probability:
