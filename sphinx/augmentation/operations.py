@@ -537,7 +537,7 @@ class RainScene(Operation):
             image_hls = cv2.cvtColor(
                 image, cv2.COLOR_RGB2HLS).astype(
                 np.float32)
-            image_hls[:, :, 1] *= self.brightness_coefficient
+            # image_hls[:, :, 1] *= self.brightness_coefficient
 
             image_rgb = cv2.cvtColor(
                 image_hls.astype(

@@ -1,7 +1,7 @@
 from sphinx.augmentation import Builder
 from PIL import Image
 
-pipeline = Builder(config_json="tests/test_config.json")
+'''pipeline = Builder(config_json="tests/test_config.json")
 pipeline.calculate_and_set_generator_params(batch_size=1)
 gen = pipeline.process_and_generate()
 
@@ -17,7 +17,7 @@ while True:
             item.image.save("samples/{}.png".format(i))
             i+=1
     except StopIteration:
-        break
+        break'''
 
 # from os import PRIO_PROCESS
 # from sphinx.augmentation import Builder
@@ -53,6 +53,7 @@ try:
     shutil.rmtree('tests/output/images')
     shutil.rmtree('tests/output/masks')
     shutil.rmtree('tests/output/annotations')
+    shutil.rmtree('tests/output/annotation_mask')
 except:
     pass
 pipeline = Builder(config_json="tests/sun_flare_test_config.json")

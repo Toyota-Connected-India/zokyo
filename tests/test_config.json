@@ -4,10 +4,10 @@
     "output_dir": "tests/output",
     "annotation_dir": "tests/annotation",
     "annotation_format": "pascal_voc",
-    "sample" : 12,
+    "sample" : 7,
     "multi_threaded" : false,
     "run_all" : false,
-    "batch_ingestion": true,
+    "batch_ingestion": false,
     "process_and_yield": false,
     "save_annotation_mask" : true,
     "operations":[

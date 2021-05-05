@@ -7,6 +7,7 @@ from os.path import join, split
 import json
 import importlib
 import re
+from pathlib import Path
 
 from .pipeline import DataPipeline
 from PIL import Image
@@ -226,6 +227,19 @@ class Builder(AbstractBuilder):
                 'batch_ingestion',
                 'internal_batch') if key in self.config.keys())
 
+        if "annotation_dir" in self.config.keys(
+        ) and self.config["annotation_format"] == "pascal_voc":
+            voc_names_path = list(
+                Path(self.config['annotation_dir']).glob('*.names'))[0]
+
+            with open(voc_names_path, 'r') as f:
+                voc_names = [n.rstrip('\n') for n in f.readlines()]
+
+            for i, cat in enumerate(voc_names, 1):
+                if cat not in self.class_dictionary.keys():
+                    self.class_dictionary[cat] = i
+                    self.classes += 1
+
     def get_builder_logger(self):
         return self.logger
 
@@ -243,9 +257,9 @@ class Builder(AbstractBuilder):
                 for elem in child:
                     bnd_dict = {}
                     if elem.tag == "name":
-                        if elem.text not in self.class_dictionary.keys():
-                            self.class_dictionary[elem.text] = self.classes
-                            self.classes += 1
+                        # if elem.text not in self.class_dictionary.keys():
+                        #    self.class_dictionary[elem.text] = self.classes
+                        #    self.classes += 1
                         if elem.text not in class_bnd_box["classes"].keys():
                             class_bnd_box["classes"][elem.text] = []
                         current_tag = elem.text
@@ -265,9 +279,9 @@ class Builder(AbstractBuilder):
         for cat in current_image_class_data_dict["classes"].keys():
             for bnd in current_image_class_data_dict["classes"][cat]:
                 color = (
-                    self.class_dictionary[cat],
-                    self.class_dictionary[cat],
-                    self.class_dictionary[cat])
+                    255 * self.class_dictionary[cat] / self.classes,
+                    255 * self.class_dictionary[cat] / self.classes,
+                    255 * self.class_dictionary[cat] / self.classes)
                 annotation_mask = cv2.rectangle(
                     annotation_mask, (bnd["xmin"], bnd["ymin"]), (bnd["xmax"], bnd["ymax"]), color, -1)
         return annotation_mask
@@ -425,7 +439,7 @@ class Builder(AbstractBuilder):
                         'a'),
                     encoding='unicode')
             if self.save_annotation_mask:
-                ets.annotation_mask.save(
+                Image.fromarray(ets.annotation_mask).save(
                     join(
                         self.output_dir,
                         "annotation_mask") +
@@ -481,7 +495,8 @@ class Builder(AbstractBuilder):
             if self.setting_generator_params:
                 if not infinite_generator:
                     sample_factor_count = 0
-                    for i in cycle(range(self.data_len)):
+                    for i in cycle(range(0, self.data_len,
+                                   self.internal_batch)):
                         if sample_factor_count == self.sample_factor:
                             break
                         data_list = data_path_list[i:(i + self.internal_batch)]

@@ -45,7 +45,7 @@ report-coverage:
 
 .PHONY: test-requirements
 test-requirements:
-	$(PYTHON) -m pip install --user pytest pytest-cov flake8 matplotlib seaborn Jinja2 requests-mock tensorflow
+	$(PYTHON) -m pip install pytest pytest-cov flake8 matplotlib seaborn Jinja2 requests-mock tensorflow
 
 .PHONY: install
 install:
