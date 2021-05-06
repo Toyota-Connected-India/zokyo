@@ -19,7 +19,7 @@ cache:
     - venv/
 
 .base_dind:
-  image: registry.gitlab.com/toyotaconnectedindia/sphinx
+  image: registry.gitlab.com/toyotaconnectedindia/sphinx:cdc29413
   services:
     - name: docker:18.06.1-dind
       command: ["--experimental"]
