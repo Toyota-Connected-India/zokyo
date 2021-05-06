@@ -17,18 +17,11 @@ aws-login: ${CRED_FILE}
 
 .PHONY: auto-lint
 auto-lint:
-	docker run --rm -t \
-		-v `pwd`:/app \
-		-w /app python:3.7-alpine \
-		/bin/ash -c "pip install autopep8; pip3 install tqdm; python auto-lint.py"
+	pip install autopep8; pip3 install tqdm; python auto-lint.py
 
 .PHONY: test-lint
 test-lint: clean-py
-	docker run --rm -t \
-		-v `pwd`:/app \
-		-w /app python:3.7-alpine \
-		/bin/ash -c "pip install flake8; python -m flake8 sphinx --filename='*.py' --ignore E803,F401,F403,W292,W293,W504,F541,F821,F405,W291,E501,E302"
-		# /bin/ash -c "pip install flake8; python -m flake8 sphinx --filename='*.py' --ignore E803,F401,F403,W293,W504,F541"
+	pip install flake8; python -m flake8 sphinx --filename='*.py' --ignore E803,F401,F403,W292,W293,W504,F541,F821,F405,W291,E501,E302
 
 .PHONY: test-unit
 test-unit: test-requirements
