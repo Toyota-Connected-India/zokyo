@@ -38,7 +38,7 @@ report-coverage:
 
 .PHONY: test-requirements
 test-requirements:
-	$(PYTHON) -m pip install pytest pytest-cov flake8 matplotlib seaborn Jinja2 requests-mock tensorflow
+	$(PYTHON) -m pip install pytest pytest-cov flake8 matplotlib opencv-python==4.5.1.48
 
 .PHONY: install
 install:
