@@ -2,8 +2,7 @@
 import os
 import pytest
 import unittest
-from ...augmentation import Builder
-from ...utils.CustomExceptions import CrucialValueNotFoundError
+from sphinx.augmentation import Builder
 import shutil
 
 
@@ -15,8 +14,6 @@ def builder_class(request):
 @pytest.mark.usefixtures("builder_class")
 class BuilderTest(unittest.TestCase):
     def test_build_run(self):
-        # shutil.rmtree('tests/output/images')
-        # shutil.rmtree('tests/output/masks')
         self.builder.process_and_save()
         assert len(os.listdir('tests/output/images/')) == 6
         assert len(os.listdir('tests/output/masks')) == 6
