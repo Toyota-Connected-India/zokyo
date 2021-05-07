@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 
 from .pipeline import DataPipeline
+from .generators import KerasGenerator
 from PIL import Image
 from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented, ConfigurationError
 import numpy as np
@@ -183,6 +184,9 @@ class Builder(AbstractBuilder):
         if "multi_threaded" not in self.config.keys():
             self.multi_threaded = False
 
+        if "shuffle" not in self.config.keys():
+            self.shuffle = False
+
         if "batch_ingestion" not in self.config.keys():
             self.batch_ingestion = False
 
@@ -225,6 +229,7 @@ class Builder(AbstractBuilder):
                 'annotation_format',
                 'save_annotation_mask',
                 'batch_ingestion',
+                'shuffle',
                 'internal_batch') if key in self.config.keys())
 
         if "annotation_dir" in self.config.keys(
@@ -278,10 +283,14 @@ class Builder(AbstractBuilder):
             dtype=np.uint8)
         for cat in current_image_class_data_dict["classes"].keys():
             for bnd in current_image_class_data_dict["classes"][cat]:
+                # color = (
+                #     255 * self.class_dictionary[cat] / self.classes,
+                #     255 * self.class_dictionary[cat] / self.classes,
+                #     255 * self.class_dictionary[cat] / self.classes)
                 color = (
-                    255 * self.class_dictionary[cat] / self.classes,
-                    255 * self.class_dictionary[cat] / self.classes,
-                    255 * self.class_dictionary[cat] / self.classes)
+                    self.class_dictionary[cat],
+                    self.class_dictionary[cat],
+                    self.class_dictionary[cat])
                 annotation_mask = cv2.rectangle(
                     annotation_mask, (bnd["xmin"], bnd["ymin"]), (bnd["xmax"], bnd["ymax"]), color, -1)
         return annotation_mask
@@ -397,6 +406,7 @@ class Builder(AbstractBuilder):
         image_mask_list = []
         for data_dict in data_sample_list:
             sd = SphinxData()
+            sd.name = Path(data_dict["image"]).stem
             sd.image = Image.open(data_dict["image"])
             if data_dict["mask"] is not None:
                 sd.mask = Image.open(data_dict["mask"])
@@ -486,69 +496,67 @@ class Builder(AbstractBuilder):
            NOTE : On batch ingestion mode if both internal batch and output batch size is given, sample number cannot be achieved.
         '''
 
+        if not self.setting_generator_params:
+            raise Exception(
+                "Did you call calculate_and_set_generator_params method ?")
+
         data_path_list = self._check_and_populate_path()
-        self.logger.info("internal batch : {}".format(self.internal_batch))
         self.logger.info("sample factor : {}".format(self.sample_factor))
         self.logger.info("batch size : {}".format(self.batch_size))
 
         if self.batch_ingestion:
-            if self.setting_generator_params:
-                if not infinite_generator:
-                    sample_factor_count = 0
-                    for i in cycle(range(0, self.data_len,
-                                   self.internal_batch)):
-                        if sample_factor_count == self.sample_factor:
-                            break
-                        data_list = data_path_list[i:(i + self.internal_batch)]
-                        entities = self._load_entities(data_list)
-                        self.logger.info("val : {}".format(i))
-                        self.logger.info(
-                            "Entities num: {}".format(
-                                len(entities)))
-                        pipeline = DataPipeline(entities=entities)
-                        pipeline = self._add_operation(pipeline=pipeline)
-                        result_entities = pipeline.sample_for_generator(
-                            batch_size=self.batch_size)
-                        sample_factor_count += 1
-                        del pipeline
-                        yield result_entities
-                else:
-                    if self.batch_size is None:
-                        raise ValueError("Batch Size not found")
-                    while True:
-                        indexlist = random.sample(
-                            range(0, self.data_len), self.internal_batch)
-                        data_list = [data_path_list[i] for i in indexlist]
-                        entites = self._load_entities(data_list)
-                        pipeline = DataPipeline(entities=entites)
-                        pipeline = self._add_operation(pipeline=pipeline)
-                        result_entities = pipeline.sample_for_generator(
-                            batch_size=self.batch_size)
-                        del pipeline
-                        yield result_entities
+            self.logger.info("internal batch : {}".format(self.internal_batch))
+
+            if not infinite_generator:
+                sample_count = 0
+                for i in cycle(range(0, self.data_len, self.internal_batch)):
+                    if sample_count == self.sample:
+                        break
+                    data_list = data_path_list[i:(i + self.internal_batch)]
+                    entities = self._load_entities(data_list)
+                    self.logger.info("val : {}".format(i))
+                    self.logger.info(
+                        "Entities num: {}".format(
+                            len(entities)))
+                    pipeline = DataPipeline(
+                        entities=entities, shuffle=self.shuffle)
+                    pipeline = self._add_operation(pipeline=pipeline)
+                    result_entities = pipeline.sample_for_generator(
+                        batch_size=min(self.sample - sample_count, self.batch_size))
+                    sample_count += min(self.sample -
+                                        sample_count, self.batch_size)
+                    del pipeline
+                    yield result_entities
             else:
-                raise Exception(
-                    "Did you call calculate_and_set_generator_params method ?")
+                if self.batch_size is None:
+                    raise ValueError("Batch Size not found")
+                while True:
+                    indexlist = random.sample(
+                        range(0, self.data_len), self.internal_batch)
+                    data_list = [data_path_list[i] for i in indexlist]
+                    entites = self._load_entities(data_list)
+                    pipeline = DataPipeline(
+                        entities=entites, shuffle=self.shuffle)
+                    pipeline = self._add_operation(pipeline=pipeline)
+                    result_entities = pipeline.sample_for_generator(
+                        batch_size=self.batch_size)
+                    del pipeline
+                    yield result_entities
 
         else:
-            if self.setting_generator_params:
-                entities = self._load_entities(data_path_list)
-                pipeline = DataPipeline(entities=entities)
-                pipeline = self._add_operation(pipeline)
-                result_entities = pipeline.sample(self.sample)
-                if not infinite_generator:
-                    for i in range(self.sample_factor):
-                        yield result_entities[i:(i + self.batch_size)]
-                else:
-                    while True:
-                        indexlist = random.sample(
-                            range(0, self.sample), self.batch_size)
-                        results = [result_entities[i] for i in indexlist]
-                        yield results
-
+            entities = self._load_entities(data_path_list)
+            pipeline = DataPipeline(entities=entities, shuffle=self.shuffle)
+            pipeline = self._add_operation(pipeline)
+            result_entities = pipeline.sample_for_generator(self.sample)
+            if not infinite_generator:
+                for i in range(0, self.sample, self.batch_size):
+                    yield result_entities[i:(i + self.batch_size)]
             else:
-                raise Exception(
-                    "\nDid you call calculate_and_set_generator_params method ?")
+                while True:
+                    indexlist = random.sample(
+                        range(0, self.sample), self.batch_size)
+                    results = [result_entities[i] for i in indexlist]
+                    yield results
 
     def process_and_save(self, batch_save_size=None, internal_batch_size=None):
         '''
@@ -557,7 +565,7 @@ class Builder(AbstractBuilder):
         if not self.batch_ingestion:
             data_path_list = self._check_and_populate_path()
             entities = self._load_entities(data_path_list)
-            pipeline = DataPipeline(entities=entities)
+            pipeline = DataPipeline(entities=entities, shuffle=self.shuffle)
             pipeline = self._add_operation(pipeline)
             result_entities = pipeline.sample(self.sample)
             self._save_entities_to_disk(result_entities)
@@ -575,5 +583,11 @@ class Builder(AbstractBuilder):
                 except StopIteration:
                     break
 
-    def get_keras_generator(self, batch_size=None):
-        raise NotImplementedError("Keras generator not implemented yet")
+    def get_keras_generator(self, batch_size, internal_batch=None, input_func=None, output_func=None, shuffle=False, task="classification"):
+        if not internal_batch:
+            if self.batch_ingestion:
+                internal_batch = self.internal_batch
+            else:
+                internal_batch = batch_size
+        
+        return KerasGenerator(builder=self, internal_batch=internal_batch, batch_size=batch_size, input_func=input_func, output_func=output_func, shuffle=shuffle, task=task)

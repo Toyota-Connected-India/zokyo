@@ -8,16 +8,16 @@
     "multi_threaded" : false,
     "run_all" : false,
     "batch_ingestion": false,
-    "shuffle": false,
     "process_and_yield": false,
     "save_annotation_mask" : true,
     "operations":[
         {
-            "operation": "BrightenScene",
+            "operation": "EqualizeScene",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 1,
-                "brightness" : 1,
+                "probability": 0.4,
+                "is_mask" : true,
+                "mask_label" : 7,
                 "is_annotation" : true,
                 "annotation_label" : 1
             }

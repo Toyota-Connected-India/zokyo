@@ -5,6 +5,7 @@ import copy
 
 class SphinxData(object):
     def __init__(self, ):
+        self.name: str = None
         self.image: Image.Image = None
         self.mask: Image.Image = None
         self.annotation_mask: Image.Image = None
