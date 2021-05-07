@@ -3,14 +3,12 @@
 # ashok.ramadass@toyotaconnected.com, ]
 
 import cv2
-from numpy.lib import histograms
-from ..utils.CustomExceptions import CoefficientNotinRangeError, InvalidImageArrayError, CrucialValueNotFoundError
-from ..utils.misc import from_float, to_float
+from ..utils.CustomExceptions import (CoefficientNotinRangeError,
+                                      CrucialValueNotFoundError)
 from PIL import Image, ImageOps
 import numpy as np
 import random
 from random import randint
-import warnings
 import math
 from .utils import apply_augmentation
 
@@ -40,7 +38,8 @@ class ArgsClass(object):
         if "is_annotation" not in kwargs.keys():
             kwargs["is_annotation"] = False
 
-        if kwargs["is_annotation"] is True and "annotation_label" not in kwargs:
+        if (kwargs["is_annotation"] is True and
+                "annotation_label" not in kwargs):
             kwargs["annotation_label"] = None
 
         self.__dict__.update((key, kwargs[key]) for key in kwargs)
@@ -79,7 +78,8 @@ class EqualizeScene(Operation):
                     image = entities.image
                     image_mask = entities.annotation_mask
                     image = apply_augmentation(
-                        image, image_mask, self.args.annotation_label, equalizeHist)
+                        image, image_mask, self.args.annotation_label,
+                        equalizeHist)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -196,7 +196,8 @@ class BrightenScene(Operation):
                     image = entities.image
                     image_mask = entities.annotation_mask
                     image = apply_augmentation(
-                        image, image_mask, self.args.annotation_label, brighten)
+                        image, image_mask, self.args.annotation_label,
+                        brighten)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -242,7 +243,8 @@ class RandomBrightness(Operation):
                     image = entities.image
                     image_mask = entities.mask
                     image = apply_augmentation(
-                        image, image_mask, self.args.mask_label, random_brighten)
+                        image, image_mask, self.args.mask_label,
+                        random_brighten)
                     entities.image = Image.fromarray(Image.fromarray(image))
                     return entities
 
@@ -255,7 +257,8 @@ class RandomBrightness(Operation):
                     image = entities.image
                     image_mask = entities.annotation_mask
                     image = apply_augmentation(
-                        image, image_mask, self.args.annotation_label, random_brighten)
+                        image, image_mask, self.args.annotation_label,
+                        random_brighten)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -281,9 +284,9 @@ class SnowScene(Operation):
             image = np.array(image, dtype=np.uint8)
             image_HLS = cv2.cvtColor(image, cv2.COLOR_BGR2HLS_FULL)
             rand = np.random.randint(
-                225, 255, (image_HLS[:, :, 1].shape[0], image_HLS[:, :, 1].shape[1]))
-            image_HLS[:, :, 1][image_HLS[:, :, 1] >
-                               coefficient] = rand[image_HLS[:, :, 1] > coefficient]
+                225, 255, (image_HLS[:, :, 1].shape[0],
+                           image_HLS[:, :, 1].shape[1]))
+            image_HLS[:, :, 1][image_HLS[:, :, 1] > coefficient] = rand[image_HLS[:, :, 1] > coefficient] # noqa
             image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2BGR_FULL)
             return image_RGB
 
@@ -359,7 +362,8 @@ class RadialLensDistortion(Operation):
                     image = entities.image
                     image_mask = entities.mask
                     image = apply_augmentation(
-                        image, image_mask, self.args.mask_label, radial_distort)
+                        image, image_mask, self.args.mask_label,
+                        radial_distort)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -374,7 +378,8 @@ class RadialLensDistortion(Operation):
                     image = entities.image
                     image_mask = entities.annotation_mask
                     image = apply_augmentation(
-                        image, image_mask, self.args.annotation_label, radial_distort)
+                        image, image_mask, self.args.annotation_label,
+                        radial_distort)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -417,7 +422,8 @@ class TangentialLensDistortion(Operation):
                     image = entities.image
                     image_mask = entities.mask
                     image = apply_augmentation(
-                        image, image_mask, self.args.mask_label, tangential_distort)
+                        image, image_mask, self.args.mask_label,
+                        tangential_distort)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -432,7 +438,8 @@ class TangentialLensDistortion(Operation):
                     image = entities.image
                     image_mask = entities.annotation_mask
                     image = apply_augmentation(
-                        image, image_mask, self.args.annotation_label, tangential_distort)
+                        image, image_mask, self.args.annotation_label,
+                        tangential_distort)
                     entities.image = Image.fromarray(image)
                     return entities
 
@@ -452,11 +459,13 @@ class RainScene(Operation):
         if self.args.rain_type not in ["drizzle", "heavy", "torrential", None]:
             raise ValueError(
                 "raint_type must be one of ({}). Got: {}".format(
-                    ["drizzle", "heavy", "torrential", None], self.args.rain_type)
+                    ["drizzle", "heavy", "torrential", None],
+                    self.args.rain_type)
             )
         if not -20 <= self.args.slant_lower <= self.args.slant_upper <= 20:
             raise ValueError(
-                "Invalid combination of slant_lower and slant_upper. Got: {}".format(
+                '''Invalid combination of slant_lower and slant_upper. Got:
+                {}'''.format(
                     (self.args.slant_lower, self.args.slant_upper))
             )
         if not 1 <= self.args.drop_width <= 5:
@@ -469,12 +478,15 @@ class RainScene(Operation):
                     self.args.drop_length))
         if not 0 <= self.args.brightness_coefficient <= 1:
             raise ValueError(
-                "brightness_coefficient must be in range [0, 1]. Got: {}".format(
+                '''brightness_coefficient must be in range [0, 1]. Got:
+                {}'''.format(
                     self.args.brightness_coefficient))
 
-        if not self.args.drop_color and isinstance(self.args.drop_color, list):
+        if not self.args.drop_color and isinstance(self.args.drop_color,
+                                                   list):
             raise ValueError(
-                "drop_color must be a list of length 3 and each value must be in range [0, 255] . Got: {}".format(
+                '''drop_color must be a list of length 3 and each value
+                must be in range [0, 255] . Got: {}'''.format(
                     self.args.drop_color))
         self.slant_lower = self.args.slant_lower
         self.slant_upper = self.args.slant_upper
@@ -489,7 +501,8 @@ class RainScene(Operation):
 
         def rain(image):
             def get_params(img):
-                slant = int(random.uniform(self.slant_lower, self.slant_upper))
+                slant = int(random.uniform(self.slant_lower,
+                                           self.slant_upper))
 
                 height, width = img.shape[:2]
                 area = height * width
@@ -508,7 +521,8 @@ class RainScene(Operation):
                     num_drops = area // 600
                 rain_drops = []
                 for _i in range(
-                        num_drops):  # If You want heavy rain, try increasing this
+                        num_drops):
+                    # If You want heavy rain, try increasing this
                     if slant < 0:
                         x = random.randint(slant, width)
                     else:
@@ -600,8 +614,9 @@ class SunFlare(Operation):
                 x = []
                 y = []
                 for rand_x in range(0, imshape[1], 10):
-                    rand_y = math.tan(angle) * (rand_x -
-                                                flare_center[0]) + flare_center[1]
+                    rand_y = math.tan(angle) * ((rand_x -
+                                                flare_center[0]) +
+                                                flare_center[1])
                     x.append(rand_x)
                     y.append(2 * flare_center[1] - rand_y)
                 return x, y
@@ -619,10 +634,12 @@ class SunFlare(Operation):
                         overlay,
                         (int(x[r]), int(y[r])),
                         rad**3,
-                        (random.randint(max(src_color[0] - 50, 0), src_color[0]),
+                        (random.randint(max(src_color[0] - 50, 0),
+                                        src_color[0]),
                          random.randint(
                              max(src_color[1] - 50, 0), src_color[1]),
-                         random.randint(max(src_color[2] - 50, 0), src_color[2])),
+                         random.randint(max(src_color[2] - 50, 0),
+                                        src_color[2])),
                         - 1
                     )
                     cv2.addWeighted(

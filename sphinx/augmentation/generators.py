@@ -1,10 +1,4 @@
-from os import pipe
-import cv2
 from tensorflow.keras.utils import Sequence
-import math
-import numpy as np
-import random
-import warnings
 
 
 class SegmentationGenerator(Sequence):

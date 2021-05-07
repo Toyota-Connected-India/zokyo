@@ -1,9 +1,6 @@
-from PIL import Image
-import numpy as np
 from .operations import Operation
 import random
 from tqdm import tqdm
-import os
 
 
 class DataPipeline(object):
@@ -16,7 +13,8 @@ class DataPipeline(object):
             self.operations.append(operation)
         else:
             raise TypeError(
-                "Must be of type Augmentor Operation or a Sphinx Operation to be added to the pipeline.")
+                '''Must be of type Augmentor Operation or a Sphinx
+                Operation to be added to the pipeline.''')
 
     def remove_operation(self, operation_index=-1):
         self.operations.pop(operation_index)
