@@ -594,11 +594,13 @@ class Builder(AbstractBuilder):
                 except StopIteration:
                     break
 
-    def get_keras_generator(self, batch_size, internal_batch=None, input_func=None, output_func=None, shuffle=False, task="classification"):
+    def get_keras_generator(self, batch_size, internal_batch=None, input_func=None,
+                            output_func=None, shuffle=False, task="classification"):
         if not internal_batch:
             if self.batch_ingestion:
                 internal_batch = self.internal_batch
             else:
                 internal_batch = batch_size
-        
-        return KerasGenerator(builder=self, internal_batch=internal_batch, batch_size=batch_size, input_func=input_func, output_func=output_func, shuffle=shuffle, task=task)
+
+        return KerasGenerator(builder=self, internal_batch=internal_batch, batch_size=batch_size,
+                              input_func=input_func, output_func=output_func, shuffle=shuffle, task=task)

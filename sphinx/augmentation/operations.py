@@ -286,7 +286,7 @@ class SnowScene(Operation):
             rand = np.random.randint(
                 225, 255, (image_HLS[:, :, 1].shape[0],
                            image_HLS[:, :, 1].shape[1]))
-            image_HLS[:, :, 1][image_HLS[:, :, 1] > coefficient] = rand[image_HLS[:, :, 1] > coefficient] # noqa
+            image_HLS[:, :, 1][image_HLS[:, :, 1] > coefficient] = rand[image_HLS[:, :, 1] > coefficient]  # noqa
             image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2BGR_FULL)
             return image_RGB
 

@@ -8,7 +8,8 @@ import warnings
 
 
 class KerasGenerator(Sequence):
-    def __init__(self, builder, internal_batch, batch_size, input_func=None, output_func=None, shuffle=False, task="classification"):
+    def __init__(self, builder, internal_batch, batch_size, input_func=None,
+                 output_func=None, shuffle=False, task="classification"):
         'Initialization'
         self.batch_size = batch_size
         self.internal_batch = internal_batch
@@ -22,11 +23,11 @@ class KerasGenerator(Sequence):
                 f'Expected task to be one of classification, detection, segmentation but got {task}')
         else:
             self.task = task
-        
+
         self.builder.batch_ingestion = True
         self.builder.calculate_and_set_generator_params(
             batch_size=self.batch_size, internal_batch=self.internal_batch)
-        
+
         self.on_epoch_end()
 
     def __len__(self):
@@ -49,12 +50,12 @@ class KerasGenerator(Sequence):
             self.input_func = lambda x: x
         if not self.output_func:
             self.output_func = lambda x: x
-        
+
         X = []
         y = []
         for data in data_batch:
             X.append(self.input_func(np.array(data.image)))
-            
+
             if self.task == "classification":
                 ann = self.builder._get_annotations(data.annotation)
                 y.append(self.output_func(ann))

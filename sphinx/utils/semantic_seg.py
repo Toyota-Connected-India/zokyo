@@ -9,7 +9,8 @@ import cv2
 from matplotlib import cm
 
 
-def generate_semantic_map(img_path, ann_path, out_dir, opacity=0.4, gt=False, cmap='Spectral', verbose=True):
+def generate_semantic_map(img_path, ann_path, out_dir,
+                          opacity=0.4, gt=False, cmap='Spectral', verbose=True):
     '''
     Generate semantic segmentation map for the given image and its annotations and save it to given output directory.
     '''

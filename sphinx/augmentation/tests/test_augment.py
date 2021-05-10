@@ -31,7 +31,8 @@ class BuilderTest(unittest.TestCase):
         shutil.rmtree('tests/output/annotation_mask')
 
     def test_sequential_sampling_run(self):
-        pipeline = Builder(config_json="tests/sequential_sampling_test_config.json")
+        pipeline = Builder(
+            config_json="tests/sequential_sampling_test_config.json")
         pipeline.calculate_and_set_generator_params(batch_size=2)
         gen = pipeline.process_and_generate()
 
