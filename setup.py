@@ -21,6 +21,7 @@ import sphinx
 REQUIREMENTS = [
     'numpy>=1.17.3',
     'pyyaml==5.1.2',
+    'pandas>=1.2.4'
     'scikit-learn>=0.23.2',
     'Augmentor>=0.2.8',
     'opencv-python>=4.4.0',
