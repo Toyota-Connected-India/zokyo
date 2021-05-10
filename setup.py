@@ -28,7 +28,8 @@ REQUIREMENTS = [
     'opencv-python>=4.4.0',
     'Pillow>=5.2.0',
     'scipy>=1.5.0',
-    'tqdm'
+    'tqdm',
+    'tensorflow>=2.5.0'
 ]
 
 SETUPTOOLS_COMMANDS = {
