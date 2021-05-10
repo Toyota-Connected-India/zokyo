@@ -2,8 +2,7 @@
 import os
 import pytest
 import unittest
-from ...augmentation import Builder
-from ...utils.CustomExceptions import CrucialValueNotFoundError
+from sphinx.augmentation import Builder
 import shutil
 
 

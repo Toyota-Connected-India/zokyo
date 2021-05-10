@@ -18,35 +18,24 @@ cache:
     - .cache/pip
     - venv/
 
-before_script:
-  - python -V  # Print out python version for debugging
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
+.base_dind:
+  image: registry.gitlab.com/toyotaconnectedindia/sphinx:cdc29413
+  services:
+    - name: docker:18.06.1-dind
+      command: ["--experimental"]
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_CLI_EXPERIMENTAL: enabled
 
-test:
-  script:
-    - python setup.py test
-    - pip install tox flake8  # you can also use tox
-    - tox -e py36,flake8
+stages:
+  - tests
 
-run:
+tests:
+  stage: tests
+  extends: .base_dind
   script:
-    - python setup.py bdist_wheel
-    # an alternative approach is to install and run:
-    - pip install dist/*
-    # run the command here
-  artifacts:
-    paths:
-      - dist/*.whl
+    - make test-requirements
+    - make install
+    - make test
 
-pages:
-  script:
-    - pip install sphinx sphinx-rtd-theme
-    - cd doc ; make html
-    - mv build/html/ ../public/
-  artifacts:
-    paths:
-      - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

@@ -8,7 +8,8 @@ class CoefficientNotinRangeError(Exception):
         super().__init__()
 
     def __str__(self):
-        return "\"{0}\" coefficient of value {1} is not in range {2} and {3}".format(
+        return '''\"{0}\" coefficient of value {1} is not in range
+                  {2} and {3}'''.format(
             self.coeff_type, self.coefficient, self.range_min, self.range_max)
 
 

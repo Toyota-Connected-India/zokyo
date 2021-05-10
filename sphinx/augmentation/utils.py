@@ -1,6 +1,5 @@
 # Contributors : [srinivas.v@toyotaconnected.co.in, ]
 import numpy as np
-from PIL import Image
 import os
 
 

@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
-__all__ = ('augment', 'operations', 'utils', 'pipeline', 'generators', 'data')
 
-# To support old imports
-from .augment import *
-from .operations import *
-from .utils import *
-from .pipeline import *
-from .generators import *
-from .data import *
+from .augment import Builder  # noqa: F401
+from .operations import (EqualizeScene,  # noqa: F401
+                         BrightenScene,  # noqa: F401
+                         DarkenScene,  # noqa: F401
+                         RainScene,  # noqa: F401
+                         RandomBrightness)  # noqa: F401

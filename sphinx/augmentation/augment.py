@@ -3,16 +3,16 @@
 # srinivas.v@toyotaconnected.co.in, ]
 
 import os
-from os.path import join, split
+from os.path import join
 import json
 import importlib
-import re
 from pathlib import Path
 
 from .pipeline import DataPipeline
 from .generators import KerasGenerator
 from PIL import Image
-from ..utils.CustomExceptions import CrucialValueNotFoundError, OperationNotFoundOrImplemented, ConfigurationError
+from ..utils.CustomExceptions import (CrucialValueNotFoundError,
+                                      OperationNotFoundOrImplemented)
 import numpy as np
 from tqdm import tqdm
 import random
@@ -53,11 +53,13 @@ class AbstractBuilder(ABC):
 
 class Builder(AbstractBuilder):
     '''
-        TODO : Image checks and exception handling, filter all the files that are not of acceptable format ( png, jpg, bmp, jpeg )
+        TODO : Image checks and exception handling, filter all the files
+        that are not of acceptable format ( png, jpg, bmp, jpeg )
         TODO : Parallelize saving images to disk
 
         Builder class to create augmentor Pipeline object
-        Config file is a json map used to define Operations and their properties
+        Config file is a json map used to define Operations and their
+        properties
         {
             "input_dir" : "tests/images",
             "mask_dir" : "tests/masks",
@@ -198,7 +200,8 @@ class Builder(AbstractBuilder):
             else:
                 if self.config["annotation_format"] != "pascal_voc":
                     raise NotImplementedError(
-                        "Annotation format not supported, pascal_voc is the only supported format")
+                        '''Annotation format not supported, pascal_voc is the
+                         only supported format''')
 
         if "save_annotation_mask" not in self.config.keys():
             self.save_annotation_mask = False
@@ -292,7 +295,9 @@ class Builder(AbstractBuilder):
                     self.class_dictionary[cat],
                     self.class_dictionary[cat])
                 annotation_mask = cv2.rectangle(
-                    annotation_mask, (bnd["xmin"], bnd["ymin"]), (bnd["xmax"], bnd["ymax"]), color, -1)
+                    annotation_mask,
+                    (bnd["xmin"], bnd["ymin"]),
+                    (bnd["xmax"], bnd["ymax"]), color, -1)
         return annotation_mask
 
     def _add_operation(self, pipeline):
@@ -322,7 +327,8 @@ class Builder(AbstractBuilder):
 
     def _image_mask_pair_list_factory(self):
         '''
-            Function that create a list of pair of image files with its respective masks
+            Function that create a list of pair of image files with its
+            respective masks
             TODO: Implement name checks and verification
         '''
         _image_mask_pair = []
@@ -334,7 +340,8 @@ class Builder(AbstractBuilder):
 
         image_list = sorted(os.listdir(self.input_dir))
 
-        if "mask_dir" in self.__dict__.keys() and "annotation_dir" in self.__dict__.keys():
+        if ("mask_dir" in self.__dict__.keys() and
+                "annotation_dir" in self.__dict__.keys()):
             mask_list = os.listdir(self.mask_dir)
             annotation_list = os.listdir(self.annotation_dir)
             mask_list.sort()
@@ -396,7 +403,8 @@ class Builder(AbstractBuilder):
         return input_data_list
 
     def _check_and_populate_path(self):
-        if "mask_dir" in self.config.keys() or "annotation_dir" in self.config.keys():
+        if ("mask_dir" in self.config.keys() or
+                "annotation_dir" in self.config.keys()):
             data_path_list = self._image_mask_pair_list_factory()
         else:
             data_path_list = self._image_list_factory()
@@ -462,7 +470,8 @@ class Builder(AbstractBuilder):
         if self.batch_ingestion:
             if batch_size is None and internal_batch is None:
                 raise ValueError(
-                    "Provide batch size or internal batch as batch_ingestion mode is set to \"True\"")
+                    '''Provide batch size or internal batch as batch_ingestion
+                    mode is set to True''')
 
             elif batch_size is None:
                 self.sample_factor = math.ceil(
@@ -478,7 +487,8 @@ class Builder(AbstractBuilder):
 
             else:
                 self.logger.info(
-                    "\"Sample\" wont be taken into consideration if both internal_batch and batch_size is given")
+                    '''Sample wont be taken into consideration if both
+                    internal_batch and batch_size is given''')
                 self.sample_factor = math.ceil(
                     self.data_len / internal_batch)
                 self.batch_size = batch_size
@@ -493,7 +503,8 @@ class Builder(AbstractBuilder):
     def process_and_generate(self, infinite_generator=False):
         '''
            Process the images and yields the results in batches.
-           NOTE : On batch ingestion mode if both internal batch and output batch size is given, sample number cannot be achieved.
+           NOTE : On batch ingestion mode if both internal batch and output
+           batch size is given, sample number cannot be achieved.
         '''
 
         if not self.setting_generator_params:

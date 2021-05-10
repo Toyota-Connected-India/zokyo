@@ -10,7 +10,6 @@
 """Utilities for Pandas frames"""
 
 import json
-import pandas as pd
 
 from .misc import is_iterable
 

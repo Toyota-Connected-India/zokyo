@@ -1,7 +1,5 @@
-import pytest
 import unittest
-from ...augmentation import EqualizeScene, DarkenScene, BrightenScene
-from ...augmentation import Builder
+from sphinx.augmentation import Builder
 import shutil
 import os
 

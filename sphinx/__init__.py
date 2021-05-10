@@ -10,6 +10,7 @@ except NameError:
 # global namespace
 try:
     from sphinx import utils
+    from sphinx import augmentation
 except ImportError:
     if __SPHINX_SETUP__ is False:
         raise
