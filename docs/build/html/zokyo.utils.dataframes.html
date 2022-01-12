@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zokyo.utils.dataframes module &mdash; zokyo 0.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="zokyo.utils.logging module" href="zokyo.utils.logging.html" />
+    <link rel="prev" title="zokyo.utils.data_format_conversions module" href="zokyo.utils.data_format_conversions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> zokyo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">zokyo</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="zokyo.html">zokyo package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="zokyo.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="zokyo.augmentation.html">zokyo.augmentation package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="zokyo.utils.html">zokyo.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="zokyo.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zokyo.html#module-zokyo">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">zokyo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">zokyo</a> &raquo;</li>
+          <li><a href="zokyo.html">zokyo package</a> &raquo;</li>
+          <li><a href="zokyo.utils.html">zokyo.utils package</a> &raquo;</li>
+      <li>zokyo.utils.dataframes module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/zokyo.utils.dataframes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-zokyo.utils.dataframes">
+<span id="zokyo-utils-dataframes-module"></span><h1>zokyo.utils.dataframes module<a class="headerlink" href="#module-zokyo.utils.dataframes" title="Permalink to this headline"></a></h1>
+<p>Utilities for Pandas frames</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="zokyo.utils.dataframes.json_field_parser">
+<span class="sig-prename descclassname"><span class="pre">zokyo.utils.dataframes.</span></span><span class="sig-name descname"><span class="pre">json_field_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/dataframes.html#json_field_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.dataframes.json_field_parser" title="Permalink to this definition"></a></dt>
+<dd><p>Parses a string field to JSON when reading the CSV from disk</p>
+<dl class="simple">
+<dt>data<span class="classifier">str or iterable</span></dt><dd><p>The string or iterable that should be parsed to JSON</p>
+</dd>
+</dl>
+<p>The intended form is for this to be used as a converter during the
+dataframe parse stage:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;x.csv&#39;</span><span class="p">,</span> <span class="n">converters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="n">json_field_parser</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Alternatively, an iterable of parseable JSONs can be passed:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">json_field_parser</span><span class="p">([</span><span class="s1">&#39;{&quot;key&quot;: &quot;value&quot;}&#39;</span><span class="p">])</span>
+<span class="go">[{&#39;key&#39;: &#39;value&#39;}]</span>
+</pre></div>
+</div>
+<p>Passing an already-parsed JSON will also work:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">json_field_parser</span><span class="p">({</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">})</span>
+<span class="go">{&#39;key&#39;: &#39;value&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="zokyo.utils.data_format_conversions.html" class="btn btn-neutral float-left" title="zokyo.utils.data_format_conversions module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="zokyo.utils.logging.html" class="btn btn-neutral float-right" title="zokyo.utils.logging module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Toyota Connected.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

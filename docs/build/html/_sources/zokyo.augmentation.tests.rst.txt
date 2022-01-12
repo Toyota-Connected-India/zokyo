@@ -1,0 +1,37 @@
+zokyo.augmentation.tests package
+================================
+
+Submodules
+----------
+
+zokyo.augmentation.tests.test\_augment module
+---------------------------------------------
+
+.. automodule:: zokyo.augmentation.tests.test_augment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zokyo.augmentation.tests.test\_operations module
+------------------------------------------------
+
+.. automodule:: zokyo.augmentation.tests.test_operations
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zokyo.augmentation.tests.test\_utils module
+-------------------------------------------
+
+.. automodule:: zokyo.augmentation.tests.test_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: zokyo.augmentation.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:

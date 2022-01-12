@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zokyo.augmentation.operations &mdash; zokyo 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> zokyo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">zokyo</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">zokyo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>zokyo.augmentation.operations</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for zokyo.augmentation.operations</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># Contributors : [srinivas.v@toyotaconnected.co.in,</span>
+<span class="c1"># ashok.ramadass@toyotaconnected.com, ]</span>
+
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">from</span> <span class="nn">..utils.CustomExceptions</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CoefficientNotinRangeError</span><span class="p">,</span>
+                                      <span class="n">CrucialValueNotFoundError</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageOps</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">apply_augmentation</span>
+
+
+<div class="viewcode-block" id="Operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.Operation">[docs]</a><span class="k">class</span> <span class="nc">Operation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Base class for operations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probability</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">probability</span> <span class="o">=</span> <span class="n">probability</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+<div class="viewcode-block" id="Operation.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.Operation.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Illegal call to base class.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ArgsClass"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.ArgsClass">[docs]</a><span class="k">class</span> <span class="nc">ArgsClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class used to handle arguments passed to operations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;probability&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="s2">&quot;is_mask&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;is_mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;is_mask&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s2">&quot;mask_label&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mask_label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="s2">&quot;is_annotation&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;is_annotation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;is_annotation&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span>
+                <span class="s2">&quot;annotation_label&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;annotation_label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EqualizeScene"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.EqualizeScene">[docs]</a><span class="k">class</span> <span class="nc">EqualizeScene</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to equalize an image or specific classes of an image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">Operation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EqualizeScene.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.EqualizeScene.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">equalizeHist</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+            <span class="n">img_yuv</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2YUV</span><span class="p">)</span>
+            <span class="n">img_yuv</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">equalizeHist</span><span class="p">(</span><span class="n">img_yuv</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">img_rgb</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img_yuv</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_YUV2BGR</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">img_rgb</span>
+
+        <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">ImageOps</span><span class="o">.</span><span class="n">equalize</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span><span class="p">,</span> <span class="n">equalizeHist</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">ImageOps</span><span class="o">.</span><span class="n">equalize</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span><span class="p">,</span>
+                        <span class="n">equalizeHist</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span><span class="p">:</span>
+                <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">ImageOps</span><span class="o">.</span><span class="n">equalize</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">entities</span>
+
+        <span class="k">return</span> <span class="n">do</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DarkenScene"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.DarkenScene">[docs]</a><span class="k">class</span> <span class="nc">DarkenScene</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to darken an image or specific classes of an image based on the darkness parameter[0, 1]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">Operation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;darkness&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">CrucialValueNotFoundError</span><span class="p">(</span>
+                <span class="s2">&quot;DarkenScene&quot;</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;darkness&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">darkness</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">darkness</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">darkness</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">CoefficientNotinRangeError</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">darkness</span><span class="p">,</span> <span class="s2">&quot;darkness&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">darkness_coeff</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">darkness</span>
+
+<div class="viewcode-block" id="DarkenScene.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.DarkenScene.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">darken</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+            <span class="n">image_HLS</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_RGB2HLS</span><span class="p">)</span>
+            <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">darkness_coeff</span>
+            <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">image_HLS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image_HLS</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">image_RGB</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image_HLS</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_HLS2RGB</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">image_RGB</span>
+
+        <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">darken</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span><span class="p">,</span> <span class="n">darken</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">darken</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span><span class="p">,</span> <span class="n">darken</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span><span class="p">:</span>
+                <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">darken</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">entities</span>
+
+        <span class="k">return</span> <span class="n">do</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BrightenScene"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.BrightenScene">[docs]</a><span class="k">class</span> <span class="nc">BrightenScene</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to brighten an image or specific classes of an image based on the brightness parameter[0, 1]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">Operation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;brightness&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">CrucialValueNotFoundError</span><span class="p">(</span>
+                <span class="s2">&quot;BrightenScene&quot;</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;brightness&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">brightness</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">brightness</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">brightness</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">CoefficientNotinRangeError</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">brightness</span><span class="p">,</span> <span class="s2">&quot;BrightnessCoefficient&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">brightness_coeff</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">brightness</span>
+
+<div class="viewcode-block" id="BrightenScene.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.BrightenScene.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">brighten</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">image_HLS</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_RGB2HLS</span><span class="p">)</span>
+            <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">brightness_coeff</span>
+            <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">255</span><span class="p">]</span> <span class="o">=</span> <span class="mi">255</span>
+            <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">image_HLS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image_HLS</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">image_RGB</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image_HLS</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_HLS2RGB</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">image_RGB</span>
+
+        <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">brighten</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span><span class="p">,</span> <span class="n">brighten</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">brighten</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span><span class="p">,</span>
+                        <span class="n">brighten</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span><span class="p">:</span>
+                <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">brighten</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">entities</span>
+
+        <span class="k">return</span> <span class="n">do</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RandomBrightness"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.RandomBrightness">[docs]</a><span class="k">class</span> <span class="nc">RandomBrightness</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to randomly brighten an image or specific classes of an image based on the random distribution</span>
+<span class="sd">        parameter (normal or uniform)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">Operation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;distribution&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">CrucialValueNotFoundError</span><span class="p">(</span>
+                <span class="s2">&quot;RandomBrightness&quot;</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;distribution&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coeff</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">distribution</span> <span class="o">==</span> <span class="s2">&quot;uniform&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coeff</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RandomBrightness.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.RandomBrightness.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">random_brighten</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">image_HLS</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_RGB2HLS</span><span class="p">)</span>
+            <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">coeff</span>
+            <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">255</span><span class="p">]</span> <span class="o">=</span> <span class="mi">255</span>
+            <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">image_HLS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image_HLS</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">image_RGB</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image_HLS</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_HLS2RGB</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">image_RGB</span>
+
+        <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">random_brighten</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span><span class="p">,</span>
+                        <span class="n">random_brighten</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">random_brighten</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span><span class="p">,</span>
+                        <span class="n">random_brighten</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span><span class="p">:</span>
+                <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                    <span class="n">random_brighten</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">entities</span>
+
+        <span class="k">return</span> <span class="n">do</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SnowScene"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.SnowScene">[docs]</a><span class="k">class</span> <span class="nc">SnowScene</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to add snow effect to an image or specific classes of an image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">Operation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SnowScene.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.SnowScene.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">snow</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+            <span class="n">coefficient</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
+            <span class="n">coefficient</span> <span class="o">*=</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">coefficient</span> <span class="o">+=</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">3</span>
+            <span class="n">coefficient</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">coefficient</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">image_HLS</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2HLS_FULL</span><span class="p">)</span>
+            <span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                <span class="mi">225</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="p">(</span><span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                           <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">coefficient</span><span class="p">]</span> <span class="o">=</span> <span class="n">rand</span><span class="p">[</span><span class="n">image_HLS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">coefficient</span><span class="p">]</span>  <span class="c1"># noqa</span>
+            <span class="n">image_RGB</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image_HLS</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_HLS2BGR_FULL</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">image_RGB</span>
+
+        <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">snow</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span><span class="p">,</span> <span class="n">snow</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">snow</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span><span class="p">,</span> <span class="n">snow</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span><span class="p">:</span>
+                <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">snow</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">entities</span>
+
+        <span class="k">return</span> <span class="n">do</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RadialLensDistortion"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.RadialLensDistortion">[docs]</a><span class="k">class</span> <span class="nc">RadialLensDistortion</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to apply radial distortion to an image or specific classes of an image using the</span>
+<span class="sd">        distortion type parameter (NegativeBarrel, PinCushion). It is applied to masks/ annotation masks too</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">Operation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">distortiontype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;NegativeBarrel&quot;</span><span class="p">,</span> <span class="s2">&quot;PinCushion&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;distortiontype must be one of (</span><span class="si">{}</span><span class="s2">). Got: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="p">[</span><span class="s2">&quot;NegativeBarrel&quot;</span><span class="p">,</span> <span class="s2">&quot;PinCushion&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rain_type</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">distortiontype</span> <span class="o">==</span> <span class="s2">&quot;NegativeBarrel&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">radialk1</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">distortiontype</span> <span class="o">!=</span> <span class="s2">&quot;PinCushion&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">radialk1</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span>
+
+<div class="viewcode-block" id="RadialLensDistortion.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.RadialLensDistortion.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">radial_distort</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">d_coef</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radialk1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">w</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+            <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">w</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+            <span class="n">M</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getOptimalNewCameraMatrix</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">d_coef</span><span class="p">,</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">remap</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">initUndistortRectifyMap</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">d_coef</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">remap</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="o">*</span><span class="n">remap</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">INTER_LINEAR</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">image</span>
+
+        <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">radial_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">radial_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">mask</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span><span class="p">,</span>
+                        <span class="n">radial_distort</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">radial_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">radial_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span><span class="p">,</span>
+                        <span class="n">radial_distort</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span><span class="p">:</span>
+                <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                    <span class="n">radial_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">entities</span>
+
+        <span class="k">return</span> <span class="n">do</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TangentialLensDistortion"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.TangentialLensDistortion">[docs]</a><span class="k">class</span> <span class="nc">TangentialLensDistortion</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to apply tangential distortion to an image or specific classes of an image.</span>
+<span class="sd">        It is applied to masks/ annotation masks too</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">Operation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tangentialP1</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tangentialP2</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
+
+<div class="viewcode-block" id="TangentialLensDistortion.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.TangentialLensDistortion.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">tangential_distort</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">d_coef</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tangentialP1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tangentialP2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">w</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+            <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">w</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+            <span class="n">M</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getOptimalNewCameraMatrix</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">d_coef</span><span class="p">,</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">remap</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">initUndistortRectifyMap</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">d_coef</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">remap</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="o">*</span><span class="n">remap</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">INTER_LINEAR</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">image</span>
+
+        <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">tangential_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">tangential_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">mask</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">mask_label</span><span class="p">,</span>
+                        <span class="n">tangential_distort</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">tangential_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                        <span class="n">tangential_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">image</span>
+                    <span class="n">image_mask</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">annotation_mask</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">apply_augmentation</span><span class="p">(</span>
+                        <span class="n">image</span><span class="p">,</span> <span class="n">image_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">annotation_label</span><span class="p">,</span>
+                        <span class="n">tangential_distort</span><span class="p">)</span>
+                    <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">entities</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_mask</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">is_annotation</span><span class="p">:</span>
+                <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span>
+                    <span class="n">tangential_distort</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">entities</span>
+
+        <span class="k">return</span> <span class="n">do</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RainScene"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.RainScene">[docs]</a><span class="k">class</span> <span class="nc">RainScene</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to apply rain effect to an image based on the paramters rain type (drizzle, heavy, torrential),</span>
+<span class="sd">        drop width, length and color, slant of the rain and a brightness coefficient</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">Operation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rain_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;drizzle&quot;</span><span class="p">,</span> <span class="s2">&quot;heavy&quot;</span><span class="p">,</span> <span class="s2">&quot;torrential&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;raint_type must be one of (</span><span class="si">{}</span><span class="s2">). Got: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="p">[</span><span class="s2">&quot;drizzle&quot;</span><span class="p">,</span> <span class="s2">&quot;heavy&quot;</span><span class="p">,</span> <span class="s2">&quot;torrential&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rain_type</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="o">-</span><span class="mi">20</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slant_lower</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slant_upper</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sd">&#39;&#39;&#39;Invalid combination of slant_lower and slant_upper. Got:</span>
+<span class="sd">                {}&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slant_lower</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slant_upper</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">drop_width</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;drop_width must be in range [1, 5]. Got: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">drop_width</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">drop_length</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;drop_length must be in range [0, 100]. Got: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">drop_length</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">brightness_coefficient</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sd">&#39;&#39;&#39;brightness_coefficient must be in range [0, 1]. Got:</span>
+<span class="sd">                {}&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">brightness_coefficient</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">drop_color</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">drop_color</span><span class="p">,</span>
+                                                   <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sd">&#39;&#39;&#39;drop_color must be a list of length 3 and each value</span>
+<span class="sd">                must be in range [0, 255] . Got: {}&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">drop_color</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slant_lower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slant_lower</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slant_upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slant_upper</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">drop_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">drop_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drop_color</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">drop_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blur_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">blur_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brightness_coefficient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">brightness_coefficient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rain_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rain_type</span>
+
+<div class="viewcode-block" id="RainScene.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.RainScene.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">rain</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+                <span class="n">slant</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slant_lower</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">slant_upper</span><span class="p">))</span>
+
+                <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">area</span> <span class="o">=</span> <span class="n">height</span> <span class="o">*</span> <span class="n">width</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rain_type</span> <span class="o">==</span> <span class="s2">&quot;drizzle&quot;</span><span class="p">:</span>
+                    <span class="n">num_drops</span> <span class="o">=</span> <span class="n">area</span> <span class="o">//</span> <span class="mi">770</span>
+                    <span class="n">drop_length</span> <span class="o">=</span> <span class="mi">10</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rain_type</span> <span class="o">==</span> <span class="s2">&quot;heavy&quot;</span><span class="p">:</span>
+                    <span class="n">num_drops</span> <span class="o">=</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span> <span class="o">//</span> <span class="mi">600</span>
+                    <span class="n">drop_length</span> <span class="o">=</span> <span class="mi">30</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rain_type</span> <span class="o">==</span> <span class="s2">&quot;torrential&quot;</span><span class="p">:</span>
+                    <span class="n">num_drops</span> <span class="o">=</span> <span class="n">area</span> <span class="o">//</span> <span class="mi">500</span>
+                    <span class="n">drop_length</span> <span class="o">=</span> <span class="mi">60</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">drop_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drop_length</span>
+                    <span class="n">num_drops</span> <span class="o">=</span> <span class="n">area</span> <span class="o">//</span> <span class="mi">600</span>
+                <span class="n">rain_drops</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+                        <span class="n">num_drops</span><span class="p">):</span>
+                    <span class="c1"># If You want heavy rain, try increasing this</span>
+                    <span class="k">if</span> <span class="n">slant</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">slant</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="n">slant</span><span class="p">)</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">height</span> <span class="o">-</span> <span class="n">drop_length</span><span class="p">)</span>
+                    <span class="n">rain_drops</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">drop_length</span><span class="p">,</span> <span class="n">rain_drops</span><span class="p">,</span> <span class="n">slant</span>
+
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">drop_length</span><span class="p">,</span> <span class="n">rain_drops</span><span class="p">,</span> <span class="n">slant</span> <span class="o">=</span> <span class="n">get_params</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">rain_drop_x0</span><span class="p">,</span> <span class="n">rain_drop_y0</span><span class="p">)</span> <span class="ow">in</span> <span class="n">rain_drops</span><span class="p">:</span>
+                <span class="n">rain_drop_x1</span> <span class="o">=</span> <span class="n">rain_drop_x0</span> <span class="o">+</span> <span class="n">slant</span>
+                <span class="n">rain_drop_y1</span> <span class="o">=</span> <span class="n">rain_drop_y0</span> <span class="o">+</span> <span class="n">drop_length</span>
+
+                <span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+                    <span class="n">image</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">rain_drop_x0</span><span class="p">,</span>
+                     <span class="n">rain_drop_y0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">rain_drop_x1</span><span class="p">,</span>
+                     <span class="n">rain_drop_y1</span><span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">drop_color</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">drop_width</span><span class="p">)</span>
+
+            <span class="c1"># rainy view are blurry</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">blur</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blur_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blur_value</span><span class="p">))</span>
+            <span class="n">image_hls</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span>
+                <span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_RGB2HLS</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="c1"># image_hls[:, :, 1] *= self.brightness_coefficient</span>
+
+            <span class="n">image_rgb</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span>
+                <span class="n">image_hls</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_HLS2RGB</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">image_rgb</span>
+
+        <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>
+            <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">rain</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">entities</span>
+
+        <span class="k">return</span> <span class="n">do</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SunFlare"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.SunFlare">[docs]</a><span class="k">class</span> <span class="nc">SunFlare</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to apply sun flare effect to an image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">Operation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SunFlare.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.SunFlare.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">sun_flare</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">flare_center</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">angle</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">no_of_flare_circles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                      <span class="n">src_radius</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">src_color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)):</span>
+            <span class="k">def</span> <span class="nf">flare_source</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">src_color</span><span class="p">):</span>
+                <span class="n">overlay</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">num_times</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">//</span> <span class="mi">10</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">num_times</span><span class="p">)</span>
+                <span class="n">rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">num_times</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_times</span><span class="p">):</span>
+                    <span class="n">cv2</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">overlay</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">rad</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">src_color</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">alp</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">[</span><span class="n">num_times</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> \
+                        <span class="n">alpha</span><span class="p">[</span><span class="n">num_times</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">[</span><span class="n">num_times</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">overlay</span><span class="p">,</span> <span class="n">alp</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">alp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">output</span>
+
+            <span class="k">def</span> <span class="nf">add_sun_flare_line</span><span class="p">(</span><span class="n">flare_center</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">imshape</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">rand_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">imshape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">10</span><span class="p">):</span>
+                    <span class="n">rand_y</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">rand_x</span> <span class="o">-</span>
+                                                <span class="n">flare_center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span>
+                                                <span class="n">flare_center</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rand_x</span><span class="p">)</span>
+                    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">flare_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">rand_y</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+
+            <span class="k">def</span> <span class="nf">add_sun_process</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">no_of_flare_circles</span><span class="p">,</span>
+                                <span class="n">flare_center</span><span class="p">,</span> <span class="n">src_radius</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">src_color</span><span class="p">):</span>
+                <span class="n">overlay</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">imshape</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no_of_flare_circles</span><span class="p">):</span>
+                    <span class="n">alpha</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">rad</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">imshape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">100</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="n">cv2</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span>
+                        <span class="n">overlay</span><span class="p">,</span>
+                        <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">r</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">r</span><span class="p">])),</span>
+                        <span class="n">rad</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+                        <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">src_color</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                        <span class="n">src_color</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                         <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                             <span class="nb">max</span><span class="p">(</span><span class="n">src_color</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">src_color</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                         <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">src_color</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                        <span class="n">src_color</span><span class="p">[</span><span class="mi">2</span><span class="p">])),</span>
+                        <span class="o">-</span> <span class="mi">1</span>
+                    <span class="p">)</span>
+                    <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span>
+                        <span class="n">overlay</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">flare_source</span><span class="p">(</span>
+                    <span class="n">output</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span>
+                        <span class="n">flare_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span>
+                        <span class="n">flare_center</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">src_radius</span><span class="p">,</span> <span class="n">src_color</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">output</span>
+
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">imshape</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">angle</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">angle_t</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">angle_t</span> <span class="o">==</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">angle_t</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">angle_t</span> <span class="o">=</span> <span class="n">angle</span>
+            <span class="k">if</span> <span class="n">flare_center</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">flare_center_t</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                        <span class="mi">0</span><span class="p">,</span> <span class="n">imshape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                        <span class="mi">0</span><span class="p">,</span> <span class="n">imshape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">flare_center_t</span> <span class="o">=</span> <span class="n">flare_center</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">add_sun_flare_line</span><span class="p">(</span><span class="n">flare_center_t</span><span class="p">,</span> <span class="n">angle_t</span><span class="p">,</span> <span class="n">imshape</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">add_sun_process</span><span class="p">(</span>
+                <span class="n">image</span><span class="p">,</span>
+                <span class="n">no_of_flare_circles</span><span class="p">,</span>
+                <span class="n">flare_center_t</span><span class="p">,</span>
+                <span class="n">src_radius</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">src_color</span><span class="p">)</span>
+            <span class="n">image_RGB</span> <span class="o">=</span> <span class="n">output</span>
+            <span class="k">return</span> <span class="n">image_RGB</span>
+
+        <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>
+            <span class="n">entities</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">sun_flare</span><span class="p">(</span><span class="n">entities</span><span class="o">.</span><span class="n">image</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">entities</span>
+
+        <span class="k">return</span> <span class="n">do</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MotionBlur"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.MotionBlur">[docs]</a><span class="k">class</span> <span class="nc">MotionBlur</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to apply motion blur to an image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;blurness&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">CrucialValueNotFoundError</span><span class="p">(</span>
+                <span class="s2">&quot;MotionBlur&quot;</span><span class="p">,</span> <span class="s2">&quot;blurness coefficient&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blurness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">blurness</span>
+
+<div class="viewcode-block" id="MotionBlur.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.MotionBlur.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Motionblur not implemented&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FogScene"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.FogScene">[docs]</a><span class="k">class</span> <span class="nc">FogScene</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to apply fog effect to an image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgsClass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;fogness&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">CrucialValueNotFoundError</span><span class="p">(</span><span class="s2">&quot;FogScene&quot;</span><span class="p">,</span> <span class="s2">&quot;Fogness coefficient&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fogness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">fogness</span>
+
+<div class="viewcode-block" id="FogScene.perform_operation"><a class="viewcode-back" href="../../../zokyo.augmentation.html#zokyo.augmentation.operations.FogScene.perform_operation">[docs]</a>    <span class="k">def</span> <span class="nf">perform_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;FogScene not implemented&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Toyota Connected.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
