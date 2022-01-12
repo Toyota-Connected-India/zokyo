@@ -14,6 +14,10 @@ from .utils import apply_augmentation
 
 
 class Operation(object):
+    """
+        Base class for operations
+    """
+
     def __init__(self, probability):
         self.probability = probability
 
@@ -25,6 +29,10 @@ class Operation(object):
 
 
 class ArgsClass(object):
+    """
+        Class used to handle arguments passed to operations
+    """
+
     def __init__(self, **kwargs):
         if "probability" not in kwargs.keys():
             kwargs["probability"] = 1
@@ -46,6 +54,10 @@ class ArgsClass(object):
 
 
 class EqualizeScene(Operation):
+    """
+        Class to equalize an image or specific classes of an image
+    """
+
     def __init__(self, **kwargs):
         self.args = ArgsClass(**kwargs)
         Operation.__init__(self, self.args.probability)
@@ -83,7 +95,7 @@ class EqualizeScene(Operation):
                     entities.image = Image.fromarray(image)
                     return entities
 
-            if not self.is_mask and not self.is_annotation:
+            if not self.args.is_mask and not self.args.is_annotation:
                 entities.image = ImageOps.equalize(entities.image)
                 return entities
 
@@ -91,6 +103,10 @@ class EqualizeScene(Operation):
 
 
 class DarkenScene(Operation):
+    """
+        Class to darken an image or specific classes of an image based on the darkness parameter[0, 1]
+    """
+
     def __init__(self, **kwargs):
         self.args = ArgsClass(**kwargs)
         Operation.__init__(self, self.args.probability)
@@ -141,7 +157,7 @@ class DarkenScene(Operation):
                     entities.image = Image.fromarray(image)
                     return entities
 
-            if not self.is_mask and not self.is_annotation:
+            if not self.args.is_mask and not self.args.is_annotation:
                 entities.image = Image.fromarray(darken(entities.image))
                 return entities
 
@@ -149,6 +165,10 @@ class DarkenScene(Operation):
 
 
 class BrightenScene(Operation):
+    """
+        Class to brighten an image or specific classes of an image based on the brightness parameter[0, 1]
+    """
+
     def __init__(self, **kwargs):
         self.args = ArgsClass(**kwargs)
         Operation.__init__(self, self.args.probability)
@@ -201,7 +221,7 @@ class BrightenScene(Operation):
                     entities.image = Image.fromarray(image)
                     return entities
 
-            if not self.is_mask and not self.is_annotation:
+            if not self.args.is_mask and not self.args.is_annotation:
                 entities.image = Image.fromarray(brighten(entities.image))
                 return entities
 
@@ -209,6 +229,11 @@ class BrightenScene(Operation):
 
 
 class RandomBrightness(Operation):
+    """
+        Class to randomly brighten an image or specific classes of an image based on the random distribution
+        parameter (normal or uniform)
+    """
+
     def __init__(self, **kwargs):
         self.args = ArgsClass(**kwargs)
         Operation.__init__(self, self.args.probability)
@@ -262,7 +287,7 @@ class RandomBrightness(Operation):
                     entities.image = Image.fromarray(image)
                     return entities
 
-            if not self.is_mask and not self.is_annotation:
+            if not self.args.is_mask and not self.args.is_annotation:
                 entities.image = Image.fromarray(
                     random_brighten(entities.image))
                 return entities
@@ -271,6 +296,10 @@ class RandomBrightness(Operation):
 
 
 class SnowScene(Operation):
+    """
+        Class to add snow effect to an image or specific classes of an image
+    """
+
     def __init__(self, **kwargs):
         self.args = ArgsClass(**kwargs)
         Operation.__init__(self, self.args.probability)
@@ -286,7 +315,7 @@ class SnowScene(Operation):
             rand = np.random.randint(
                 225, 255, (image_HLS[:, :, 1].shape[0],
                            image_HLS[:, :, 1].shape[1]))
-            image_HLS[:, :, 1][image_HLS[:, :, 1] > coefficient] = rand[image_HLS[:, :, 1] > coefficient] # noqa
+            image_HLS[:, :, 1][image_HLS[:, :, 1] > coefficient] = rand[image_HLS[:, :, 1] > coefficient]  # noqa
             image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2BGR_FULL)
             return image_RGB
 
@@ -315,7 +344,7 @@ class SnowScene(Operation):
                     entities.image = Image.fromarray(image)
                     return entities
 
-            if not self.is_mask and not self.is_annotation:
+            if not self.args.is_mask and not self.args.is_annotation:
                 entities.image = Image.fromarray(snow(entities.image))
                 return entities
 
@@ -323,6 +352,11 @@ class SnowScene(Operation):
 
 
 class RadialLensDistortion(Operation):
+    """
+        Class to apply radial distortion to an image or specific classes of an image using the
+        distortion type parameter (NegativeBarrel, PinCushion). It is applied to masks/ annotation masks too
+    """
+
     def __init__(self, **kwargs):
         self.args = ArgsClass(**kwargs)
         Operation.__init__(self, self.args.probability)
@@ -383,7 +417,7 @@ class RadialLensDistortion(Operation):
                     entities.image = Image.fromarray(image)
                     return entities
 
-            if not self.is_mask and not self.is_annotation:
+            if not self.args.is_mask and not self.args.is_annotation:
                 entities.image = Image.fromarray(
                     radial_distort(entities.image))
                 return entities
@@ -392,6 +426,11 @@ class RadialLensDistortion(Operation):
 
 
 class TangentialLensDistortion(Operation):
+    """
+        Class to apply tangential distortion to an image or specific classes of an image.
+        It is applied to masks/ annotation masks too
+    """
+
     def __init__(self, **kwargs):
         self.args = ArgsClass(**kwargs)
         Operation.__init__(self, self.args.probability)
@@ -443,7 +482,7 @@ class TangentialLensDistortion(Operation):
                     entities.image = Image.fromarray(image)
                     return entities
 
-            if not self.is_mask and not self.is_annotation:
+            if not self.args.is_mask and not self.args.is_annotation:
                 entities.image = Image.fromarray(
                     tangential_distort(entities.image))
                 return entities
@@ -452,6 +491,11 @@ class TangentialLensDistortion(Operation):
 
 
 class RainScene(Operation):
+    """
+        Class to apply rain effect to an image based on the paramters rain type (drizzle, heavy, torrential),
+        drop width, length and color, slant of the rain and a brightness coefficient
+    """
+
     def __init__(self, **kwargs):
         self.args = ArgsClass(**kwargs)
         Operation.__init__(self, self.args.probability)
@@ -566,30 +610,11 @@ class RainScene(Operation):
         return do(entities)
 
 
-class MotionBlur(Operation):
-    def __init__(self, **kwargs):
-        self.args = ArgsClass(**kwargs)
-        if 'blurness' not in self.args.__dict__.keys():
-            raise CrucialValueNotFoundError(
-                "MotionBlur", "blurness coefficient")
-        self.blurness = self.args.blurness
-
-    def perform_operation(self, images):
-        raise NotImplementedError("Motionblur not implemented")
-
-
-class FogScene(Operation):
-    def __init__(self, **kwargs):
-        self.args = ArgsClass(**kwargs)
-        if 'fogness' not in self.args.__dict__.keys():
-            raise CrucialValueNotFoundError("FogScene", "Fogness coefficient")
-        self.fogness = self.args.fogness
-
-    def perform_operation(self, images):
-        raise NotImplementedError("FogScene not implemented")
-
-
 class SunFlare(Operation):
+    """
+        Class to apply sun flare effect to an image
+    """
+
     def __init__(self, **kwargs):
         self.args = ArgsClass(**kwargs)
         Operation.__init__(self, self.args.probability)
@@ -682,3 +707,34 @@ class SunFlare(Operation):
             return entities
 
         return do(entities)
+
+
+class MotionBlur(Operation):
+    """
+        Class to apply motion blur to an image
+    """
+
+    def __init__(self, **kwargs):
+        self.args = ArgsClass(**kwargs)
+        if 'blurness' not in self.args.__dict__.keys():
+            raise CrucialValueNotFoundError(
+                "MotionBlur", "blurness coefficient")
+        self.blurness = self.args.blurness
+
+    def perform_operation(self, images):
+        raise NotImplementedError("Motionblur not implemented")
+
+
+class FogScene(Operation):
+    """
+        Class to apply fog effect to an image
+    """
+
+    def __init__(self, **kwargs):
+        self.args = ArgsClass(**kwargs)
+        if 'fogness' not in self.args.__dict__.keys():
+            raise CrucialValueNotFoundError("FogScene", "Fogness coefficient")
+        self.fogness = self.args.fogness
+
+    def perform_operation(self, images):
+        raise NotImplementedError("FogScene not implemented")

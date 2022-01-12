@@ -1,0 +1,7 @@
+[run]
+omit = 
+    sphinx/augmentation/tests/*
+    sphinx/utils/tests/*
+    sphinx/decorators.py
+    sphinx/_config.py
+    sphinx/utils/testing.py

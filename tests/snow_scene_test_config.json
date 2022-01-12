@@ -8,7 +8,7 @@
     "run_all" : false,
     "operations": [
         {
-            "operation": "RandomBrightness",
+            "operation": "SnowScene",
             "operation_module" : "sphinx.augmentation",
             "args": {
                 "probability": 1,

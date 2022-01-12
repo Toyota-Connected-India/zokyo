@@ -4,14 +4,13 @@
     "output_dir": "tests/output",
     "annotation_dir": "tests/annotation",
     "annotation_format": "pascal_voc",
-    "sample" : 7,
+    "sample" : 6,
     "multi_threaded" : false,
     "run_all" : false,
     "batch_ingestion": false,
     "shuffle": false,
-    "debug": true,
     "process_and_yield": false,
-    "save_annotation_mask" : true,
+    "save_annotation_mask" : false,
     "operations":[
         {
             "operation": "BrightenScene",

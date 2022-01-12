@@ -21,10 +21,10 @@ auto-lint:
 
 .PHONY: test-lint
 test-lint: clean-py
-	pip install flake8; python -m flake8 sphinx --filename='*.py'
+	pip install flake8; python -m flake8 sphinx --filename='*.py' --max-line-length 120 --exclude __init__.py
 .PHONY: test-unit
 test-unit: test-requirements
-	$(PYTHON) -m pytest -v --durations=20 --cov-config .coveragerc --cov sphinx -p no:logging
+	$(PYTHON) -m pytest -v --durations=20 --cov-config=.coveragerc --cov=sphinx -p no:logging
 
 .PHONY: test
 test: test-unit test-lint

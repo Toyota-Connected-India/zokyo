@@ -3,25 +3,18 @@
     "mask_dir" : "tests/masks",
     "output_dir": "tests/output",
     "annotation_dir": "tests/annotation",
-    "annotation_format": "pascal_voc",
-    "sample" : 7,
+    "sample" : 6,
     "multi_threaded" : false,
-    "run_all" : false,
     "batch_ingestion": false,
-    "shuffle": false,
-    "debug": true,
-    "process_and_yield": false,
-    "save_annotation_mask" : true,
-    "operations":[
+    "run_all" : false,
+    "operations": [
         {
             "operation": "BrightenScene",
             "operation_module" : "sphinx.augmentation",
             "args": {
                 "probability": 1,
-                "brightness" : 1,
-                "is_annotation" : true,
-                "annotation_label" : 1
-            }
+                "brightness": 1
+              }
         }
     ]
 }

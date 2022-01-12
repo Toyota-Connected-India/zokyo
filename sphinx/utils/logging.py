@@ -4,6 +4,10 @@ import sys
 
 
 def get_logger(name: str, level) -> Logger:
+    """
+        Function to configure and return logger
+    """
+
     log_fmt = '%(asctime)s [%(name)s] [%(levelname)s] %(message)s'
     formatter = logging.Formatter(log_fmt)
     console_handler = logging.StreamHandler(sys.stdout)

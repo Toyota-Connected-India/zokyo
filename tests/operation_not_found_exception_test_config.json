@@ -5,16 +5,13 @@
     "sample" : 6,
     "multi_threaded" : false,
     "batch_ingestion": false,
-    "debug": true,
     "run_all" : false,
     "operations": [
         {
-            "operation": "EqualizeScene",
+            "operation": "XYZ",
             "operation_module" : "sphinx.augmentation",
             "args": {
-                "probability": 1,
-                "is_mask": true,
-                "mask_label": 7
+                "probability": 1
               }
         }
     ]

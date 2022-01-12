@@ -1,4 +1,8 @@
 class CoefficientNotinRangeError(Exception):
+    """
+        Class to throw exception when a coefficient is not in the specified range
+    """
+
     def __init__(self, coefficient, coeff_type="Default",
                  range_min=0, range_max=1):
         self.range_max = range_max
@@ -8,12 +12,15 @@ class CoefficientNotinRangeError(Exception):
         super().__init__()
 
     def __str__(self):
-        return '''\"{0}\" coefficient of value {1} is not in range
-                  {2} and {3}'''.format(
+        return '''\"{0}\" coefficient of value {1} is not in range {2} and {3}'''.format(
             self.coeff_type, self.coefficient, self.range_min, self.range_max)
 
 
 class InvalidImageArrayError(Exception):
+    """
+        Class to throw exception when an image is not valid
+    """
+
     def __init__(self, image_type="PIL"):
         self.image_type = image_type
         super().__init__()
@@ -23,6 +30,10 @@ class InvalidImageArrayError(Exception):
 
 
 class CrucialValueNotFoundError(Exception):
+    """
+        Class to throw exception when an expected value is not found
+    """
+
     def __init__(self, operation, value_type="sample"):
         self.value_type = value_type
         self.operation = operation
@@ -34,6 +45,10 @@ class CrucialValueNotFoundError(Exception):
 
 
 class OperationNotFoundOrImplemented(Exception):
+    """
+        Class to throw exception when an operation is not found
+    """
+
     def __init__(self, module, class_name):
         self.module = module
         self.class_name = class_name
@@ -41,10 +56,14 @@ class OperationNotFoundOrImplemented(Exception):
 
     def __str__(self):
         return "\"{0}\" not found or implemented in the module \"{1}\"".format(
-            self.module, self.class_name)
+            self.class_name, self.module)
 
 
 class ConfigurationError(Exception):
+    """
+        Class to throw exception when a configuration is not right
+    """
+
     def __init__(self, exception_string) -> None:
         self.exception_string = exception_string
         super().__init__()

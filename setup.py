@@ -19,16 +19,16 @@ builtins.__SPHINX_SETUP__ = True
 import sphinx
 
 REQUIREMENTS = [
-    'grpcio==1.26.0',
     'numpy>=1.17.3',
-    'pandas<1.0.0',
     'pyyaml==5.1.2',
+    'pandas>=1.1.5',
     'scikit-learn>=0.23.2',
     'Augmentor>=0.2.8',
     'opencv-python>=4.4.0',
     'Pillow>=5.2.0',
     'scipy>=1.5.0',
-    'tqdm'
+    'tqdm',
+    'tensorflow>=2.5.0rc1'
 ]
 
 SETUPTOOLS_COMMANDS = {

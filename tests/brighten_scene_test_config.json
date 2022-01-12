@@ -4,7 +4,7 @@
     "output_dir": "tests/output",
     "sample" : 6,
     "multi_threaded" : false,
-    "batch_ingestion": true,
+    "batch_ingestion": false,
     "run_all" : false,
     "operations": [
         {
