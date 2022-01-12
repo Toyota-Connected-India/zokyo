@@ -3,8 +3,6 @@
 # ============================================================================
 # Copyright:    Toyota Connected, 2020.  All rights reserved.
 # Authors:      Zokyo Developers
-# Email:        <ashok.ramadass@toyotaconnected.com>
-# Date:         10/28/20  11:58:37
 # ============================================================================
 
 from setuptools import setup

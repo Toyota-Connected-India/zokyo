@@ -94,16 +94,6 @@ class Builder(AbstractBuilder):
                         "is_mask" : true,
                         "label" : 2
                     }
-                },
-                {
-                    "operation": "RadialLensDistortion",
-                    "operation_module" : "zokyo.augmentation",
-                    "args": {
-                        "probability": 0.5,
-                        "is_annotation" : true,
-                        "distortiontype" : "NegativeBarrel",
-                        "is_mask" : true
-                    }
                 }
             ]
         }
@@ -554,6 +544,9 @@ class Builder(AbstractBuilder):
             self.sample_factor = math.ceil(self.sample / self.batch_size)
 
     def _augment_data_batch(self, data_list, batch_size):
+        """
+        Method to augment batches of data given the data paths and the required batch size.
+        """
 
         entities = self._load_entities(data_list)
         if self.debug:
