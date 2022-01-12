@@ -6,7 +6,7 @@ from itertools import cycle
 
 class _DataPipeline(object):
     """
-        Class which accepts SphinxData objects to pass through different operations to perform augmentation
+        Class which accepts ZokyoData objects to pass through different operations to perform augmentation
     """
 
     def __init__(self, entities, shuffle=False, **kwargs):
@@ -23,7 +23,7 @@ class _DataPipeline(object):
             self.operations.append(operation)
         else:
             raise TypeError(
-                '''Must be of type Augmentor Operation or a Sphinx
+                '''Must be of type Augmentor Operation or a Zokyo
                 Operation to be added to the pipeline.''')
 
     def remove_operation(self, operation_index=-1):

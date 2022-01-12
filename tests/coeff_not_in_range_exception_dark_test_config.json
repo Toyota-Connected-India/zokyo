@@ -9,7 +9,7 @@
     "operations": [
         {
             "operation": "DarkenScene",
-            "operation_module" : "sphinx.augmentation",
+            "operation_module" : "zokyo.augmentation",
             "args": {
                 "probability": 1,
                 "darkness": -2

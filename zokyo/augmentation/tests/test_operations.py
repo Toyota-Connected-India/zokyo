@@ -1,5 +1,5 @@
 import unittest  # noqa: F401
-from sphinx.augmentation import Builder
+from zokyo.augmentation import Builder
 import shutil
 import os
 import pytest

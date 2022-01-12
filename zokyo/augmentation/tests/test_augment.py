@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import pytest
-from sphinx.augmentation import Builder
+from zokyo.augmentation import Builder
 import shutil
 import cv2
 

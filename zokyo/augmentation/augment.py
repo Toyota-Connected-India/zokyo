@@ -19,7 +19,7 @@ import random
 import uuid
 from abc import ABC, abstractclassmethod
 import xml.etree.ElementTree as ET
-from .data import SphinxData
+from .data import ZokyoData
 import cv2
 from .utils import change_pascal_annotation
 from ..utils.logging import get_logger
@@ -76,7 +76,7 @@ class Builder(AbstractBuilder):
             "operations":[
                 {
                     "operation": "DarkenScene",
-                    "operation_module" : "sphinx.augmentation",
+                    "operation_module" : "zokyo.augmentation",
                     "args": {
                         "probability": 0.7,
                         "darkness" : 0.5,
@@ -88,7 +88,7 @@ class Builder(AbstractBuilder):
                 },
                 {
                     "operation": "EqualizeScene",
-                    "operation_module" : "sphinx.augmentation",
+                    "operation_module" : "zokyo.augmentation",
                     "args": {
                         "probability": 0.5,
                         "is_mask" : true,
@@ -97,7 +97,7 @@ class Builder(AbstractBuilder):
                 },
                 {
                     "operation": "RadialLensDistortion",
-                    "operation_module" : "sphinx.augmentation",
+                    "operation_module" : "zokyo.augmentation",
                     "args": {
                         "probability": 0.5,
                         "is_annotation" : true,
@@ -116,7 +116,7 @@ class Builder(AbstractBuilder):
         self.batch_size = None
         self._image_extension_list = ["png", "jpg", "jpeg", "bmp"]
         self._annotation_extension_list = ["xml"]
-        self.logger = get_logger("Sphinx Builder", level=logging.INFO)
+        self.logger = get_logger("Zokyo Builder", level=logging.INFO)
 
         with open(config_json) as config_file:
             self.config = json.load(config_file)
@@ -328,12 +328,12 @@ class Builder(AbstractBuilder):
 
     def _add_operation(self, pipeline):
         """
-            Adds operation to sphinx pipeline. Dynamic module loading.
+            Adds operation to zokyo pipeline. Dynamic module loading.
         """
 
         for operation in self.operations:
             if "operation_module" not in operation:
-                operation_module = "sphinx.augmentation"
+                operation_module = "zokyo.augmentation"
             else:
                 operation_module = operation["operation_module"]
 
@@ -455,12 +455,12 @@ class Builder(AbstractBuilder):
 
     def _load_entities(self, data_sample_list):
         """
-            Method to return images, annotations and masks as SphinxData objects for the given paths
+            Method to return images, annotations and masks as ZokyoData objects for the given paths
         """
 
         image_mask_list = []
         for data_dict in data_sample_list:
-            sd = SphinxData()
+            sd = ZokyoData()
             sd.name = Path(data_dict["image"]).stem
             sd.image = Image.open(data_dict["image"])
             if data_dict["mask"] is not None:
@@ -476,7 +476,7 @@ class Builder(AbstractBuilder):
 
     def _save_entities_to_disk(self, entities):
         """
-            Method to save the SphinxData objects to the output directory
+            Method to save the ZokyoData objects to the output directory
             TODO: Parallelize saving the images to disk
         """
 

@@ -15,7 +15,7 @@
     "operations":[
         {
             "operation": "BrightenScene",
-            "operation_module" : "sphinx.augmentation",
+            "operation_module" : "zokyo.augmentation",
             "args": {
                 "probability": 1,
                 "brightness" : 1,

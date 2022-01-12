@@ -8,7 +8,7 @@
     "operations": [
         {
             "operation": "RainScene",
-            "operation_module" : "sphinx.augmentation",
+            "operation_module" : "zokyo.augmentation",
             "args": {
                 "slant_lower": -10,
                 "slant_upper": 10,

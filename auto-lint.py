@@ -1,9 +1,9 @@
 import os
 from tqdm import tqdm
 
-SPHINX_DIR = "sphinx"
+ZOKYO_DIR = "zokyo"
 
-for root, dirs, files in os.walk(SPHINX_DIR):
+for root, dirs, files in os.walk(ZOKYO_DIR):
     modules = root.split(os.sep)
     print("Linting module {}..".format(modules[-1]))
     for file in tqdm(files):

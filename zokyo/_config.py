@@ -6,7 +6,7 @@ import importlib
 class _Config:
     """Singleton for storing package info lazily. We load lazily since it's
     expensive to load some of these modules and if we try to load them all,
-    importing sphinx can take several seconds to import
+    importing zokyo can take several seconds to import
     """
 
     def _see_if_available(self, package_name):

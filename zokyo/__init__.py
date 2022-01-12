@@ -3,16 +3,16 @@
 from pathlib import Path
 
 try:
-    __SPHINX_SETUP__
+    __ZOKYO_SETUP__
 except NameError:
-    __SPHINX_SETUP__ = False
+    __ZOKYO_SETUP__ = False
 
 # global namespace
 try:
-    from sphinx import utils
-    from sphinx import augmentation
+    from zokyo import utils
+    from zokyo import augmentation
 except ImportError:
-    if __SPHINX_SETUP__ is False:
+    if __ZOKYO_SETUP__ is False:
         raise
 
 try:

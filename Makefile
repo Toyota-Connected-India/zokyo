@@ -9,7 +9,7 @@ GIT_TAG := $(shell git describe --tags --exact-match $(GIT_HASH) 2>/dev/null)
 
 PYTHON_VERSION := py3$(shell python -V | cut -c 10)
 
-GITHUB_SPHINX_BASE ?= github-sphinx
+GITHUB_ZOKYO_BASE ?= github-zokyo
 
 .PHONY: aws-login
 aws-login: ${CRED_FILE}
@@ -21,10 +21,10 @@ auto-lint:
 
 .PHONY: test-lint
 test-lint: clean-py
-	pip install flake8; python -m flake8 sphinx --filename='*.py' --max-line-length 120 --exclude __init__.py
+	pip install flake8; python -m flake8 zokyo --filename='*.py' --max-line-length 120 --exclude __init__.py
 .PHONY: test-unit
 test-unit: test-requirements
-	$(PYTHON) -m pytest -v --durations=20 --cov-config=.coveragerc --cov=sphinx -p no:logging
+	$(PYTHON) -m pytest -v --durations=20 --cov-config=.coveragerc --cov=zokyo -p no:logging
 
 .PHONY: test
 test: test-unit test-lint
@@ -46,7 +46,7 @@ install:
 .PHONY: VERSION
 VERSION:
 ifneq ($(GIT_TAG),)
-	@echo $(GIT_TAG) > sphinx/VERSION
+	@echo $(GIT_TAG) > zokyo/VERSION
 else
 	@echo "Not a tagged commit, will not write to VERSION file"
 endif
@@ -59,7 +59,7 @@ endif
 	docker run --rm -t \
 		-v `pwd`:/app \
 		-w /app \
-		$(PREFIX)/$(GITHUB_SPHINX_BASE):latest \
+		$(PREFIX)/$(GITHUB_ZOKYO_BASE):latest \
 		python setup.py sdist
 
 .PHONY: clean-py
@@ -70,5 +70,5 @@ clean-py:
 clean: clean-py
 	rm -rf build
 	rm -rf dist
-	rm -rf sphinx.egg-info
+	rm -rf zokyo.egg-info
 	rm -rf .eggs

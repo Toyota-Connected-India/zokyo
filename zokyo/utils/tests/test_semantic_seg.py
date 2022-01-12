@@ -5,7 +5,7 @@ import json
 import shutil
 import cv2
 import numpy as np
-from sphinx.utils import semantic_seg
+from zokyo.utils import semantic_seg
 
 out_dir = "tests/semantic_seg/semantic_map"
 

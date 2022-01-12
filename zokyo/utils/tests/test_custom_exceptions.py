@@ -1,9 +1,9 @@
 import pytest
 import shutil
 from pathlib import Path
-from sphinx.utils.CustomExceptions import CoefficientNotinRangeError, OperationNotFoundOrImplemented, \
+from zokyo.utils.CustomExceptions import CoefficientNotinRangeError, OperationNotFoundOrImplemented, \
     CrucialValueNotFoundError
-from sphinx.augmentation import Builder
+from zokyo.augmentation import Builder
 
 test_configs = [
     "tests/coeff_not_in_range_exception_bright_test_config.json",
@@ -32,7 +32,7 @@ exception_classes = [
 err_msgs = [
     '''\"BrightnessCoefficient\" coefficient of value 2 is not in range 0 and 1''',
     '''\"darkness\" coefficient of value -2 is not in range 0 and 1''',
-    '"XYZ" not found or implemented in the module "sphinx.augmentation"',
+    '"XYZ" not found or implemented in the module "zokyo.augmentation"',
     "\"operations\" value not found for the \"augmentation configurations\" mentioned",
     "\"input_dir\" value not found for the \"configuration json file\" mentioned",
     "\"annotation_format\" value not found for the \"annotation data\" mentioned",

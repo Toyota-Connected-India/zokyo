@@ -1,4 +1,4 @@
-from sphinx.augmentation import Builder
+from zokyo.augmentation import Builder
 from PIL import Image
 import os
 import xml.etree.ElementTree as ET
@@ -44,7 +44,7 @@ while i<len(gen):
     i+=1
 
 # from os import PRIO_PROCESS
-# from sphinx.augmentation import Builder
+# from zokyo.augmentation import Builder
 # import shutil
 
 # try:
@@ -71,7 +71,7 @@ while i<len(gen):
 #         break
 
 # from os import PRIO_PROCESS
-# from sphinx.augmentation import Builder
+# from zokyo.augmentation import Builder
 # import shutil
 # try:
 #     shutil.rmtree('tests/output/images')

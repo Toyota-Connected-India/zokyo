@@ -2,7 +2,7 @@ import pytest  # noqa: F401
 from pathlib import Path
 import os
 import json
-from sphinx.utils import data_format_conversions
+from zokyo.utils import data_format_conversions
 
 VOC = "tests/annotation"
 COCO_STD = "tests/annotation_coco_std/coco_ann.json"

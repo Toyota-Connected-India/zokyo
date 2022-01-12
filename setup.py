@@ -2,7 +2,7 @@
 
 # ============================================================================
 # Copyright:    Toyota Connected, 2020.  All rights reserved.
-# Authors:      Sphinx Developers
+# Authors:      Zokyo Developers
 # Email:        <ashok.ramadass@toyotaconnected.com>
 # Date:         10/28/20  11:58:37
 # ============================================================================
@@ -13,10 +13,10 @@ from setuptools import find_packages
 import sys
 
 # This allows us to determine the package version without needing to install
-# all sphinx dependencies
+# all zokyo dependencies
 import builtins
-builtins.__SPHINX_SETUP__ = True
-import sphinx
+builtins.__ZOKYO_SETUP__ = True
+import zokyo
 
 REQUIREMENTS = [
     'numpy>=1.17.3',
@@ -83,7 +83,7 @@ if SETUPTOOLS_COMMANDS.intersection(sys.argv):
     extra_setuptools_args = dict(
         zip_safe=False,  # the package can run out of an .egg file
         package_data=dict(DISTNAME=['*',
-                                    'sphinx/datasets/uatg/*']),
+                                    'zokyo/datasets/uatg/*']),
         distclass=BinaryDistribution
     )
 else:
@@ -92,14 +92,14 @@ else:
 
 def do_setup():
     setup(
-        name="sphinx",
-        version=sphinx.__version__,
+        name="zokyo",
+        version=zokyo.__version__,
         description="Data augmentation library",
-        author="Sphinx contributors",
+        author="Zokyo contributors",
         author_email=[
             "ashok.ramadass@toyotaconnected.com"
         ],
-        url="https://github.com/toyotaconnected-India/sphinx",
+        url="https://github.com/toyotaconnected-India/zokyo",
         license="Unlicense",
         packages=find_packages(),
         include_package_data=True,

@@ -2,7 +2,7 @@
 
 # ============================================================================
 # Copyright:    Toyota Connected, 2020.  All rights reserved.
-# Authors:      Sphinx Developers
+# Authors:      Zokyo Developers
 # Email:        <ashok.ramadass@toyotaconnected.com>
 # Date:         10/28/20  23:28:54
 # ============================================================================

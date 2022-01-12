@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Utilities for testing used across Sphinx"""
+"""Utilities for testing used across Zokyo"""
 
 __all__ = ['pytest_err_msg']
 

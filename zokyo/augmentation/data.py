@@ -3,9 +3,9 @@ from xml.etree import ElementTree
 import copy
 
 
-class SphinxData(object):
+class ZokyoData(object):
     """
-        Class to represent sphinx data consisting of image name, image, mask and its annotations
+        Class to represent zokyo data consisting of image name, image, mask and its annotations
     """
 
     def __init__(self, ):

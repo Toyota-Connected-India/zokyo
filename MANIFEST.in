@@ -1,6 +1,6 @@
-include sphinx/VERSION
-recursive-include sphinx *
-recursive-include sphinx/augmentation/uatg *
+include zokyo/VERSION
+recursive-include zokyo *
+recursive-include zokyo/augmentation/uatg *
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]

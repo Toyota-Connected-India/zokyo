@@ -10,7 +10,7 @@
     "operations": [
         {
             "operation": "EqualizeScene",
-            "operation_module" : "sphinx.augmentation",
+            "operation_module" : "zokyo.augmentation",
             "args": {
                 "probability": 1,
                 "is_mask": true,

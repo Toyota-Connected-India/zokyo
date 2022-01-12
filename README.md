@@ -1,9 +1,9 @@
-# sphinx
+# zokyo
 
 
 *CV library for image data augmentation*
 
-![Sphinx](https://github.com/toyotaconnected-India/sphinx/workflows/Sphinx/badge.svg?branch=master)
+![Zokyo](https://github.com/toyotaconnected-India/zokyo/workflows/Zokyo/badge.svg?branch=master)
 
 ```
 
@@ -35,9 +35,9 @@ s::::::::::::::s p::::::::::::::::ph:::::h     h:::::i::::::in::::n    n::::n x:
 
 ```
 
-A sphinx (/ˈsfɪŋks/ SFINGKS, Ancient Greek: σφίγξ [spʰíŋks], Boeotian: φίξ [pʰíːks], plural sphinxes or sphinges) is a mythical creature with the head of a human, a falcon, a cat, or a sheep and the body of a lion with the wings of an eagle.
+A zokyo (/ˈsfɪŋks/ SFINGKS, Ancient Greek: σφίγξ [spʰíŋks], Boeotian: φίξ [pʰíːks], plural zokyoes or sphinges) is a mythical creature with the head of a human, a falcon, a cat, or a sheep and the body of a lion with the wings of an eagle.
 
-Sphinx is a CV library for image data augmentation specifically built
+Zokyo is a CV library for image data augmentation specifically built
 for Toyota and Lexus in unit camera streams on top of Augmentor.
 
 ## Installing locally
@@ -58,7 +58,7 @@ $ make test
 
 ## usage
 
-Sample Configuration json for sphinx
+Sample Configuration json for zokyo
 
 ```
 {
@@ -76,7 +76,7 @@ Sample Configuration json for sphinx
             "operations":[
                 {
                     "operation": "DarkenScene",
-                    "operation_module" : "sphinx.augmentation",
+                    "operation_module" : "zokyo.augmentation",
                     "args": {
                         "probability": 0.7,
                         "darkness" : 0.5,
@@ -88,7 +88,7 @@ Sample Configuration json for sphinx
                 },
                 {
                     "operation": "Equalize",
-                    "operation_module" : "sphinx.augmentation",
+                    "operation_module" : "zokyo.augmentation",
                     "args": {
                         "probability": 0.5,
                         "is_mask" : true,
@@ -97,7 +97,7 @@ Sample Configuration json for sphinx
                 },
                 {
                     "operation": "RadialLensDistortion",
-                    "operation_module" : "sphinx.augmentation",
+                    "operation_module" : "zokyo.augmentation",
                     "args": {
                         "probability": 0.5,
                         "is_annotation" : true,
@@ -110,7 +110,7 @@ Sample Configuration json for sphinx
 ```
 
 ```
-from sphinx.augmentation import Builder
+from zokyo.augmentation import Builder
 pipeline = Builder(config_json="config.json")
 pipeline.process_and_save()
 ```

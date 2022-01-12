@@ -11,7 +11,7 @@
     "operations": [
         {
             "operation": "SunFlare",
-            "operation_module" : "sphinx.augmentation",
+            "operation_module" : "zokyo.augmentation",
             "args": {
                 "probability": 1
             }
