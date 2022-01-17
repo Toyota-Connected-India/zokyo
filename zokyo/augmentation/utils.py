@@ -35,6 +35,7 @@ def change_pascal_annotation(annotation, image_dir, filename):
             child.text = os.path.join(image_dir, filename)
     return annotation
 
+
 def get_annotation_dictionary(annotation):
     """
         Method to parse XML annotation and return a dict with class names as keys
@@ -62,6 +63,7 @@ def get_annotation_dictionary(annotation):
                         bnd_dict[coord.tag] = int(coord.text)
                     class_bnd_box["classes"][current_tag].append(bnd_dict)
     return class_bnd_box
+
 
 def generate_mask_for_annotation_for_xml(annotation, num_classes, label_id):
     """

@@ -34,9 +34,7 @@ class TestBuilder:
     def test_sequential_sampling_run(self):
         builder = Builder(
             config_json="tests/sequential_sampling_test_config.json")
-        builder.calculate_and_set_generator_params(batch_size=2)
-        gen = builder.process_and_generate()
-
+        gen = builder.process_and_generate(batch_size=2)
         imgs = sorted(os.listdir("tests/images/"))
         i = 0
 
@@ -63,9 +61,10 @@ class TestBuilder:
     def test_keras_generator(self, task, batch_size):
         builder = Builder(
             config_json="tests/keras_generator_test_config.json")
-        builder.calculate_and_set_generator_params(
-            batch_size=batch_size, internal_batch=batch_size)
-        gen = builder.get_keras_generator(task=task)
+        gen = builder.get_keras_generator(
+            batch_size=batch_size,
+            internal_batch=batch_size,
+            task=task)
 
         idx = 0
         n_batch = len(gen)

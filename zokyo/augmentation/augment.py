@@ -498,7 +498,26 @@ class Builder(AbstractBuilder):
                         "annotation_mask") +
                     "/{}.npy".format(filename), ets.annotation_mask)
 
-    def calculate_and_set_generator_params(
+    def _augment_data_batch(self, data_list, batch_size):
+        """
+        Method to augment batches of data given the data paths and the required batch size.
+        """
+
+        entities = self._load_entities(data_list)
+        if self.debug:
+            self.logger.info(
+                "Entities num: {}".format(
+                    len(entities)))
+
+        pipeline = _DataPipeline(
+            entities=entities, shuffle=self.shuffle)
+        pipeline = self._add_operation(pipeline=pipeline)
+        result_entities = pipeline.sample_for_generator(
+            batch_size=batch_size)
+        del pipeline
+        return result_entities
+
+    def _calculate_and_set_generator_params(
             self, batch_size=None, internal_batch=None):
         """
             Method to set the batch size, internal batch size (for batch ingestion) and
@@ -539,36 +558,18 @@ class Builder(AbstractBuilder):
             self.batch_size = batch_size
             self.sample_factor = math.ceil(self.sample / self.batch_size)
 
-    def _augment_data_batch(self, data_list, batch_size):
-        """
-        Method to augment batches of data given the data paths and the required batch size.
-        """
-
-        entities = self._load_entities(data_list)
-        if self.debug:
-            self.logger.info(
-                "Entities num: {}".format(
-                    len(entities)))
-
-        pipeline = _DataPipeline(
-            entities=entities, shuffle=self.shuffle)
-        pipeline = self._add_operation(pipeline=pipeline)
-        result_entities = pipeline.sample_for_generator(
-            batch_size=batch_size)
-        del pipeline
-        return result_entities
-
-    def process_and_generate(self, infinite_generator=False):
+    def process_and_generate(self, batch_size=None,
+                             internal_batch=None, infinite_generator=False):
         """
            Process the images and yields the results in batches.
            NOTE : On batch ingestion mode if both internal batch and output
            batch size is given, sample number cannot be achieved.
         """
-
+        self._calculate_and_set_generator_params(
+            batch_size=batch_size, internal_batch=internal_batch)
         if not self.setting_generator_params:
             raise Exception(
                 "Did you call calculate_and_set_generator_params method ?")
-
         data_path_list = self._check_and_populate_path()
         if self.debug:
             self.logger.info("sample factor : {}".format(self.sample_factor))
@@ -651,7 +652,8 @@ class Builder(AbstractBuilder):
         """
             Method to return a Keras generator. If internal batch is not set, batch size value is used
         """
-
+        self._calculate_and_set_generator_params(
+            batch_size=batch_size, internal_batch=internal_batch)
         if not self.setting_generator_params:
             raise Exception(
                 "Did you call calculate_and_set_generator_params method ?")
