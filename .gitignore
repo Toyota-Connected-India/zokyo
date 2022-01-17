@@ -33,6 +33,9 @@ __pycache__
 # Virtual env
 .venv
 
+# ignore test code
+check.py
+
 # Release generated
 generated/
 
@@ -42,3 +45,4 @@ generated/
 data/
 
 zokyo/VERSION
+
