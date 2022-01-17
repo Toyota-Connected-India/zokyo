@@ -14,7 +14,8 @@ test_configs = [
     "tests/radial_lens_distortion_test_config.json",
     "tests/tangential_lens_distortion_test_config.json",
     "tests/snow_scene_test_config.json",
-    "tests/sun_flare_test_config.json"
+    "tests/sun_flare_test_config.json",
+    "tests/random_darkness_test_config.json",
 ]
 
 

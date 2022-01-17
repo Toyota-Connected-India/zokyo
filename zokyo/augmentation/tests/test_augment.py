@@ -75,25 +75,25 @@ class TestBuilder:
             masks = sorted(os.listdir("tests/masks/"))
 
         while idx < n_batch:
-            # try:
-            x_batch, y_batch = gen[idx]
-            assert len(x_batch) == len(y_batch) == min(
-                builder.sample - i, batch_size)
+            try:
+                x_batch, y_batch = gen[idx]
+                assert len(x_batch) == len(y_batch) == min(
+                    builder.sample - i, batch_size)
 
-            if task == "segmentation":
-                for x, y in zip(x_batch, y_batch):
-                    assert x.shape == cv2.imread(os.path.join(
-                        "tests", "images", imgs[i % len(imgs)])).shape
-                    assert y.shape == cv2.imread(os.path.join(
-                        "tests", "masks", masks[i % len(imgs)]), 0).shape
-                    i += 1
-            else:
-                for x in x_batch:
-                    assert x.shape == cv2.imread(os.path.join(
-                        "tests", "images", imgs[i % len(imgs)])).shape
-                    i += 1
-            idx += 1
-            # except StopIteration:
-            #     break
+                if task == "segmentation":
+                    for x, y in zip(x_batch, y_batch):
+                        assert x.shape == cv2.imread(os.path.join(
+                            "tests", "images", imgs[i % len(imgs)])).shape
+                        assert y.shape == cv2.imread(os.path.join(
+                            "tests", "masks", masks[i % len(imgs)]), 0).shape
+                        i += 1
+                else:
+                    for x in x_batch:
+                        assert x.shape == cv2.imread(os.path.join(
+                            "tests", "images", imgs[i % len(imgs)])).shape
+                        i += 1
+                idx += 1
+            except StopIteration:
+                break
 
         assert idx == n_batch

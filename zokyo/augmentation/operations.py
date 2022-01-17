@@ -296,6 +296,73 @@ class RandomBrightness(Operation):
         return do(entities)
 
 
+class RandomDarkness(Operation):
+    """
+        Class to randomly darken an image or specific classes of an image based on the random distribution
+        parameter (normal or uniform)
+    """
+
+    def __init__(self, **kwargs):
+        self.args = ArgsClass(**kwargs)
+        Operation.__init__(self, self.args.probability)
+
+        if 'distribution' not in self.args.__dict__.keys():
+            raise CrucialValueNotFoundError(
+                "RandomDarkness", value_type="distribution")
+
+        if self.args.distribution == "normal":
+            self.coeff = np.random.normal(0, 1)
+        elif self.args.distribution == "uniform":
+            self.coeff = np.random.uniform(0, 1)
+
+    def perform_operation(self, entities):
+        def random_darken(image):
+            image = np.array(image, dtype=np.uint8)
+            image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+            image_HLS[:, :, 1] = image_HLS[:, :, 1] * self.coeff
+            image_HLS[:, :, 1][image_HLS[:, :, 1] > 255] = 255
+            image_HLS[:, :, 1][image_HLS[:, :, 1] < 0] = 0
+            image_HLS = np.array(image_HLS, dtype=np.uint8)
+            image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2RGB)
+            return image_RGB
+
+        def do(entities):
+            if self.args.is_mask is True:
+                if self.args.mask_label is None:
+                    entities.image = Image.fromarray(
+                        random_darken(entities.image))
+                    return entities
+                else:
+                    image = entities.image
+                    image_mask = entities.mask
+                    image = apply_augmentation(
+                        image, image_mask, self.args.mask_label,
+                        random_darken)
+                    entities.image = Image.fromarray(Image.fromarray(image))
+                    return entities
+
+            if self.args.is_annotation is True:
+                if self.args.annotation_label is None:
+                    entities.image = Image.fromarray(
+                        random_darken(entities.image))
+                    return entities
+                else:
+                    image = entities.image
+                    image_mask = entities.annotation_mask
+                    image = apply_augmentation(
+                        image, image_mask, self.args.annotation_label,
+                        random_darken)
+                    entities.image = Image.fromarray(image)
+                    return entities
+
+            if not self.args.is_mask and not self.args.is_annotation:
+                entities.image = Image.fromarray(
+                    random_darken(entities.image))
+                return entities
+
+        return do(entities)
+
+
 class SnowScene(Operation):
     """
         Class to add snow effect to an image or specific classes of an image
