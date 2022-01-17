@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# Contributors : [srinivas.v@toyotaconnected.co.in, srivathsan.govindarajan@toyotaconnected.co.in
-# harshavardhan.thirupathi@toyotaconnected.co.in,
+# Contributors : [srinivas.v@toyotaconnected.co.in, srivathsan.govindarajan@toyotaconnected.co.in,
 # ashok.ramadass@toyotaconnected.com]
 
 import os
@@ -270,9 +269,6 @@ class Builder(AbstractBuilder):
                 for elem in child:
                     bnd_dict = {}
                     if elem.tag == "name":
-                        # if elem.text not in self.class_dictionary.keys():
-                        #    self.class_dictionary[elem.text] = self.classes
-                        #    self.classes += 1
                         if elem.text not in class_bnd_box["classes"].keys():
                             class_bnd_box["classes"][elem.text] = []
                         current_tag = elem.text
