@@ -24,5 +24,3 @@ jobs:
     - name: Run unit and linting tests
       run: make test
     
-    - name: Building and hosting documentation
-      uses: 
