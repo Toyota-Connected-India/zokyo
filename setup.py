@@ -21,12 +21,13 @@ REQUIREMENTS = [
     'pyyaml==5.1.2',
     'pandas>=1.1.5',
     'scikit-learn>=0.23.2',
-    'Augmentor>=0.2.8',
     'opencv-python>=4.4.0',
     'Pillow>=5.2.0',
     'scipy>=1.5.0',
     'tqdm',
-    'tensorflow>=2.5.0rc1'
+    'tensorflow>=2.5.0rc1',
+    'Sphinx',
+    'sphinx_rtd_theme'
 ]
 
 SETUPTOOLS_COMMANDS = {
@@ -95,6 +96,9 @@ def do_setup():
         description="Data augmentation library",
         author="Zokyo contributors",
         author_email=[
+            "srinivas.v@toyotaconnected.co.in",
+            "srivathsan.govindarajan@toyotaconnected.co.in",
+            "harshavardhan.thirupathi@toyotaconnected.co.in"
             "ashok.ramadass@toyotaconnected.com"
         ],
         url="https://github.com/toyotaconnected-India/zokyo",
