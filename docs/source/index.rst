@@ -10,14 +10,11 @@ Welcome to zokyo's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   configuration_file
+   operations
+   modules
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 Zokyo
 ========
@@ -36,7 +33,7 @@ Look how easy it is to use:
 Installation
 ------------
 
-Install Zokyo by running: 
+Install Zokyo from source by running: 
 
 .. code-block:: console
 
@@ -46,3 +43,10 @@ License
 -------
 
 The project is licensed under the Apache License 2.0.
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
