@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-
-# ============================================================================
-# Copyright:    Toyota Connected, 2020.  All rights reserved.
-# Authors:      Zokyo Developers
-# Email:        <ashok.ramadass@toyotaconnected.com>
-# Date:         10/28/20  23:34:54
-# ============================================================================
+# Contributors : [srinivas.v@toyotaconnected.co.in,srivathsan.govindarajan@toyotaconnected.co.in,
+# harshavardhan.thirupathi@toyotaconnected.co.in,
+# ashok.ramadass@toyotaconnected.com ]
 
 import os
 import six
@@ -32,11 +28,6 @@ MAX_VALUES_BY_DTYPE = {
 
 def get_git_revision_short_hash():
     """Get the short revision hash of a git commit
-
-    Examples
-    --------
-    >>> get_git_revision_short_hash()
-    '2e708f7'
     """
     return subprocess.check_output(
         ['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').strip()
@@ -56,11 +47,6 @@ def str_to_random_state(x, first_n=9):
     the integer hash result (since numpy random state seeds must be < 2**32-1)
     and seeds a random state. This allows us to create reproducible random
     states given a string as input (particularly for data creation).
-
-    Parameters
-    ----------
-    x : str
-        The string to hash.
     """
     return np.random.RandomState(int(str(abs(hash(x)))[:first_n]))
 

@@ -55,47 +55,7 @@ class Builder(AbstractBuilder):
         TODO : Parallelize saving images to disk
         TODO : Parallelize operations from data pipeline
 
-        Builder class to create augmentor Pipeline object
-        Config file is a json map used to define Operations and their
-        properties
-        {
-            "input_dir" : "tests/images",
-            "mask_dir" : "tests/masks",
-            "output_dir": "tests/output",
-            "annotation_dir": "tests/annotation",
-            "annotation_format": "pascal_voc",
-            "sample" : 50,
-            "multi_threaded" : false,
-            "run_all" : false,
-            "batch_ingestion": true,
-            "shuffle": false,
-            "debug": false,
-            "internal_batch": 5,
-            "save_annotation_mask" : false,
-            "operations":[
-                {
-                    "operation": "DarkenScene",
-                    "operation_module" : "zokyo.augmentation",
-                    "args": {
-                        "probability": 0.7,
-                        "darkness" : 0.5,
-                        "is_mask" : true,
-                        "mask_label" : 2,
-                        "is_annotation" : true,
-                        "annotation_label" : 1
-                    }
-                },
-                {
-                    "operation": "EqualizeScene",
-                    "operation_module" : "zokyo.augmentation",
-                    "args": {
-                        "probability": 0.5,
-                        "is_mask" : true,
-                        "label" : 2
-                    }
-                }
-            ]
-        }
+        Builder class to create augmentor Pipeline object through a config file
     """
 
     def __init__(self, config_json="config.json"):
