@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# Contributors : [srinivas.v@toyotaconnected.co.in,srivathsan.govindarajan@toyotaconnected.co.in,
+# harshavardhan.thirupathi@toyotaconnected.co.in,
+# ashok.ramadass@toyotaconnected.com ]
 
 """Utilities for testing used across Zokyo"""
 
@@ -10,11 +13,6 @@ def pytest_err_msg(err):
 
     Compatibility function for newer versions of pytest, where ``str(err)``
     no longer returns the expected ``__repr__`` of an exception.
-
-    Parameters
-    ----------
-    err : BaseException
-        The caught exception
     """
     try:
         return str(err.value)

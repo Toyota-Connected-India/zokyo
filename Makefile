@@ -43,6 +43,11 @@ test-requirements:
 install:
 	$(PYTHON) -m pip install .
 
+.PHONY: docs
+docs:
+	sphinx-apidoc -o docs/source zokyo zokyo/*/tests --separate
+	cd docs && make html
+
 .PHONY: VERSION
 VERSION:
 ifneq ($(GIT_TAG),)

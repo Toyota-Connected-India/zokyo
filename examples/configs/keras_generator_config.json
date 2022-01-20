@@ -1,0 +1,26 @@
+{
+    "input_dir" : "../tests/images",
+    "mask_dir" : "../tests/masks",
+    "output_dir": "output",
+    "annotation_dir": "../tests/annotation",
+    "annotation_format": "pascal_voc",
+    "sample" : 6,
+    "multi_threaded" : false,
+    "run_all" : false,
+    "batch_ingestion": false,
+    "shuffle": false,
+    "process_and_yield": false,
+    "save_annotation_mask" : false,
+    "operations":[
+        {
+            "operation": "BrightenScene",
+            "operation_module" : "zokyo.augmentation",
+            "args": {
+                "probability": 1,
+                "brightness" : 1,
+                "is_annotation" : true,
+                "annotation_label" : 1
+            }
+        }
+    ]
+}

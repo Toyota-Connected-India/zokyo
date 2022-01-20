@@ -779,7 +779,7 @@ class SunFlare(Operation):
 
 class MotionBlur(Operation):
     """
-        Class to apply motion blur to an image
+        TODO: Class to apply motion blur to an image
     """
 
     def __init__(self, **kwargs):
@@ -795,7 +795,7 @@ class MotionBlur(Operation):
 
 class FogScene(Operation):
     """
-        Class to apply fog effect to an image
+        TODO: Class to apply fog effect to an image
     """
 
     def __init__(self, **kwargs):

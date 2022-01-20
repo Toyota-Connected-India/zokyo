@@ -7,50 +7,47 @@
 
 ```
 
-                                                                                                
-                                                                                                
-                                  hhhhhhh              iiii                                     
-                                  h:::::h             i::::i                                    
-                                  h:::::h              iiii                                     
-                                  h:::::h                                                       
-    ssssssssss  ppppp   ppppppppp  h::::h hhhhh      iiiiiinnnn  nnnnnnnn   xxxxxxx      xxxxxxx
-  ss::::::::::s p::::ppp:::::::::p h::::hh:::::hhh   i:::::n:::nn::::::::nn  x:::::x    x:::::x 
-ss:::::::::::::sp:::::::::::::::::ph::::::::::::::hh  i::::n::::::::::::::nn  x:::::x  x:::::x  
-s::::::ssss:::::pp::::::ppppp::::::h:::::::hhh::::::h i::::nn:::::::::::::::n  x:::::xx:::::x   
- s:::::s  ssssss p:::::p     p:::::h::::::h   h::::::hi::::i n:::::nnnn:::::n   x::::::::::x    
-   s::::::s      p:::::p     p:::::h:::::h     h:::::hi::::i n::::n    n::::n    x::::::::x     
-      s::::::s   p:::::p     p:::::h:::::h     h:::::hi::::i n::::n    n::::n    x::::::::x     
-ssssss   s:::::s p:::::p    p::::::h:::::h     h:::::hi::::i n::::n    n::::n   x::::::::::x    
-s:::::ssss::::::sp:::::ppppp:::::::h:::::h     h:::::i::::::in::::n    n::::n  x:::::xx:::::x   
-s::::::::::::::s p::::::::::::::::ph:::::h     h:::::i::::::in::::n    n::::n x:::::x  x:::::x  
- s:::::::::::ss  p::::::::::::::pp h:::::h     h:::::i::::::in::::n    n::::nx:::::x    x:::::x 
-  sssssssssss    p::::::pppppppp   hhhhhhh     hhhhhhiiiiiiiinnnnnn    nnnnnxxxxxxx      xxxxxxx
-                 p:::::p                                                                        
-                 p:::::p                                                                        
-                p:::::::p                                                                       
-                p:::::::p                                                                       
-                p:::::::p                                                                       
-                ppppppppp                                                                       
-                                                                                                
+                                                                                             
+                                                                                             
+                                  kkkkkkkk                                                   
+                                  k::::::k                                                   
+                                  k::::::k                                                   
+                                  k::::::k                                                   
+zzzzzzzzzzzzzzzzz   ooooooooooo    k:::::k    kkkkkkkyyyyyyy           yyyyyyy ooooooooooo   
+z:::::::::::::::z oo:::::::::::oo  k:::::k   k:::::k  y:::::y         y:::::yoo:::::::::::oo 
+z::::::::::::::z o:::::::::::::::o k:::::k  k:::::k    y:::::y       y:::::yo:::::::::::::::o
+zzzzzzzz::::::z  o:::::ooooo:::::o k:::::k k:::::k      y:::::y     y:::::y o:::::ooooo:::::o
+      z::::::z   o::::o     o::::o k::::::k:::::k        y:::::y   y:::::y  o::::o     o::::o
+     z::::::z    o::::o     o::::o k:::::::::::k          y:::::y y:::::y   o::::o     o::::o
+    z::::::z     o::::o     o::::o k:::::::::::k           y:::::y:::::y    o::::o     o::::o
+   z::::::z      o::::o     o::::o k::::::k:::::k           y:::::::::y     o::::o     o::::o
+  z::::::zzzzzzzzo:::::ooooo:::::ok::::::k k:::::k           y:::::::y      o:::::ooooo:::::o
+ z::::::::::::::zo:::::::::::::::ok::::::k  k:::::k           y:::::y       o:::::::::::::::o
+z:::::::::::::::z oo:::::::::::oo k::::::k   k:::::k         y:::::y         oo:::::::::::oo 
+zzzzzzzzzzzzzzzzz   ooooooooooo   kkkkkkkk    kkkkkkk       y:::::y            ooooooooooo   
+                                                           y:::::y                           
+                                                          y:::::y                            
+                                                         y:::::y                             
+                                                        y:::::y                              
+                                                       yyyyyyy                               
+                                                                                                                                                                 
 
 ```
 
-A zokyo (/ˈsfɪŋks/ SFINGKS, Ancient Greek: σφίγξ [spʰíŋks], Boeotian: φίξ [pʰíːks], plural zokyoes or sphinges) is a mythical creature with the head of a human, a falcon, a cat, or a sheep and the body of a lion with the wings of an eagle.
+Zokyo is a no-nonsense low-code computer vision augmentation library specifically built for automotive deep learning development which is
+easy to integrate with your MLOps pipelines. 
 
-Zokyo is a CV library for image data augmentation specifically built
-for Toyota and Lexus in unit camera streams on top of Augmentor.
-
-## Installing locally
+## Installing from source
 
 With your `venv` activated:
 
 ```bash
-$ python setup.py install
+$ make install
 ```
 
 ### Running tests
 
-From your activated `.venv` run:
+From your activated `venv` run:
 
 ```bash
 $ make test
@@ -58,56 +55,39 @@ $ make test
 
 ## usage
 
-Sample Configuration json for zokyo
+An ML engineer can try out different operations to finalize a configuration file for augmenting their images. A sample Configuration json file for Zokyo
 
 ```
 {
-            "input_dir" : "images",
-            "output_dir" : "output",
-            "annotation_dir" : "annotations",
-            "annotation_format" : "pascal_voc",
-            "mask_dir" : "mask"
-            "sample" : 5000,
-            "multi_threaded" : true,
-            "run_all" : false,
-            "batch_ingestion": true,
-            "internal_batch": 20,
-            "save_annotation_mask" : false,
-            "operations":[
-                {
-                    "operation": "DarkenScene",
-                    "operation_module" : "zokyo.augmentation",
-                    "args": {
-                        "probability": 0.7,
-                        "darkness" : 0.5,
-                        "is_mask" : true,
-                        "mask_label" : 2,
-                        "is_annotation" : true,
-                        "annotation_label : 1
-                    }
-                },
-                {
-                    "operation": "Equalize",
-                    "operation_module" : "zokyo.augmentation",
-                    "args": {
-                        "probability": 0.5,
-                        "is_mask" : true,
-                        "label" : 2
-                    }
-                },
-                {
-                    "operation": "RadialLensDistortion",
-                    "operation_module" : "zokyo.augmentation",
-                    "args": {
-                        "probability": 0.5,
-                        "is_annotation" : true,
-                        "distortiontype" : "NegativeBarrel",
-                        "is_mask" : true,
-                    }
+        "input_dir" : "images", # input directory
+        "output_dir" : "output", # output directory
+        "annotation_dir" : "annotations", # ground truth annotations directory (Pascal VOC format)
+        "annotation_format" : "pascal_voc", # annotation format 
+        "mask_dir" : "mask" # segmentation masks directory 
+        "sample" : 5000, # number of output samples required
+        "multi_threaded" : true, # TODO
+        "batch_ingestion": true, # set to true to turn on batch ingestion to have internal batch size
+        "internal_batch": 20, # internal batch size
+        "save_annotation_mask" : false, # set to true to save output anotation masks
+        "operations":[
+            {
+                "operation": "DarkenScene", # operation name
+                "operation_module" : "zokyo.augmentation", # module of that operation
+                "args": { # arguments required by that operation
+                    "probability": 0.7, # probability of applying that operation
+                    "darkness" : 0.5, # argument specific to the augmentation operation
+                    "is_mask" : true, # apply augmentation operation to specific mask class label
+                    "mask_label" : 2, # that specific mask label
+                    "is_annotation" : true, # apply augmentation operation to specific annotation class label
+                    "annotation_label : 1 # that specific annotation label
                 }
-            ]
-        }
+            }
+            ...
+        ]
+}
 ```
+
+The above created config can then be used a DevOps engineer to load and augment the data with the following 3 lines of code. 
 
 ```
 from zokyo.augmentation import Builder
@@ -115,3 +95,6 @@ pipeline = Builder(config_json="config.json")
 pipeline.process_and_save()
 ```
 
+For more usage tutorials, take a look at the notebooks in the [examples folder](/examples).
+
+**Note:** Zokyo currently supports only Pascal VOC format. To convert other annotation formats to Pascal VOC see [this](/zokyo/utils/data_format_conversions.py).
