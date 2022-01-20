@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zokyo Augmentation Operations &mdash; zokyo 0.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="zokyo" href="modules.html" />
+    <link rel="prev" title="Zokyo Configuration file" href="configuration_file.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> zokyo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Zokyo Configuration file</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Zokyo Augmentation Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">zokyo</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">zokyo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Zokyo Augmentation Operations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/operations.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="zokyo-augmentation-operations">
+<h1>Zokyo Augmentation Operations<a class="headerlink" href="#zokyo-augmentation-operations" title="Permalink to this headline"></a></h1>
+<p>The following are the operations that are currently supported inside Zokyo. Any extra operations needed can be raised a feature request or can be added as a separate module in “operation_module” in config.json.</p>
+<ol class="arabic simple">
+<li><p><strong>EqualizeScene:</strong> Operation to equalize an image or specific annotation classes in that image.</p></li>
+<li><p><strong>DarkenScene:</strong> Operation to darken an image or specific annotation classes in that image. Requires a darkness parameter [0, 1] in config.</p></li>
+<li><p><strong>BrightenScene:</strong> Operation to brighten an image or specific annotation classes in that image. Requires a brightness parameter [0, 1] in config.</p></li>
+<li><p><strong>RandomBrightness:</strong> Operation to randomly brighten an image or specific annotation classes in that image based on a random distribution. Requires a distribution parameter (normal or uniform) in config.</p></li>
+<li><p><strong>RandomBrightness:</strong> Operation to randomly darken an image or specific annotation classes in that image based on a random distribution. Requires a distribution parameter (normal or uniform) in config.</p></li>
+<li><p><strong>SnowScene:</strong> Operation to add snow effect to an image or specific annotation classes in that image.</p></li>
+<li><p><strong>RadialLensDistortion:</strong> Operation to add radial distortion effect to an image or specific annotation classes in that image. Requires a distortion parameter (NegativeBarrel, PinCushion).</p></li>
+<li><p><strong>TangentialLensDistortion:</strong> Operation to add tangential distortion effect to an image or specific annotation classes in that image.</p></li>
+<li><p><strong>RainScene:</strong> Operation to add rain effect to an image or specific annotation classes in that image. Requires -
+* rain_type (drizzle, heavy, torrential)
+* drop_width [1, 5]
+* drop_length [0, 100]
+* brightness_coefficient [0, 1]
+* slant_lower, slant_upper (-20 &lt;= slant_lower &lt;= slant_upper &lt;= 20)
+* drop_color (list of 3 pixel values)</p></li>
+<li><p><strong>SunFlare:</strong> Operation to add sun flare effect to an image.</p></li>
+<li><p><strong>MotionBlur:</strong> TODO</p></li>
+<li><p><strong>FogScene:</strong> TODO</p></li>
+</ol>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="configuration_file.html" class="btn btn-neutral float-left" title="Zokyo Configuration file" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="zokyo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Toyota Connected.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

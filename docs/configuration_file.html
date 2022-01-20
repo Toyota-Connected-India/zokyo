@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zokyo Configuration file &mdash; zokyo 0.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Zokyo Augmentation Operations" href="operations.html" />
+    <link rel="prev" title="Welcome to zokyo’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> zokyo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Zokyo Configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operations.html">Zokyo Augmentation Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">zokyo</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">zokyo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Zokyo Configuration file</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/configuration_file.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="zokyo-configuration-file">
+<h1>Zokyo Configuration file<a class="headerlink" href="#zokyo-configuration-file" title="Permalink to this headline"></a></h1>
+<p>The Builder class instance requires a config file to be passed to it based on which augmentation operations are performed on the given data.</p>
+<p>The following is the JSON config file’s parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;input_dir&quot;</span> <span class="p">:</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="c1"># input directory</span>
+    <span class="s2">&quot;output_dir&quot;</span> <span class="p">:</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="c1"># output directory</span>
+    <span class="s2">&quot;annotation_dir&quot;</span> <span class="p">:</span> <span class="s2">&quot;annotation&quot;</span><span class="p">,</span> <span class="c1"># ground truth annotations directory (only Pascal VOC format for now)</span>
+    <span class="s2">&quot;annotation_format&quot;</span> <span class="p">:</span> <span class="s2">&quot;pascal_voc&quot;</span><span class="p">,</span> <span class="c1"># annotation format</span>
+    <span class="s2">&quot;mask_dir&quot;</span> <span class="p">:</span> <span class="s2">&quot;masks&quot;</span><span class="p">,</span> <span class="c1"># segmentation masks directory</span>
+    <span class="s2">&quot;sample&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="c1"># number of output samples required</span>
+    <span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="c1"># set to true to enable logging</span>
+    <span class="s2">&quot;multi_threaded&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span> <span class="c1"># Multi threading (TODO)</span>
+    <span class="s2">&quot;shuffle&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span> <span class="c1"># set to true to shuffle the data</span>
+    <span class="s2">&quot;batch_ingestion&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span> <span class="c1"># set to true to turn on batch ingestion to have internal batch size</span>
+    <span class="s2">&quot;internal_batch&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># internal batch size</span>
+    <span class="s2">&quot;save_annotation_mask&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span> <span class="c1"># set to true to save output anotation masks</span>
+    <span class="s2">&quot;operations&quot;</span><span class="p">:[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="n">OperationName</span><span class="p">,</span><span class="c1"># operation name</span>
+            <span class="s2">&quot;operation_module&quot;</span> <span class="p">:</span> <span class="s2">&quot;zokyo.augmentation&quot;</span><span class="p">,</span> <span class="c1"># module of that operation (use &quot;zokyo.augmentation&quot;. You can write your own module which takes ZokyoData instance as input.)</span>
+            <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="c1"># arguments required by that operation</span>
+                <span class="s2">&quot;probability&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="c1"># probability of applying that operation</span>
+                <span class="s2">&quot;is_mask&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="c1"># set to true to apply augmentation operation to specific mask class label</span>
+                <span class="s2">&quot;mask_label&quot;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="c1"># that specific mask label</span>
+                <span class="s2">&quot;is_annotation&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="c1"># set to true to apply augmentation operation to specific annotation class label</span>
+                <span class="s2">&quot;annotation_label&quot;</span> <span class="p">:</span> <span class="mi">1</span> <span class="c1"># that specific annotation label</span>
+                <span class="c1"># other args specific to that operation</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+
+        <span class="c1"># other operations</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to zokyo’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="operations.html" class="btn btn-neutral float-right" title="Zokyo Augmentation Operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Toyota Connected.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -45,8 +45,9 @@ install:
 
 .PHONY: docs
 docs:
-	sphinx-apidoc -o docs/source zokyo zokyo/*/tests --separate
-	cd docs && make html
+	sphinx-apidoc -o docsrc/source zokyo zokyo/*/tests --separate
+	cd docsrc && make html
+	cp -r docsrc/build/html/* docs/
 
 .PHONY: VERSION
 VERSION:

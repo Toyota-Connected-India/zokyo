@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zokyo.decorators &mdash; zokyo 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> zokyo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration_file.html">Zokyo Configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../operations.html">Zokyo Augmentation Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">zokyo</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">zokyo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>zokyo.decorators</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for zokyo.decorators</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Since we don&#39;t force some packages to be build-time requirements, these</span>
+<span class="sd">functions are used to decorate methods that require said packages. Internally,</span>
+<span class="sd">it checks on the availability of the package before calling the function. All</span>
+<span class="sd">library imports should take place inside the method body.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_config</span> <span class="k">as</span> <span class="n">cfg</span>
+
+
+<div class="viewcode-block" id="timer"><a class="viewcode-back" href="../../zokyo.decorators.html#zokyo.decorators.timer">[docs]</a><span class="k">def</span> <span class="nf">timer</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Print the runtime of the decorated function&quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper_timer</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="n">run_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> in </span><span class="si">{</span><span class="n">run_time</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> secs&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">wrapper_timer</span></div>
+
+
+<span class="k">def</span> <span class="nf">_lazy_import_validator</span><span class="p">(</span><span class="n">delegate</span><span class="p">,</span> <span class="o">*</span><span class="n">packages</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">packages</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pkg</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">installed</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">_conf</span><span class="o">.</span><span class="n">_see_if_available</span><span class="p">(</span><span class="n">pkg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pkg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pkg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot interpret </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="p">))</span>
+            <span class="n">import_name</span><span class="p">,</span> <span class="n">pkg</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">installed</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">_conf</span><span class="o">.</span><span class="n">_see_if_available</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot interpret </span><span class="si">{0}</span><span class="s2"> (type=</span><span class="si">{1}</span><span class="s2">). &quot;</span>
+                            <span class="s2">&quot;Elements should be str or dict.&quot;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">pkg</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">installed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> requires </span><span class="si">{1}</span><span class="s2">&quot;</span>
+                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">delegate</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">pkg</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="depends_on"><a class="viewcode-back" href="../../zokyo.decorators.html#zokyo.decorators.depends_on">[docs]</a><span class="k">def</span> <span class="nf">depends_on</span><span class="p">(</span><span class="o">*</span><span class="n">packages</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class or function decorator for callables that depend on packages</span>
+
+<span class="sd">    Either a number of package names or mappings from package import names to</span>
+<span class="sd">    package install names::</span>
+
+<span class="sd">        &gt;&gt;&gt; @depends_on(&#39;scipy&#39;, {&#39;sklearn&#39;: &#39;scikit-learn&#39;}, &#39;a_fake_pkg&#39;)</span>
+<span class="sd">        ... class SomeClass:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; SomeClass()</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">          File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span>
+<span class="sd">        ImportError: SomeClass requires a_fake_pkg</span>
+
+<span class="sd">        &gt;&gt;&gt; @depends_on(&#39;scipy&#39;, &#39;numpy&#39;)</span>
+<span class="sd">        ... def do_something_cool():</span>
+<span class="sd">        ...     print(&#39;ayyy&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; do_something_cool()</span>
+<span class="sd">        ayyy</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">callable_wrapper</span><span class="p">(</span><span class="n">delegate</span><span class="p">):</span>
+        <span class="n">orig_init</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">delegate</span><span class="p">,</span> <span class="s2">&quot;__init__&quot;</span><span class="p">):</span>  <span class="c1"># &lt;~~ it&#39;s a class</span>
+            <span class="c1"># Make copy of original __init__, so we can call it without</span>
+            <span class="c1"># recursion, but only if cls proves to be a class and not a</span>
+            <span class="c1"># function</span>
+            <span class="n">orig_init</span> <span class="o">=</span> <span class="n">delegate</span><span class="o">.</span><span class="fm">__init__</span>
+
+        <span class="c1"># Returned for classes</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">delegate</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">class_init_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">_lazy_import_validator</span><span class="p">(</span><span class="n">delegate</span><span class="p">,</span> <span class="o">*</span><span class="n">packages</span><span class="p">)</span>
+            <span class="n">orig_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># calls the original __init__</span>
+
+        <span class="c1"># Returned for functions</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">delegate</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">func_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">_lazy_import_validator</span><span class="p">(</span><span class="n">delegate</span><span class="p">,</span> <span class="o">*</span><span class="n">packages</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">delegate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># overload the class&#39;s __init__ func if it&#39;s a class, or just return</span>
+        <span class="c1"># the func wrapper otherwise</span>
+        <span class="k">if</span> <span class="n">orig_init</span><span class="p">:</span>
+            <span class="n">delegate</span><span class="o">.</span><span class="fm">__init__</span> <span class="o">=</span> <span class="n">class_init_wrapper</span>
+            <span class="k">return</span> <span class="n">delegate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func_wrapper</span>
+    <span class="k">return</span> <span class="n">callable_wrapper</span></div>
+
+
+<div class="viewcode-block" id="deprecated"><a class="viewcode-back" href="../../zokyo.decorators.html#zokyo.decorators.deprecated">[docs]</a><span class="k">def</span> <span class="nf">deprecated</span><span class="p">(</span><span class="n">use_instead_msg</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">func_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A decorator that will raise deprecation warnings&quot;&quot;&quot;</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">{0}</span><span class="s2">&#39; is deprecated and will be removed in a &quot;</span>
+                          <span class="s2">&quot;future release. Use </span><span class="si">{1}</span><span class="s2"> instead&quot;</span>
+                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">use_instead_msg</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wrapper</span>
+    <span class="k">return</span> <span class="n">func_wrapper</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Toyota Connected.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

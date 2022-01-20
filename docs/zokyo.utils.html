@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zokyo.utils package &mdash; zokyo 0.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="zokyo.utils.CustomExceptions module" href="zokyo.utils.CustomExceptions.html" />
+    <link rel="prev" title="zokyo.augmentation.utils module" href="zokyo.augmentation.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> zokyo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Zokyo Configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operations.html">Zokyo Augmentation Operations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">zokyo</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="zokyo.html">zokyo package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="zokyo.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="zokyo.augmentation.html">zokyo.augmentation package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">zokyo.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="zokyo.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zokyo.html#module-zokyo">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">zokyo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">zokyo</a> &raquo;</li>
+          <li><a href="zokyo.html">zokyo package</a> &raquo;</li>
+      <li>zokyo.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/zokyo.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="zokyo-utils-package">
+<h1>zokyo.utils package<a class="headerlink" href="#zokyo-utils-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="zokyo.utils.CustomExceptions.html">zokyo.utils.CustomExceptions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zokyo.utils.data_format_conversions.html">zokyo.utils.data_format_conversions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zokyo.utils.dataframes.html">zokyo.utils.dataframes module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zokyo.utils.logging.html">zokyo.utils.logging module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zokyo.utils.misc.html">zokyo.utils.misc module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zokyo.utils.s3.html">zokyo.utils.s3 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zokyo.utils.semantic_seg.html">zokyo.utils.semantic_seg module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zokyo.utils.testing.html">zokyo.utils.testing module</a></li>
+</ul>
+</div>
+</section>
+<section id="module-zokyo.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-zokyo.utils" title="Permalink to this headline"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="zokyo.utils.CoefficientNotinRangeError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">CoefficientNotinRangeError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefficient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coeff_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/CustomExceptions.html#CoefficientNotinRangeError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.CoefficientNotinRangeError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Class to throw exception when a coefficient is not in the specified range</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="zokyo.utils.ConfigurationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">ConfigurationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exception_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/CustomExceptions.html#ConfigurationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.ConfigurationError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Class to throw exception when a configuration is not right</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="zokyo.utils.CrucialValueNotFoundError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">CrucialValueNotFoundError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sample'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/CustomExceptions.html#CrucialValueNotFoundError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.CrucialValueNotFoundError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Class to throw exception when an expected value is not found</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="zokyo.utils.InvalidImageArrayError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">InvalidImageArrayError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PIL'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/CustomExceptions.html#InvalidImageArrayError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.InvalidImageArrayError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Class to throw exception when an image is not valid</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="zokyo.utils.OperationNotFoundOrImplemented">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">OperationNotFoundOrImplemented</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/CustomExceptions.html#OperationNotFoundOrImplemented"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.OperationNotFoundOrImplemented" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Class to throw exception when an operation is not found</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zokyo.utils.Path">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">Path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.PurePath</span></code></p>
+<p>PurePath subclass that can make system calls.</p>
+<p>Path represents a filesystem path but unlike PurePath, also offers
+methods to do system calls on path objects. Depending on your system,
+instantiating a Path will return either a PosixPath or a WindowsPath
+object. You can also instantiate a PosixPath or WindowsPath directly,
+but cannot instantiate a WindowsPath on a POSIX system or vice versa.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.absolute">
+<span class="sig-name descname"><span class="pre">absolute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.absolute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.absolute" title="Permalink to this definition"></a></dt>
+<dd><p>Return an absolute version of this path.  This function works
+even if the path doesn’t point to anything.</p>
+<p>No normalization is done, i.e. all ‘.’ and ‘..’ will be kept along.
+Use resolve() to get the canonical path to a file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.chmod">
+<span class="sig-name descname"><span class="pre">chmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.chmod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.chmod" title="Permalink to this definition"></a></dt>
+<dd><p>Change the permissions of the path, like os.chmod().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.cwd">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cwd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.cwd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.cwd" title="Permalink to this definition"></a></dt>
+<dd><p>Return a new path pointing to the current working directory
+(as returned by os.getcwd()).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.exists">
+<span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.exists" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this path exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.expanduser">
+<span class="sig-name descname"><span class="pre">expanduser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.expanduser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.expanduser" title="Permalink to this definition"></a></dt>
+<dd><p>Return a new path with expanded ~ and ~user constructs
+(as returned by os.path.expanduser)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.glob">
+<span class="sig-name descname"><span class="pre">glob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.glob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.glob" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over this subtree and yield all existing files (of any
+kind, including directories) matching the given relative pattern.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.group">
+<span class="sig-name descname"><span class="pre">group</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.group" title="Permalink to this definition"></a></dt>
+<dd><p>Return the group name of the file gid.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.home">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">home</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.home"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.home" title="Permalink to this definition"></a></dt>
+<dd><p>Return a new path pointing to the user’s home directory (as
+returned by os.path.expanduser(‘~’)).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.is_block_device">
+<span class="sig-name descname"><span class="pre">is_block_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.is_block_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.is_block_device" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this path is a block device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.is_char_device">
+<span class="sig-name descname"><span class="pre">is_char_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.is_char_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.is_char_device" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this path is a character device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.is_dir">
+<span class="sig-name descname"><span class="pre">is_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.is_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.is_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this path is a directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.is_fifo">
+<span class="sig-name descname"><span class="pre">is_fifo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.is_fifo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.is_fifo" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this path is a FIFO.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.is_file">
+<span class="sig-name descname"><span class="pre">is_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.is_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.is_file" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this path is a regular file (also True for symlinks pointing
+to regular files).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.is_mount">
+<span class="sig-name descname"><span class="pre">is_mount</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.is_mount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.is_mount" title="Permalink to this definition"></a></dt>
+<dd><p>Check if this path is a POSIX mount point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.is_socket">
+<span class="sig-name descname"><span class="pre">is_socket</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.is_socket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.is_socket" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this path is a socket.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.is_symlink">
+<span class="sig-name descname"><span class="pre">is_symlink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.is_symlink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.is_symlink" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this path is a symbolic link.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.iterdir">
+<span class="sig-name descname"><span class="pre">iterdir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.iterdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.iterdir" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over the files in this directory.  Does not yield any
+result for the special paths ‘.’ and ‘..’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.lchmod">
+<span class="sig-name descname"><span class="pre">lchmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.lchmod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.lchmod" title="Permalink to this definition"></a></dt>
+<dd><p>Like chmod(), except if the path points to a symlink, the symlink’s
+permissions are changed, rather than its target’s.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.lstat">
+<span class="sig-name descname"><span class="pre">lstat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.lstat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.lstat" title="Permalink to this definition"></a></dt>
+<dd><p>Like stat(), except if the path points to a symlink, the symlink’s
+status information is returned, rather than its target’s.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.mkdir">
+<span class="sig-name descname"><span class="pre">mkdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">511</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exist_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.mkdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.mkdir" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new directory at this given path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.open">
+<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffering</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.open" title="Permalink to this definition"></a></dt>
+<dd><p>Open the file pointed by this path and return a file object, as
+the built-in open() function does.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.owner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.owner" title="Permalink to this definition"></a></dt>
+<dd><p>Return the login name of the file owner.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.read_bytes">
+<span class="sig-name descname"><span class="pre">read_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.read_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.read_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Open the file in bytes mode, read it, and close the file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.read_text">
+<span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.read_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>Open the file in text mode, read it, and close the file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.rename">
+<span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.rename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.rename" title="Permalink to this definition"></a></dt>
+<dd><p>Rename this path to the given path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.replace">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.replace" title="Permalink to this definition"></a></dt>
+<dd><p>Rename this path to the given path, clobbering the existing
+destination if it exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.resolve">
+<span class="sig-name descname"><span class="pre">resolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.resolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.resolve" title="Permalink to this definition"></a></dt>
+<dd><p>Make the path absolute, resolving all symlinks on the way and also
+normalizing it (for example turning slashes into backslashes under
+Windows).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.rglob">
+<span class="sig-name descname"><span class="pre">rglob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.rglob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.rglob" title="Permalink to this definition"></a></dt>
+<dd><p>Recursively yield all existing files (of any kind, including
+directories) matching the given relative pattern, anywhere in
+this subtree.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.rmdir">
+<span class="sig-name descname"><span class="pre">rmdir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.rmdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.rmdir" title="Permalink to this definition"></a></dt>
+<dd><p>Remove this directory.  The directory must be empty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.samefile">
+<span class="sig-name descname"><span class="pre">samefile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.samefile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.samefile" title="Permalink to this definition"></a></dt>
+<dd><p>Return whether other_path is the same or not as this file
+(as returned by os.path.samefile()).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.stat">
+<span class="sig-name descname"><span class="pre">stat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.stat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.stat" title="Permalink to this definition"></a></dt>
+<dd><p>Return the result of the stat() system call on this path, like
+os.stat() does.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.symlink_to">
+<span class="sig-name descname"><span class="pre">symlink_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_is_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.symlink_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.symlink_to" title="Permalink to this definition"></a></dt>
+<dd><p>Make this path a symlink pointing to the given path.
+Note the order of arguments (self, target) is the reverse of os.symlink’s.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.touch">
+<span class="sig-name descname"><span class="pre">touch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">438</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exist_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.touch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.touch" title="Permalink to this definition"></a></dt>
+<dd><p>Create this file with the given access mode, if it doesn’t exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.unlink">
+<span class="sig-name descname"><span class="pre">unlink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.unlink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.unlink" title="Permalink to this definition"></a></dt>
+<dd><p>Remove this file or link.
+If the path is a directory, use rmdir() instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.write_bytes">
+<span class="sig-name descname"><span class="pre">write_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.write_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.write_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Open the file in bytes mode, write to it, and close the file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zokyo.utils.Path.write_text">
+<span class="sig-name descname"><span class="pre">write_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pathlib.html#Path.write_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.Path.write_text" title="Permalink to this definition"></a></dt>
+<dd><p>Open the file in text mode, write to it, and close the file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zokyo.utils.download_s3_dir">
+<span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">download_s3_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s3_bucket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_from_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/s3.html#download_s3_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.download_s3_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Downloads a directory from s3</p>
+<dl class="simple">
+<dt>s3_bucket<span class="classifier">boto3.resources.factory.s3.Bucket</span></dt><dd><p>boto3 bucket resource for the bucket to download from</p>
+</dd>
+<dt>dir_path<span class="classifier">str</span></dt><dd><p>The path of the directory to download</p>
+</dd>
+<dt>strip_from_path<span class="classifier">str, optional</span></dt><dd><p>Removes an element of the download path for each object in the save
+path of the object. For example, models/latest/1423455/variables would
+be saved to  models/latest/variables using strip_from_path value
+of ‘1423455/’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zokyo.utils.generate_semantic_map">
+<span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">generate_semantic_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ann_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_poly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/semantic_seg.html#generate_semantic_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.generate_semantic_map" title="Permalink to this definition"></a></dt>
+<dd><p>Generate semantic segmentation map for the given image and its annotations and
+save it to given output directory if given. If gt is true then ground truth mask is also returned.
+If color map list is not given then Spectral color map from matplotlib is used.
+(Currently accepts coco toyo annotations)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zokyo.utils.json_field_parser">
+<span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">json_field_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/dataframes.html#json_field_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.json_field_parser" title="Permalink to this definition"></a></dt>
+<dd><p>Parses a string field to JSON when reading the CSV from disk</p>
+<dl class="simple">
+<dt>data<span class="classifier">str or iterable</span></dt><dd><p>The string or iterable that should be parsed to JSON</p>
+</dd>
+</dl>
+<p>The intended form is for this to be used as a converter during the
+dataframe parse stage:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;x.csv&#39;</span><span class="p">,</span> <span class="n">converters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="n">json_field_parser</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Alternatively, an iterable of parseable JSONs can be passed:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">json_field_parser</span><span class="p">([</span><span class="s1">&#39;{&quot;key&quot;: &quot;value&quot;}&#39;</span><span class="p">])</span>
+<span class="go">[{&#39;key&#39;: &#39;value&#39;}]</span>
+</pre></div>
+</div>
+<p>Passing an already-parsed JSON will also work:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">json_field_parser</span><span class="p">({</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">})</span>
+<span class="go">{&#39;key&#39;: &#39;value&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zokyo.utils.pytest_err_msg">
+<span class="sig-prename descclassname"><span class="pre">zokyo.utils.</span></span><span class="sig-name descname"><span class="pre">pytest_err_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/testing.html#pytest_err_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.pytest_err_msg" title="Permalink to this definition"></a></dt>
+<dd><p>Get the error message from an exception that pytest catches</p>
+<p>Compatibility function for newer versions of pytest, where <code class="docutils literal notranslate"><span class="pre">str(err)</span></code>
+no longer returns the expected <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> of an exception.</p>
+<dl class="simple">
+<dt>err<span class="classifier">BaseException</span></dt><dd><p>The caught exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="zokyo.augmentation.utils.html" class="btn btn-neutral float-left" title="zokyo.augmentation.utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="zokyo.utils.CustomExceptions.html" class="btn btn-neutral float-right" title="zokyo.utils.CustomExceptions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Toyota Connected.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
