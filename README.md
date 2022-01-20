@@ -63,7 +63,7 @@ $ make docs
 
 ## Usage
 
-An ML engineer can try out different operations to finalize a configuration file for augmenting their images. A sample Configuration json file for Zokyo
+A Computer Vision or ML engineer can try out different operations to finalize a configuration file for augmenting their images. A sample Configuration json file for Zokyo looks like this
 
 ```
 {
@@ -80,7 +80,7 @@ An ML engineer can try out different operations to finalize a configuration file
         "operations":[
             {
                 "operation": "DarkenScene", # operation name
-                "operation_module" : "zokyo.augmentation", # module of that operation
+                "operation_module" : "zokyo.augmentation", # module of that operation, refer examples on how to write custom ops
                 "args": { # arguments required by that operation
                     "probability": 0.7, # probability of applying that operation
                     "darkness" : 0.5, # argument specific to the augmentation operation
