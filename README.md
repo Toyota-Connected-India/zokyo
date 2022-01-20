@@ -87,7 +87,7 @@ An ML engineer can try out different operations to finalize a configuration file
 }
 ```
 
-The above created config can then be used a DevOps engineer to load and augment the data with the following 3 lines of code. 
+The above created config can then be used by a DevOps engineer to load and augment the data with the following 3 lines of code. 
 
 ```
 from zokyo.augmentation import Builder
