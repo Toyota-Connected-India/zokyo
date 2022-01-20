@@ -18,7 +18,7 @@ import zokyo
 
 REQUIREMENTS = [
     'numpy>=1.17.3',
-    'pyyaml==5.1.2',
+    'pyyaml>=5.4',
     'pandas>=1.1.5',
     'scikit-learn>=0.23.2',
     'opencv-python>=4.4.0',
