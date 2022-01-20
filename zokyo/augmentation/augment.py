@@ -52,10 +52,12 @@ class AbstractBuilder(ABC):
 
 class Builder(AbstractBuilder):
     """
+        Builder class to create augmentor Pipeline object through a config file
+
         TODO : Parallelize saving images to disk
+        
         TODO : Parallelize operations from data pipeline
 
-        Builder class to create augmentor Pipeline object through a config file
     """
 
     def __init__(self, config_json="config.json"):

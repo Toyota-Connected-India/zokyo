@@ -90,25 +90,6 @@
 <dt class="sig sig-object py" id="zokyo.utils.dataframes.json_field_parser">
 <span class="sig-prename descclassname"><span class="pre">zokyo.utils.dataframes.</span></span><span class="sig-name descname"><span class="pre">json_field_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/utils/dataframes.html#json_field_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.utils.dataframes.json_field_parser" title="Permalink to this definition"></a></dt>
 <dd><p>Parses a string field to JSON when reading the CSV from disk</p>
-<dl class="simple">
-<dt>data<span class="classifier">str or iterable</span></dt><dd><p>The string or iterable that should be parsed to JSON</p>
-</dd>
-</dl>
-<p>The intended form is for this to be used as a converter during the
-dataframe parse stage:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;x.csv&#39;</span><span class="p">,</span> <span class="n">converters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="n">json_field_parser</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Alternatively, an iterable of parseable JSONs can be passed:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">json_field_parser</span><span class="p">([</span><span class="s1">&#39;{&quot;key&quot;: &quot;value&quot;}&#39;</span><span class="p">])</span>
-<span class="go">[{&#39;key&#39;: &#39;value&#39;}]</span>
-</pre></div>
-</div>
-<p>Passing an already-parsed JSON will also work:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">json_field_parser</span><span class="p">({</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">})</span>
-<span class="go">{&#39;key&#39;: &#39;value&#39;}</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </section>

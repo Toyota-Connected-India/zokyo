@@ -110,61 +110,9 @@
 <dt class="sig sig-object py" id="zokyo.augmentation.augment.Builder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zokyo.augmentation.augment.</span></span><span class="sig-name descname"><span class="pre">Builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config.json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/augmentation/augment.html#Builder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.augmentation.augment.Builder" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#zokyo.augmentation.augment.AbstractBuilder" title="zokyo.augmentation.augment.AbstractBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">zokyo.augmentation.augment.AbstractBuilder</span></code></a></p>
-<p>TODO : Parallelize saving images to disk
-TODO : Parallelize operations from data pipeline</p>
-<p>Builder class to create augmentor Pipeline object
-Config file is a json map used to define Operations and their
-properties
-{</p>
-<blockquote>
-<div><p>“input_dir” : “tests/images”,
-“mask_dir” : “tests/masks”,
-“output_dir”: “tests/output”,
-“annotation_dir”: “tests/annotation”,
-“annotation_format”: “pascal_voc”,
-“sample” : 50,
-“multi_threaded” : false,
-“run_all” : false,
-“batch_ingestion”: true,
-“shuffle”: false,
-“debug”: false,
-“internal_batch”: 5,
-“save_annotation_mask” : false,
-“operations”:[</p>
-<blockquote>
-<div><dl>
-<dt>{</dt><dd><p>“operation”: “DarkenScene”,
-“operation_module” : “zokyo.augmentation”,
-“args”: {</p>
-<blockquote>
-<div><p>“probability”: 0.7,
-“darkness” : 0.5,
-“is_mask” : true,
-“mask_label” : 2,
-“is_annotation” : true,
-“annotation_label” : 1</p>
-</div></blockquote>
-<p>}</p>
-</dd>
-</dl>
-<p>},
-{</p>
-<blockquote>
-<div><p>“operation”: “EqualizeScene”,
-“operation_module” : “zokyo.augmentation”,
-“args”: {</p>
-<blockquote>
-<div><p>“probability”: 0.5,
-“is_mask” : true,
-“label” : 2</p>
-</div></blockquote>
-<p>}</p>
-</div></blockquote>
-<p>}</p>
-</div></blockquote>
-<p>]</p>
-</div></blockquote>
-<p>}</p>
+<p>Builder class to create augmentor Pipeline object through a config file</p>
+<p>TODO : Parallelize saving images to disk</p>
+<p>TODO : Parallelize operations from data pipeline</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="zokyo.augmentation.augment.Builder.get_builder_logger">
 <span class="sig-name descname"><span class="pre">get_builder_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/zokyo/augmentation/augment.html#Builder.get_builder_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zokyo.augmentation.augment.Builder.get_builder_logger" title="Permalink to this definition"></a></dt>

@@ -66,7 +66,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for zokyo.utils.s3</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># Contributors : [srinivas.v@toyotaconnected.co.in,srivathsan.govindarajan@toyotaconnected.co.in,</span>
+<span class="c1"># harshavardhan.thirupathi@toyotaconnected.co.in,</span>
+<span class="c1"># ashok.ramadass@toyotaconnected.com ]</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
 
 
 <span class="k">def</span> <span class="nf">_find_latest_dir</span><span class="p">(</span><span class="n">s3_bucket</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">):</span>
@@ -74,20 +79,6 @@
 <span class="sd">    Finds the latest model directory by using the directory name. Since</span>
 <span class="sd">    saved models use timestamp as the folder name, takes the maximum timestamp</span>
 <span class="sd">    value as the latest directory</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    s3_bucket : boto3.resources.factory.s3.Bucket</span>
-<span class="sd">        boto3 bucket resource for the bucket to download from</span>
-
-<span class="sd">    dir_path : str</span>
-<span class="sd">        The path of the directory in which to search for the latest model</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    latest_dir : str</span>
-<span class="sd">        The latest model directory in the provided dir_path</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">obj_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">obj_summary</span> <span class="ow">in</span> <span class="n">s3_bucket</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Prefix</span><span class="o">=</span><span class="n">dir_path</span><span class="p">):</span>
@@ -98,21 +89,6 @@
 
 
 <span class="k">def</span> <span class="nf">_maybe_strip_from_path</span><span class="p">(</span><span class="n">download_path</span><span class="p">,</span> <span class="n">strip_from_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    s3_bucket : boto3.resources.factory.s3.Bucket</span>
-<span class="sd">        boto3 bucket resource for the bucket to download from</span>
-
-<span class="sd">    dir_path : str</span>
-<span class="sd">        The path of the directory to download</span>
-
-<span class="sd">    strip_from_path : str, optional</span>
-<span class="sd">        Removes an element of the download path for each object in the save</span>
-<span class="sd">        path of the object. For example, models/latest/1423455/variables would</span>
-<span class="sd">        be saved to  models/latest/variables using strip_from_path value</span>
-<span class="sd">        of &#39;1423455/&#39;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">strip_from_path</span><span class="p">:</span>
         <span class="n">save_path</span> <span class="o">=</span> <span class="n">download_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">strip_from_path</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -123,21 +99,6 @@
 <div class="viewcode-block" id="download_s3_dir"><a class="viewcode-back" href="../../../zokyo.utils.s3.html#zokyo.utils.download_s3_dir">[docs]</a><span class="k">def</span> <span class="nf">download_s3_dir</span><span class="p">(</span><span class="n">s3_bucket</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">,</span> <span class="n">strip_from_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Downloads a directory from s3</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    s3_bucket : boto3.resources.factory.s3.Bucket</span>
-<span class="sd">        boto3 bucket resource for the bucket to download from</span>
-
-<span class="sd">    dir_path : str</span>
-<span class="sd">        The path of the directory to download</span>
-
-<span class="sd">    strip_from_path : str, optional</span>
-<span class="sd">        Removes an element of the download path for each object in the save</span>
-<span class="sd">        path of the object. For example, models/latest/1423455/variables would</span>
-<span class="sd">        be saved to  models/latest/variables using strip_from_path value</span>
-<span class="sd">        of &#39;1423455/&#39;</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">obj_summary</span> <span class="ow">in</span> <span class="n">s3_bucket</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Prefix</span><span class="o">=</span><span class="n">dir_path</span><span class="p">):</span>
         <span class="n">download_path</span> <span class="o">=</span> <span class="n">obj_summary</span><span class="o">.</span><span class="n">key</span>

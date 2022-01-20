@@ -45,8 +45,8 @@ install:
 
 .PHONY: docs
 docs:
-	sphinx-apidoc -o docsrc/source zokyo zokyo/*/tests --separate
-	cd docsrc && make html
+	sphinx-apidoc -o docsrc/source zokyo zokyo/*/tests --separate --force
+	cd docsrc && make clean html
 	rm -rf docs/*
 	cd docs && touch .nojekyll
 	cp -r docsrc/build/html/* docs/

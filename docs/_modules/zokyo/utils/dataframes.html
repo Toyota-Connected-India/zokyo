@@ -67,13 +67,9 @@
              
   <h1>Source code for zokyo.utils.dataframes</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-
-<span class="c1"># ============================================================================</span>
-<span class="c1"># Copyright:    Toyota Connected, 2020.  All rights reserved.</span>
-<span class="c1"># Authors:      Zokyo Developers</span>
-<span class="c1"># Email:        &lt;ashok.ramadass@toyotaconnected.com&gt;</span>
-<span class="c1"># Date:         10/28/20  23:28:54</span>
-<span class="c1"># ============================================================================</span>
+<span class="c1"># Contributors : [srinivas.v@toyotaconnected.co.in,srivathsan.govindarajan@toyotaconnected.co.in,</span>
+<span class="c1"># harshavardhan.thirupathi@toyotaconnected.co.in,</span>
+<span class="c1"># ashok.ramadass@toyotaconnected.com ]</span>
 
 <span class="sd">&quot;&quot;&quot;Utilities for Pandas frames&quot;&quot;&quot;</span>
 
@@ -85,29 +81,8 @@
 
 
 <div class="viewcode-block" id="json_field_parser"><a class="viewcode-back" href="../../../zokyo.utils.dataframes.html#zokyo.utils.json_field_parser">[docs]</a><span class="k">def</span> <span class="nf">json_field_parser</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parses a string field to JSON when reading the CSV from disk</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    data : str or iterable</span>
-<span class="sd">        The string or iterable that should be parsed to JSON</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    The intended form is for this to be used as a converter during the</span>
-<span class="sd">    dataframe parse stage:</span>
-
-<span class="sd">    &gt;&gt;&gt; df = pd.read_csv(&#39;x.csv&#39;, converters={&#39;entities&#39;: json_field_parser})</span>
-
-<span class="sd">    Alternatively, an iterable of parseable JSONs can be passed:</span>
-
-<span class="sd">    &gt;&gt;&gt; json_field_parser([&#39;{&quot;key&quot;: &quot;value&quot;}&#39;])</span>
-<span class="sd">    [{&#39;key&#39;: &#39;value&#39;}]</span>
-
-<span class="sd">    Passing an already-parsed JSON will also work:</span>
-
-<span class="sd">    &gt;&gt;&gt; json_field_parser({&#39;key&#39;: &#39;value&#39;})</span>
-<span class="sd">    {&#39;key&#39;: &#39;value&#39;}</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses a string field to JSON when reading the CSV from disk</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># If it&#39;s already a dict, pass through.</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>

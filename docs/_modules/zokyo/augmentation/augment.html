@@ -120,50 +120,12 @@
 
 <div class="viewcode-block" id="Builder"><a class="viewcode-back" href="../../../zokyo.augmentation.augment.html#zokyo.augmentation.augment.Builder">[docs]</a><span class="k">class</span> <span class="nc">Builder</span><span class="p">(</span><span class="n">AbstractBuilder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builder class to create augmentor Pipeline object through a config file</span>
+
 <span class="sd">        TODO : Parallelize saving images to disk</span>
+<span class="sd">        </span>
 <span class="sd">        TODO : Parallelize operations from data pipeline</span>
 
-<span class="sd">        Builder class to create augmentor Pipeline object</span>
-<span class="sd">        Config file is a json map used to define Operations and their</span>
-<span class="sd">        properties</span>
-<span class="sd">        {</span>
-<span class="sd">            &quot;input_dir&quot; : &quot;tests/images&quot;,</span>
-<span class="sd">            &quot;mask_dir&quot; : &quot;tests/masks&quot;,</span>
-<span class="sd">            &quot;output_dir&quot;: &quot;tests/output&quot;,</span>
-<span class="sd">            &quot;annotation_dir&quot;: &quot;tests/annotation&quot;,</span>
-<span class="sd">            &quot;annotation_format&quot;: &quot;pascal_voc&quot;,</span>
-<span class="sd">            &quot;sample&quot; : 50,</span>
-<span class="sd">            &quot;multi_threaded&quot; : false,</span>
-<span class="sd">            &quot;run_all&quot; : false,</span>
-<span class="sd">            &quot;batch_ingestion&quot;: true,</span>
-<span class="sd">            &quot;shuffle&quot;: false,</span>
-<span class="sd">            &quot;debug&quot;: false,</span>
-<span class="sd">            &quot;internal_batch&quot;: 5,</span>
-<span class="sd">            &quot;save_annotation_mask&quot; : false,</span>
-<span class="sd">            &quot;operations&quot;:[</span>
-<span class="sd">                {</span>
-<span class="sd">                    &quot;operation&quot;: &quot;DarkenScene&quot;,</span>
-<span class="sd">                    &quot;operation_module&quot; : &quot;zokyo.augmentation&quot;,</span>
-<span class="sd">                    &quot;args&quot;: {</span>
-<span class="sd">                        &quot;probability&quot;: 0.7,</span>
-<span class="sd">                        &quot;darkness&quot; : 0.5,</span>
-<span class="sd">                        &quot;is_mask&quot; : true,</span>
-<span class="sd">                        &quot;mask_label&quot; : 2,</span>
-<span class="sd">                        &quot;is_annotation&quot; : true,</span>
-<span class="sd">                        &quot;annotation_label&quot; : 1</span>
-<span class="sd">                    }</span>
-<span class="sd">                },</span>
-<span class="sd">                {</span>
-<span class="sd">                    &quot;operation&quot;: &quot;EqualizeScene&quot;,</span>
-<span class="sd">                    &quot;operation_module&quot; : &quot;zokyo.augmentation&quot;,</span>
-<span class="sd">                    &quot;args&quot;: {</span>
-<span class="sd">                        &quot;probability&quot;: 0.5,</span>
-<span class="sd">                        &quot;is_mask&quot; : true,</span>
-<span class="sd">                        &quot;label&quot; : 2</span>
-<span class="sd">                    }</span>
-<span class="sd">                }</span>
-<span class="sd">            ]</span>
-<span class="sd">        }</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_json</span><span class="o">=</span><span class="s2">&quot;config.json&quot;</span><span class="p">):</span>
