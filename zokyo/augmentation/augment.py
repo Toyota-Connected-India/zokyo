@@ -55,7 +55,7 @@ class Builder(AbstractBuilder):
         Builder class to create augmentor Pipeline object through a config file
 
         TODO : Parallelize saving images to disk
-        
+
         TODO : Parallelize operations from data pipeline
 
     """
