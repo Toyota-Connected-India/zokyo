@@ -53,7 +53,15 @@ From your activated `venv` run:
 $ make test
 ```
 
-## usage
+## Generate documentation
+
+After done adding a new module with necessary docstrings, make sure to run the following command to generate sphinx documentation.
+
+```bash
+$ make docs
+```
+
+## Usage
 
 An ML engineer can try out different operations to finalize a configuration file for augmenting their images. A sample Configuration json file for Zokyo
 
