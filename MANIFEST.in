@@ -1,6 +1,6 @@
 include zokyo/VERSION
 recursive-include zokyo *
-recursive-include zokyo/augmentation/uatg *
+recursive-include zokyo/augmentation/ *
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
