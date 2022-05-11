@@ -3,7 +3,7 @@
 
 *CV library for image data augmentation*
 
-![Zokyo](https://github.com/toyotaconnected-India/zokyo/workflows/Zokyo/badge.svg?branch=master)
+![Zokyo](https://github.com/toyota-connected-India/zokyo/workflows/Zokyo/badge.svg?branch=master)
 
 ```
 
@@ -65,6 +65,8 @@ $ make docs
 
 A Computer Vision or ML engineer can try out different operations to finalize a configuration file for augmenting their images. A sample Configuration json file for Zokyo looks like this,
 
+**Note:** Refer [Documentation](https://toyota-connected-india.github.io/zokyo/) for more details. 
+
 ```
 {
         "input_dir" : "images", # input directory
@@ -103,6 +105,20 @@ pipeline = Builder(config_json="config.json")
 pipeline.process_and_save()
 ```
 
-For more usage tutorials, take a look at the notebooks in the [examples folder](/examples).
+## Code of Conduct  
+
+`Zokyo` is an open-source project and adheres to the [Contributor Convent Code of Conduct](CODE_OF_CONDUCT.md). By participating you are expected to uphold our Code of Conduct. We request our contributors and users to take a few minutes to review our Code of Conduct. 
+
+## Contribution 
+
+If you are interested in contributing to Zokyo through code, documentation, feature ideas, bug fixing, etc., use the [Issues](https://github.com/Toyota-Connected-India/zokyo/issues) section as the place to start the discussion. 
+
+### License 
+
+`Zokyo` is licensed under [Apache License 2.0](LICENSE).
+
+---
+
+For more usage tutorials, take a look at the notebooks in the [examples folder](/examples). 
 
 **Note:** Zokyo currently supports only Pascal VOC format. To convert other annotation formats to Pascal VOC see [this](/zokyo/utils/data_format_conversions.py).
