@@ -55,7 +55,7 @@ $ make test
 
 ## Generate documentation
 
-After done adding a new module with necessary docstrings, make sure to run the following command to generate sphinx documentation.
+After done adding a new module with necessary docstrings, make sure to run the following command to generate sphinx documentation before submitting the PR.
 
 ```bash
 $ make docs
