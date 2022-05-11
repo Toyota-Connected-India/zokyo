@@ -63,7 +63,7 @@ $ make docs
 
 ## Usage
 
-A Computer Vision or ML engineer can try out different operations to finalize a configuration file for augmenting their images. A sample Configuration json file for Zokyo looks like this
+A Computer Vision or ML engineer can try out different operations to finalize a configuration file for augmenting their images. A sample Configuration json file for Zokyo looks like this,
 
 ```
 {
